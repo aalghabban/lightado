@@ -8,6 +8,127 @@ LightADO is a ORM Interested in serving the integration developers with function
 
 It's Data Access Layer for SQL Server it will handle all of the legacy that come when dealing with sql server database like " open connections, create sqlcommand, loop throw DataReader, Get a Data Table , convert Data table to Object or data set, close connection, get output and parameters values.. etc , with lightAdo.net you can Execute Query and Non Query, get direct object or even dynamic object, auto mapping stored procedures to object properties set foreign  key to get sub object details, Validation nulls without writing single if statement and more with just simple one line of code.
 
+## Installation
+
+```sh
+$ dotnet add package LightAdo.net --version 5.1.2
+```
+
+Or you can use Visual studio search for lightado.net.
+
+# Setup
+
+Add app.config to your file, in the connection string section add connection with name DefaultConnection example: 
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+  <connectionStrings>
+      <add name="DefaultConnection" connectionString="...."/>  
+  </connectionStrings>
+</configuration>
+```
+# Examples
+
+## Execute Query to Object
+
+The code below excuting SP and return the data as object. 
+
+```C#
+new Query().ExecuteToObject(
+                "Employes_GetByID",
+                this,
+                System.Data.CommandType.StoredProcedure,
+                new Parameter("ID", id));
+```
+
+The code below excuting SQL statment and return the data as object. 
+
+```C#
+new Query().ExecuteToObject(
+                "select * from Employes where ID = @ID",
+                this,
+                System.Data.CommandType.Text,
+                new Parameter("ID", id));
+```
+
+Get A list of objects: 
+```C#
+   public List<Job> Get(Level level)
+        {
+            return new Query().ExecuteToListOfObject<Job>("Jobs_GetByLevel",
+                System.Data.CommandType.StoredProcedure,
+                new Parameter("Level", level.ID));
+        }
+```
+
+## Non Query
+
+The code below Auth mapping an object to SP: 
+```C#
+public bool Close()
+{
+  return new NonQuery().Execute("Memos_Close", this);
+}
+```
+
+## Relationship
+
+Let's start with Employ where each employ must have job, here's how the Job class will look like: 
+```C#
+public class Job{
+
+  public Job {
+
+  }
+
+   [PrimaryKey]
+  public int ID {get;set;}
+  public string Name {get;set;}
+  public DateTime CreateDate {get;set;}
+}
+```
+
+In the Employ class: 
+
+```C#
+public class Employ{
+   [PrimaryKey]
+  public int ID {get;set;}
+  public string Name {get;set;}
+  public DateTime CreateDate {get;set;}
+
+   [ForeignKey]
+  public Job Job {get;set;}
+}
+```
+During the mapping process LightAdo will search for the constructor that have an int id, so the final Job class should look like this: 
+
+```C#
+public class Job{
+
+  public Job {
+
+  }
+
+    public Job(int id)
+  {
+    new Query().ExecuteToObject<Job>("Jobs_GetByID", 
+                this,
+                System.Data.CommandType.StoredProcedure,
+                new Parameter("ID", id));
+  }
+
+
+   [PrimaryKey]
+  public int ID {get;set;}
+  public string Name {get;set;}
+  public DateTime CreateDate {get;set;}
+}
+```
+
+
+
 # Change Log 
 #### 5.1.2
 - Adding the transcation Ability so now you can do muilt sql command in one line of code
@@ -123,15 +244,4 @@ I aslo remove the lightADOExpection and replaces it with normal
 
 #### 1.0.6
 - Fxing the Loading Connection string with auto mapping in NonQuery. 
-- Add Encryption as Attribute so you can mark property as encrypted lightado.net will encrypt and decrypt this property automatically
-
-
-
-
-## Installation
-
-```sh
-$ dotnet add package LightAdo.net --version 5.1.2
-```
-
-Or you can use Visual studio search for lightado.net.
+- Add Encryption as Attribute so you can mark property as encrypted lightado.net will encrypt and decrypt this property automatically.
