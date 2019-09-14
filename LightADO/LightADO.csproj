@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <Version>5.1.2</Version>
+    <Authors>ALGHABBAN</Authors>
+    <Company>Quad Microsystem</Company>
+    <Description>Adding the transcation Ability so now you can do muilt sql command in one line of code, don't upgrade to this version unless you are using .net core 2.2</Description>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageReleaseNotes>Fixing the Ecrypted Key Length</PackageReleaseNotes>
+    <PackageId>LightAdo.net</PackageId>
+    <Product>LightAdo.net</Product>
+    <AssemblyVersion>5.1.2.0</AssemblyVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.5.0" />
+    <PackageReference Include="System.Data.Common" Version="4.3.0" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.6.1" />
+  </ItemGroup>
+
+</Project>

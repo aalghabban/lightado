@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>LightAdo.net</id>
+    <version>5.1.1</version>
+    <authors>ALGHABBAN</authors>
+    <owners>ALGHABBAN</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Adding the transcation Ability so now you can do muilt sql command in one line of code, don't upgrade to this version unless you are using .net core 2.2</description>
+    <releaseNotes>Fixing the Ecrypted Key Length</releaseNotes>
+    <dependencies>
+      <group targetFramework=".NETCoreApp2.2">
+        <dependency id="Newtonsoft.Json" version="12.0.2" exclude="Build,Analyzers" />
+        <dependency id="System.Configuration.ConfigurationManager" version="4.5.0" exclude="Build,Analyzers" />
+        <dependency id="System.Data.Common" version="4.3.0" exclude="Build,Analyzers" />
+        <dependency id="System.Data.SqlClient" version="4.6.1" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="C:\Users\ALGHABBAN\Documents\Visual Studio 2019\Projects\LightADO\LightADO\bin\Debug\netcoreapp2.2\LightADO.dll" target="lib\netcoreapp2.2\LightADO.dll" />
+  </files>
+</package>
