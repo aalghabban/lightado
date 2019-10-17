@@ -9,7 +9,7 @@
     <description>Adding the transcation Ability so now you can do muilt sql command in one line of code, don't upgrade to this version unless you are using .net core 2.2</description>
     <releaseNotes>Fixing the Ecrypted Key Length</releaseNotes>
     <dependencies>
-      <group targetFramework=".NETCoreApp2.2">
+      <group targetFramework=".NETCoreApp3.0">
         <dependency id="Microsoft.Extensions.Configuration" version="3.0.0" exclude="Build,Analyzers" />
         <dependency id="Microsoft.Extensions.Configuration.Abstractions" version="3.0.0" exclude="Build,Analyzers" />
         <dependency id="Microsoft.Extensions.Configuration.FileExtensions" version="3.0.0" exclude="Build,Analyzers" />
@@ -23,6 +23,6 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="C:\Users\aalgh\Documents\Visual Studio 2019\Projects\lightado\LightADO\bin\Debug\netcoreapp2.2\LightADO.dll" target="lib\netcoreapp2.2\LightADO.dll" />
+    <file src="C:\Users\aalgh\Documents\Visual Studio 2019\Projects\lightado\LightADO\bin\Debug\netcoreapp3.0\LightADO.dll" target="lib\netcoreapp3.0\LightADO.dll" />
   </files>
 </package>
