@@ -146,8 +146,7 @@ public class Job{
 - Now light ado support reading from appsettings.json and app.config or web.config without having change anything from your end, except adding the connection string to ConnectionStrings in appsettings.json file.
 - Now you can set a default value for a property so before the query get execute (NonQuery) the DataMapper class will load the default value to the empty property, also it work with Query so you can load default values unstalend of nulls. 
 
-
-During the mapping process LightAdo will search for the constructor that have an int id, so the final Job class should look like this: 
+In the example below you can see the Default value attribute which can have 4 parameters as following: 
 
 Example: 
 
@@ -177,8 +176,6 @@ public class Job{
   public DateTime CreateDate {get;set;}
 }
 ```
-
-In the example below you can see the Default value attribute which can have 4 parameters as following: 
 
 Value: The default value of the property.
 ValueTypes: The type of the value with it is value or it will be loaded from Properties or methods of the same object type as you can see in exmple above the DefaultValue will 
