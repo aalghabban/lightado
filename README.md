@@ -2,23 +2,24 @@
 
 LightADO is a ORM Interested in serving the integration developers with functionalities like:
 
-  - Parsing json or xml object to C# object.
-  - connting to multiple sql server databases. 
-  - Logges and encryption built in. 
+  - Parsing json or xml object to C# object and vice versa.
+  - connecting to multiple sql server databases. 
+  - Logges and encryption built in,  default values on inserting objects.
 
-It's Data Access Layer for SQL Server it will handle all of the legacy that come when dealing with sql server database like " open connections, create sqlcommand, loop throw DataReader, Get a Data Table , convert Data table to Object or data set, close connection, get output and parameters values.. etc , with lightAdo.net you can Execute Query and Non Query, get direct object or even dynamic object, auto mapping stored procedures to object properties set foreign  key to get sub object details, Validation nulls without writing single if statement and more with just simple one line of code.
+This Data Access Layer for SQL Server will handle all of the legacy that come when dealing with ADO like " open connections, create sqlcommand, loop throw DataReader, Get a Data Table , convert Data table to Object or data set, close connection, get output and parameters values.. etc , 
+with lightAdo.net you can Execute Query and Non Query, get direct object or even dynamic object, auto mapping stored procedures to object properties set foreign  key to get sub object details, Validation nulls without writing single if statement and more with just simple one line of code.
 
 ## Installation
 
 ```sh
-$ dotnet add package LightAdo.net --version 5.1.2
+$ dotnet add package LightAdo.net --version 5.2.0
 ```
 
 Or you can use Visual studio search for lightado.net.
 
 # Setup
 
-Add app.config to your file, in the connection string section add connection with name DefaultConnection example: 
+Add app.config or appsettings.json to your file, in the connection string section add connection with name DefaultConnection example: 
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
@@ -28,6 +29,16 @@ Add app.config to your file, in the connection string section add connection wit
   </connectionStrings>
 </configuration>
 ```
+
+```json
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Data Source=.;Initial Catalog=sso;User ID=sa;Password=1986Gabban2017*m"
+  }
+}
+
+```
+
 # Examples
 
 ## Execute Query to Object
@@ -130,6 +141,51 @@ public class Job{
 
 
 # Change Log 
+
+#### 5.2.0
+- Now light ado support reading from appsettings.json and app.config or web.config without having change anything from your end, except adding the connection string to ConnectionStrings in appsettings.json file.
+- Now you can set a default value for a property so before the query get execute (NonQuery) the DataMapper class will load the default value to the empty property, also it work with Query so you can load default values unstalend of nulls. 
+
+
+During the mapping process LightAdo will search for the constructor that have an int id, so the final Job class should look like this: 
+
+Example: 
+
+```C#
+public class Job{
+
+  public Job {
+
+  }
+
+    public Job(int id)
+  {
+    new Query().ExecuteToObject<Job>("Jobs_GetByID", 
+                this,
+                System.Data.CommandType.StoredProcedure,
+                new Parameter("ID", id));
+  }
+
+
+  [PrimaryKey]
+  public int ID {get;set;}
+
+  [DefaultValue("ALGHABBAN")]
+  public string Name {get;set;}
+
+  [DefaultValue("New", DefaultValue.ValueTypes.Properties, Directions.WithBoth)]
+  public DateTime CreateDate {get;set;}
+}
+```
+
+In the example below you can see the Default value attribute which can have 4 parameters as following: 
+
+Value: The default value of the property.
+ValueTypes: The type of the value with it is value or it will be loaded from Properties or methods of the same object type as you can see in exmple above the DefaultValue will 
+			call the DateTime.Now Property to get the date.
+
+Directions: if you want to enable DefaultValue withQuery or NonQuery or With both of them.
+
 #### 5.1.2
 - Adding the transcation Ability so now you can do muilt sql command in one line of code
 

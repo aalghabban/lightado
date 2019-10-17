@@ -1,8 +1,8 @@
-﻿using System;
-
-namespace LightADO
+﻿namespace LightADO
 {
-  public sealed class PrimaryKey : Attribute
-  {
-  }
+    using System;
+
+    public sealed class PrimaryKey : Attribute
+    {
+    }
 }

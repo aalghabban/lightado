@@ -10,14 +10,19 @@
     <releaseNotes>Fixing the Ecrypted Key Length</releaseNotes>
     <dependencies>
       <group targetFramework=".NETCoreApp2.2">
+        <dependency id="Microsoft.Extensions.Configuration" version="3.0.0" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.Extensions.Configuration.Abstractions" version="3.0.0" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.Extensions.Configuration.FileExtensions" version="3.0.0" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.Extensions.Configuration.Json" version="3.0.0" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.Extensions.FileProviders.Abstractions" version="3.0.0" exclude="Build,Analyzers" />
         <dependency id="Newtonsoft.Json" version="12.0.2" exclude="Build,Analyzers" />
         <dependency id="System.Configuration.ConfigurationManager" version="4.5.0" exclude="Build,Analyzers" />
         <dependency id="System.Data.Common" version="4.3.0" exclude="Build,Analyzers" />
-        <dependency id="System.Data.SqlClient" version="4.6.1" exclude="Build,Analyzers" />
+        <dependency id="System.Data.SqlClient" version="4.7.0" exclude="Build,Analyzers" />
       </group>
     </dependencies>
   </metadata>
   <files>
-    <file src="C:\Users\ALGHABBAN\Documents\Visual Studio 2019\Projects\LightADO\LightADO\bin\Debug\netcoreapp2.2\LightADO.dll" target="lib\netcoreapp2.2\LightADO.dll" />
+    <file src="C:\Users\aalgh\Documents\Visual Studio 2019\Projects\lightado\LightADO\bin\Debug\netcoreapp2.2\LightADO.dll" target="lib\netcoreapp2.2\LightADO.dll" />
   </files>
 </package>

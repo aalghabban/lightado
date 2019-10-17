@@ -67,6 +67,7 @@
             List<Parameter> parameterList = new List<Parameter>();
             try
             {
+                DefaultValue.SetDefaultValus(objectToMap, DefaultValue.Directions.WithNonQuery);
                 foreach (StoredProcedureParameter parameter1 in new StoredProcedureParameter(command, setting).Parameters)
                 {
                     StoredProcedureParameter parameter = parameter1;
@@ -119,7 +120,7 @@
             return parameterList;
         }
 
-        private static Type GetCSharpType(SqlDbType sqltype)
+        internal static Type GetCSharpType(SqlDbType sqltype)
         {
             Type type = (Type)null;
             new Dictionary<SqlDbType, Type>()
@@ -304,8 +305,13 @@
             {
                 PropertyInfo[] properties = typeof(T).GetProperties();
                 T instance = Activator.CreateInstance<T>();
+                
                 foreach (PropertyInfo propertyInfo in properties)
+                {
                     DataMapper.MapPropertyOfObject<T>(instance, row, propertyInfo, onError);
+                }
+
+                DefaultValue.SetDefaultValus(instance, DefaultValue.Directions.WithQuery);
                 return instance;
             }
             catch (Exception ex)

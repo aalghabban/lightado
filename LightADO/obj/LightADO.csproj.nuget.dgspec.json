@@ -1,26 +1,21 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\ALGHABBAN\\Documents\\Visual Studio 2019\\Projects\\LightADO\\LightADO\\LightADO.csproj": {}
+    "C:\\Users\\aalgh\\Documents\\Visual Studio 2019\\Projects\\lightado\\LightADO\\LightADO.csproj": {}
   },
   "projects": {
-    "C:\\Users\\ALGHABBAN\\Documents\\Visual Studio 2019\\Projects\\LightADO\\LightADO\\LightADO.csproj": {
+    "C:\\Users\\aalgh\\Documents\\Visual Studio 2019\\Projects\\lightado\\LightADO\\LightADO.csproj": {
       "version": "5.1.2",
       "restore": {
-        "projectUniqueName": "C:\\Users\\ALGHABBAN\\Documents\\Visual Studio 2019\\Projects\\LightADO\\LightADO\\LightADO.csproj",
+        "projectUniqueName": "C:\\Users\\aalgh\\Documents\\Visual Studio 2019\\Projects\\lightado\\LightADO\\LightADO.csproj",
         "projectName": "LightAdo.net",
-        "projectPath": "C:\\Users\\ALGHABBAN\\Documents\\Visual Studio 2019\\Projects\\LightADO\\LightADO\\LightADO.csproj",
-        "packagesPath": "C:\\Users\\ALGHABBAN\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\ALGHABBAN\\Documents\\Visual Studio 2019\\Projects\\LightADO\\LightADO\\obj\\",
+        "projectPath": "C:\\Users\\aalgh\\Documents\\Visual Studio 2019\\Projects\\lightado\\LightADO\\LightADO.csproj",
+        "packagesPath": "C:\\Users\\aalgh\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\aalgh\\Documents\\Visual Studio 2019\\Projects\\lightado\\LightADO\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Microsoft\\Xamarin\\NuGet\\",
-          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
-        ],
         "configFilePaths": [
-          "C:\\Users\\ALGHABBAN\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+          "C:\\Users\\aalgh\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "netcoreapp2.2"
@@ -43,6 +38,26 @@
       "frameworks": {
         "netcoreapp2.2": {
           "dependencies": {
+            "Microsoft.Extensions.Configuration": {
+              "target": "Package",
+              "version": "[3.0.0, )"
+            },
+            "Microsoft.Extensions.Configuration.Abstractions": {
+              "target": "Package",
+              "version": "[3.0.0, )"
+            },
+            "Microsoft.Extensions.Configuration.FileExtensions": {
+              "target": "Package",
+              "version": "[3.0.0, )"
+            },
+            "Microsoft.Extensions.Configuration.Json": {
+              "target": "Package",
+              "version": "[3.0.0, )"
+            },
+            "Microsoft.Extensions.FileProviders.Abstractions": {
+              "target": "Package",
+              "version": "[3.0.0, )"
+            },
             "Microsoft.NETCore.App": {
               "suppressParent": "All",
               "target": "Package",
@@ -63,14 +78,20 @@
             },
             "System.Data.SqlClient": {
               "target": "Package",
-              "version": "[4.6.1, )"
+              "version": "[4.7.0, )"
             }
           },
           "imports": [
-            "net461"
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
           ],
           "assetTargetFallback": true,
-          "warn": true
+          "warn": true,
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.0.100\\RuntimeIdentifierGraph.json"
         }
       }
     }

@@ -27,7 +27,7 @@
             {
                 if (string.IsNullOrWhiteSpace(this.encryptKey))
                 {
-                    this.encryptKey = System.Configuration.ConfigurationManager.AppSettings["EncryptKey"];
+                    this.encryptKey = ConfigurationLoader.GetValueOfKey("EncryptKey", ConfigurationLoader.ConfigurationSections.AppSettings);
                     if (string.IsNullOrWhiteSpace(this.encryptKey))
                         throw new Exception("The Encryption key is not set in the appSetting section of the configration file, Create new key with name EncryptKey and set the value of it to random string");
                 }
@@ -44,15 +44,25 @@
 
         public LightADOSetting()
         {
-            this.ConnectionString = SqlConnectionHandler.LoadConnectionFromConfigrationFile("DefaultConnection");
+            this.ConnectionString = this.LoadConnectionString();
         }
 
         public LightADOSetting(string connectionString, bool loadFromConfigrationFile)
         {
             if (loadFromConfigrationFile)
-                this.ConnectionString = SqlConnectionHandler.LoadConnectionFromConfigrationFile(connectionString);
+                this.ConnectionString = this.LoadConnectionString(connectionString);
             else
                 this.ConnectionString = connectionString;
         }
+
+        private string LoadConnectionString(string connectionStringName = "DefaultConnection")
+        {
+            string connectionString = ConfigurationLoader.GetValueOfKey(connectionStringName);
+            if (connectionString == null)
+                throw new Exception("Lightado did not find a connection string with name DefaultConnection, in both appsettings.json or the app.confg");
+
+            return connectionString;
+        }
+
     }
 }
