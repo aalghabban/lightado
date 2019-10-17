@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>LightAdo.net</id>
+    <version>5.2.4</version>
+    <authors>ALGHABBAN</authors>
+    <owners>ALGHABBAN</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Adding the transcation Ability so now you can do muilt sql command in one line of code, don't upgrade to this version unless you are using .net core 3.0</description>
+    <releaseNotes>Fixing the Ecrypted Key Length</releaseNotes>
+    <dependencies>
+      <group targetFramework=".NETCoreApp3.0">
+        <dependency id="Microsoft.Extensions.Configuration" version="3.0.0" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.Extensions.Configuration.Abstractions" version="3.0.0" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.Extensions.Configuration.FileExtensions" version="3.0.0" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.Extensions.Configuration.Json" version="3.0.0" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.Extensions.FileProviders.Abstractions" version="3.0.0" exclude="Build,Analyzers" />
+        <dependency id="Newtonsoft.Json" version="12.0.2" exclude="Build,Analyzers" />
+        <dependency id="System.Configuration.ConfigurationManager" version="4.6.0" exclude="Build,Analyzers" />
+        <dependency id="System.Data.Common" version="4.3.0" exclude="Build,Analyzers" />
+        <dependency id="System.Data.SqlClient" version="4.7.0" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="C:\Users\aalgh\Documents\Visual Studio 2019\Projects\lightado\LightADO\bin\Debug\netcoreapp3.0\LightADO.dll" target="lib\netcoreapp3.0\LightADO.dll" />
+  </files>
+</package>
