@@ -142,7 +142,7 @@ public class Job{
 
 # Change Log 
 
-#### 5.2.0
+#### 5.2.1
 - Now light ado support reading from appsettings.json and app.config or web.config without having change anything from your end, except adding the connection string to ConnectionStrings in appsettings.json file.
 - Now you can set a default value for a property so before the query get execute (NonQuery) the DataMapper class will load the default value to the empty property, also it work with Query so you can load default values unstalend of nulls. 
 
