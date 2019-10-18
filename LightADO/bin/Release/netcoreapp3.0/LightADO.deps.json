@@ -6,7 +6,7 @@
   "compilationOptions": {},
   "targets": {
     ".NETCoreApp,Version=v3.0": {
-      "LightADO/5.2.6": {
+      "LightADO/5.2.7": {
         "dependencies": {
           "Microsoft.Extensions.Configuration": "3.0.0",
           "Microsoft.Extensions.Configuration.Abstractions": "3.0.0",
@@ -390,7 +390,7 @@
     }
   },
   "libraries": {
-    "LightADO/5.2.6": {
+    "LightADO/5.2.7": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

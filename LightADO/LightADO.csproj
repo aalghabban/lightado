@@ -2,17 +2,25 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
-    <Version>5.2.4</Version>
+    <Version>5.2.7</Version>
     <Authors>ALGHABBAN</Authors>
     <Company>Quad Microsystem</Company>
-    <Description>Adding the transcation Ability so now you can do muilt sql command in one line of code, don't upgrade to this version unless you are using .net core 3.0</Description>
+    <Description>LightADO is a ORM Interested in serving the integration developers with functionalities like:
+
+Parsing json or xml object to C# object and vice versa.
+connecting to multiple sql server databases.
+Logges and encryption built in, default values on inserting objects.
+This Data Access Layer for SQL Server will handle all of the legacy that come when dealing with ADO like " open connections, create sqlcommand, loop throw DataReader, Get a Data Table , convert Data table to Object or data set, close connection, get output and parameters values.. etc , with lightAdo.net you can Execute Query and Non Query, get direct object or even dynamic object, auto mapping stored procedures to object properties set foreign key to get sub object details, Validation nulls without writing single if statement and more with just simple one line of code.</Description>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <PackageReleaseNotes>Fixing the Ecrypted Key Length</PackageReleaseNotes>
+    <PackageReleaseNotes>Fixing the setting up the default values</PackageReleaseNotes>
     <PackageId>LightAdo.net</PackageId>
     <Product>LightAdo.net</Product>
-    <AssemblyVersion>5.2.4.0</AssemblyVersion>
-    <FileVersion>5.3.4.0</FileVersion>
+    <AssemblyVersion>5.3.7.0</AssemblyVersion>
+    <FileVersion>5.3.7.0</FileVersion>
+    <RepositoryUrl>https://github.com/aalghabban/lightado</RepositoryUrl>
+    <PackageProjectUrl>https://lighado.quadmicrosystem.com</PackageProjectUrl>
+    <PackageIconUrl>https://i.ibb.co/9gdzCHg/lightweight-icon-250x250.png</PackageIconUrl>
   </PropertyGroup>
 
   <ItemGroup>

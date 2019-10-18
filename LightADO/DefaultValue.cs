@@ -45,15 +45,8 @@
                     if (customAttribute.Direction == Directions.WithBoth || customAttribute.Direction == directions)
                     {
                         DefaultValue defaultValue = customAttribute;
-                        if (customAttribute.Direction == Directions.WithQuery)
-                        {
-                            object value = objectToMapDefaultValues.GetType().GetProperty(property.Name).GetValue(objectToMapDefaultValues);
-                            if (value == null)
-                            {
-                                SetDefaultValue(objectToMapDefaultValues, customAttribute, objectToMapDefaultValues.GetType().GetProperty(property.Name));
-                            }
-                        }
-                        else
+                        object value = objectToMapDefaultValues.GetType().GetProperty(property.Name).GetValue(objectToMapDefaultValues);
+                        if (value == null)
                         {
                             SetDefaultValue(objectToMapDefaultValues, customAttribute, objectToMapDefaultValues.GetType().GetProperty(property.Name));
                         }
