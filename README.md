@@ -84,7 +84,7 @@ Using **lighado** we can use the NonQuery Class to map and get the new id of the
 new NonQuery().Execute("Create_Employes", this);
 ```
 
-That's it very much it, Done! things should be that simple and clean.
+That's very much it, Done! things should be that simple and clean.
 
 # Features
 
@@ -103,12 +103,9 @@ That's it very much it, Done! things should be that simple and clean.
 - Plug your logic to **lightado** events gives you the power to control and see the transactions all the way from mapping, validations execution, closing tell the object get back to you.
 - Enable logging using the power of log4net.
 - Encrypt each property and decrypt on run time, using your encryption methods.
-
+- Multi Mapping convert result to multiple types of objects.
 
 # Chanage Logs
-
-### Installation
- # Change Log 
 
 #### 5.2.7 
 - upgrading to core 3.0. 
@@ -228,7 +225,7 @@ That's it very much it, Done! things should be that simple and clean.
 
  #### 1.0.6
  - Fxing the Loading Connection string with auto mapping in NonQuery. 
- - Add Encryption as Attribute so you can mark property as encrypted lightado.net will encrypt and decrypt this property automatically
+ - Add Encryption as Attribute so you can mark property as encrypted lightado.net will encrypt and decrypt this property automatically.
 
 # Support
  1. [LightADO](https://lightado.net)
