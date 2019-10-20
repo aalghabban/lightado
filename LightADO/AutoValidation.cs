@@ -1,4 +1,21 @@
-﻿namespace LightADO
+﻿/*
+ * Copyright (C) 2019 ALGHABBAn
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+namespace LightADO
 {
     using System;
     using System.Reflection;
@@ -7,39 +24,33 @@
     {
         public string ErrorMessage { get; set; }
 
-        public string CallThisMethod { get; set; }
-
         internal static bool ValidateObject<T>(T objectToValidate)
         {
             foreach (PropertyInfo property in objectToValidate.GetType().GetProperties())
             {
-                object[] customAttributes = property.GetCustomAttributes(true);
-                if (customAttributes != null && (uint)customAttributes.Length > 0U)
+                AutoValidation validation = property.GetCustomAttribute<AutoValidation>(true);
+                if (validation != null)
                 {
-                    foreach (object customAttribute in customAttributes)
-                    {
-                        if (customAttribute.GetType().BaseType.Name == nameof(AutoValidation))
-                        {
-                            object propertyValue = objectToValidate.GetType().GetProperty(property.Name).GetValue((object)objectToValidate);
-                            AutoValidation.ValidateProperty(customAttribute, propertyValue);
-                        }
-                    }
+                    object propertyValue = objectToValidate.GetType().GetProperty(property.Name).GetValue((object)objectToValidate);
+                    AutoValidation.ValidateProperty(validation, propertyValue);
                 }
             }
             return true;
         }
 
-        private static void ValidateProperty(object customAttribute, object propertyValue)
+        private static void ValidateProperty(AutoValidation validationAttribute, object propertyValue)
         {
-            string name = customAttribute.GetType().GetProperty("CallThisMethod").GetValue(customAttribute) != null ? customAttribute.GetType().GetProperty("CallThisMethod").GetValue(customAttribute).ToString() : "Validate";
-            if (bool.Parse(customAttribute.GetType().GetMethod(name).Invoke(customAttribute, new object[1]
+            if (bool.Parse(validationAttribute.GetType().GetMethod("Validate").Invoke(validationAttribute, new object[1] {propertyValue}).ToString()))
             {
-        propertyValue
-            }).ToString()))
                 return;
-            if (customAttribute.GetType().GetProperty("ErrorMessage").GetValue(customAttribute) != null)
-                throw new LightADOValidationException(customAttribute.GetType().GetProperty("ErrorMessage").GetValue(customAttribute).ToString());
-            throw new LightADOValidationException(string.Format("Violation of {0}, set the error message as [{1}( ErrorMessage=\"This A demo \")]; to display it", (object)customAttribute.GetType().Name, (object)customAttribute.GetType().Name));
+            }
+                
+            if (string.IsNullOrEmpty(validationAttribute.ErrorMessage) == false)
+            {
+                throw new LightADOValidationException(validationAttribute.ErrorMessage);
+            }
+                
+            throw new LightADOValidationException(string.Format("Violation of {0}, set the error message as [{1}( ErrorMessage=\"This A demo \")]; to display it", validationAttribute.GetType().Name, validationAttribute.GetType().Name));
         }
 
         public abstract bool Validate(object propertyValue);

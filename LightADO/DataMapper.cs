@@ -1,14 +1,31 @@
-﻿namespace LightADO
+﻿/*
+ * Copyright (C) 2019 ALGHABBAn
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+namespace LightADO
 {
-    using Microsoft.CSharp.RuntimeBinder;
     using System;
     using System.Collections.Generic;
     using System.Data;
-    using System.Dynamic;
     using System.Linq;
     using System.Reflection;
-    using System.Runtime.CompilerServices;
 
+    /// <summary>
+    /// This class used to map object from or to Sql query.
+    /// </summary>
     public class DataMapper
     {
         public static List<T> ConvertDataTableToListOfObject<T>(DataTable table, OnError onError = null)
@@ -56,12 +73,29 @@
             return dataSet;
         }
 
-        internal static List<Parameter> MapObjectToStoredProcedure<T>(
-          string command,
-          T objectToMap,
-          LightADOSetting setting,
-          OnError onError,
-          params Parameter[] parameters)
+        public static T MapDataRowToObject<T>(DataRow row, OnError onError)
+        {
+            try
+            {
+                PropertyInfo[] properties = typeof(T).GetProperties();
+                T instance = Activator.CreateInstance<T>();
+
+                foreach (PropertyInfo propertyInfo in properties)
+                {
+                    DataMapper.MapPropertyOfObject<T>(instance, row, propertyInfo, onError);
+                }
+
+                DefaultValue.SetDefaultValus(instance, DefaultValue.Directions.WithQuery);
+                return instance;
+            }
+            catch (Exception ex)
+            {
+                QueryBase.ThrowExacptionOrEvent(onError, ex, "");
+            }
+            return default(T);
+        }
+
+        internal static List<Parameter> MapObjectToStoredProcedure<T>(string command, T objectToMap, LightADOSetting setting, OnError onError, params Parameter[] parameters)
         {
             Func<PropertyInfo, bool> predicate = (Func<PropertyInfo, bool>)null;
             List<Parameter> parameterList = new List<Parameter>();
@@ -237,12 +271,7 @@
             return type;
         }
 
-        private static void SearchForCustomColumnNames<T>(
-          T objectToMap,
-          List<Parameter> mappedParameters,
-          StoredProcedureParameter parameter,
-          string currentParameteNameInStoredProcedure,
-          OnError onError)
+        private static void SearchForCustomColumnNames<T>(T objectToMap, List<Parameter> mappedParameters, StoredProcedureParameter parameter, string currentParameteNameInStoredProcedure, OnError onError)
         {
             Func<PropertyInfo, bool> predicate = (Func<PropertyInfo, bool>)null;
             try
@@ -271,13 +300,7 @@
             }
         }
 
-        private static bool GetPrimaryKeyValueFromSubObject<T>(
-          T objectToMap,
-          List<Parameter> parameters,
-          StoredProcedureParameter parameter,
-          string currentParameteName,
-          string propertyName,
-          OnError onError)
+        private static bool GetPrimaryKeyValueFromSubObject<T>(T objectToMap, List<Parameter> parameters, StoredProcedureParameter parameter, string currentParameteName, string propertyName, OnError onError)
         {
             try
             {
@@ -299,33 +322,7 @@
             return false;
         }
 
-        public static T MapDataRowToObject<T>(DataRow row, OnError onError)
-        {
-            try
-            {
-                PropertyInfo[] properties = typeof(T).GetProperties();
-                T instance = Activator.CreateInstance<T>();
-                
-                foreach (PropertyInfo propertyInfo in properties)
-                {
-                    DataMapper.MapPropertyOfObject<T>(instance, row, propertyInfo, onError);
-                }
-
-                DefaultValue.SetDefaultValus(instance, DefaultValue.Directions.WithQuery);
-                return instance;
-            }
-            catch (Exception ex)
-            {
-                QueryBase.ThrowExacptionOrEvent(onError, ex, "");
-            }
-            return default(T);
-        }
-
-        private static void MapPropertyOfObject<T>(
-          T item,
-          DataRow row,
-          PropertyInfo propertyInfo,
-          OnError onError)
+        private static void MapPropertyOfObject<T>(T item, DataRow row, PropertyInfo propertyInfo, OnError onError)
         {
             bool flag = (uint)propertyInfo.GetCustomAttributes(typeof(ForeignKey), false).Length > 0U;
             string columnName = DataMapper.GetColumnName(propertyInfo, onError);
@@ -385,11 +382,7 @@
             return (string)null;
         }
 
-        private static void MapForeignObject<T>(
-          T item,
-          DataRow row,
-          PropertyInfo propertyInfo,
-          OnError onError)
+        private static void MapForeignObject<T>(T item, DataRow row, PropertyInfo propertyInfo, OnError onError)
         {
             try
             {
@@ -411,25 +404,20 @@
             }
         }
 
-        private static bool GetPrimaryKeyValueFromSubObject<T>(
-          T objectToMap,
-          List<Parameter> parameters,
-          StoredProcedureParameter parameter,
-          string currentParameteName,
-          OnError onError)
+        private static bool GetPrimaryKeyValueFromSubObject<T>(T objectToMap, List<Parameter> parameters, StoredProcedureParameter parameter, string currentParameteName, OnError onError)
         {
             try
             {
-                object obj = objectToMap.GetType().GetProperty(currentParameteName).GetValue((object)objectToMap);
+                object obj = objectToMap.GetType().GetProperty(currentParameteName).GetValue(objectToMap);
                 foreach (PropertyInfo property in obj.GetType().GetProperties())
                 {
-                    if ((uint)obj.GetType().GetProperty(property.Name).GetCustomAttributes(typeof(PrimaryKey), false).Length > 0U)
+                    if (obj.GetType().GetProperty(property.Name).GetCustomAttributes(typeof(PrimaryKey), false).Length > 0U)
                     {
                         parameters.Add(new Parameter(currentParameteName, obj.GetType().GetProperty(property.Name).GetValue(obj), parameter.GetParameterDirection));
                         return true;
                     }
                 }
-                throw new Exception(string.Format("primary key is Not defined in {0}", (object)obj.GetType().ToString()));
+                throw new Exception(string.Format("primary key is Not defined in {0}", obj.GetType().ToString()));
             }
             catch (Exception ex)
             {

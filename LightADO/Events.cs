@@ -18,18 +18,11 @@
 namespace LightADO
 {
     using System;
-
-    public sealed class LightADOValidationException : Exception
-    {
-        public new string Message { get; internal set; }
-
-        public string Code { get; internal set; }
-
-        public new string Source { get; set; }
-
-        internal LightADOValidationException(string message)
-        {
-            this.Message = message;
-        }
-    }
+    public delegate void AfterCloseConnection();
+    public delegate void AfterExecute();
+    public delegate void AfterOpenConnection();
+    public delegate void BeforeCloseConnection();
+    public delegate void BeforeExecute();
+    public delegate void BeforeOpenConnection();
+    public delegate void OnError(Exception ex);
 }

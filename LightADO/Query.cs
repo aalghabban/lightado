@@ -1,4 +1,21 @@
-﻿namespace LightADO
+﻿/*
+ * Copyright (C) 2019 ALGHABBAn
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+namespace LightADO
 {
     using Newtonsoft.Json;
     using System;
@@ -183,59 +200,47 @@
             return stringList1;
         }
 
-        public string ExecuteToObject<T>(
-          string command,
-          Exception nullException,
-          CommandType commandType = CommandType.StoredProcedure,
-          FormatType formatType = FormatType.XML,
-          params Parameter[] parameters)
+        public string ExecuteToObject<T>(string command, Exception nullException, CommandType commandType = CommandType.StoredProcedure, FormatType formatType = FormatType.XML, params Parameter[] parameters)
         {
             string str = this.ExecuteToObject<T>(command, commandType, formatType, parameters);
             if (string.IsNullOrWhiteSpace(str))
+            {
                 return str;
+            }
+
             throw nullException;
         }
 
-        public List<string> ExecuteToListOfObject<T>(
-          string command,
-          Exception nullException,
-          CommandType commandType = CommandType.StoredProcedure,
-          FormatType formatType = FormatType.XML,
+        public List<string> ExecuteToListOfObject<T>(string command, Exception nullException, CommandType commandType = CommandType.StoredProcedure, FormatType formatType = FormatType.XML,
           params Parameter[] parameters)
         {
             List<string> listOfObject = this.ExecuteToListOfObject<T>(command, commandType, formatType, parameters);
             if (listOfObject != null && listOfObject.Count > 0)
+            {
                 return listOfObject;
+            }
+
             throw nullException;
         }
 
         private T CheckNull<T>(T objectToCheck, Exception exception)
         {
-            if ((object)objectToCheck == null)
-                QueryBase.ThrowExacptionOrEvent(this.OnError, exception, "");
+            if (objectToCheck == null)
+            {
+                ThrowExacptionOrEvent(this.OnError, exception, "");
+            }
+
             return objectToCheck;
         }
 
         private List<T> CheckNullList<T>(List<T> objectToCheck, Exception exception)
         {
             if (objectToCheck == null || objectToCheck.Count == 0)
+            {
                 QueryBase.ThrowExacptionOrEvent(this.OnError, exception, "");
-            return objectToCheck;
-        }
+            }
 
-        private List<object> CheckNullListDynamic(List<object> objectToCheck, Exception exception)
-        {
-            try
-            {
-                if (objectToCheck == null || objectToCheck.Count == 0)
-                    QueryBase.ThrowExacptionOrEvent(this.OnError, exception, "");
-                return objectToCheck;
-            }
-            catch (Exception ex)
-            {
-                QueryBase.ThrowExacptionOrEvent(this.OnError, ex, "");
-            }
-            return (List<object>)null;
+            return objectToCheck;
         }
 
         private DataTable ExecuteToDataTable(SqlCommand command)
@@ -245,52 +250,57 @@
             {
                 if (command != null)
                 {
-                    if (this.BeforeConnectionOpened != null)
-                        this.BeforeConnectionOpened();
+                    this.BeforeConnectionOpened?.Invoke();
                     if (command.Connection.State == ConnectionState.Closed)
+                    {
                         command.Connection.Open();
-                    if (this.AfterConnectionOpened != null)
-                        this.AfterConnectionOpened();
-                    if (this.BeforeQueryExecute != null)
-                        this.BeforeQueryExecute();
+                    }
+
+                    this.AfterConnectionOpened?.Invoke();
+                    this.BeforeQueryExecute?.Invoke();
                     SqlDataReader sqlDataReader = command.ExecuteReader(CommandBehavior.CloseConnection);
                     dataTable = new DataTable();
-                    dataTable.Load((IDataReader)sqlDataReader);
-                    if (this.AfterQueryExecute != null)
-                        this.AfterQueryExecute();
+                    dataTable.Load(sqlDataReader);
+                    this.AfterQueryExecute?.Invoke();
                 }
             }
             catch (Exception ex)
             {
-                QueryBase.ThrowExacptionOrEvent(this.OnError, ex, "");
+                ThrowExacptionOrEvent(this.OnError, ex, "");
             }
             finally
             {
-                if (this.BeforeConnectionClosed != null)
-                    this.BeforeConnectionClosed();
+                this.BeforeConnectionClosed?.Invoke();
                 if (command.Connection.State == ConnectionState.Open)
+                {
                     command.Connection.Close();
-                if (this.AfterConnectionClosed != null)
-                    this.AfterConnectionClosed();
+                }
+
+                this.AfterConnectionClosed?.Invoke();
             }
             return dataTable;
         }
 
+        /// <summary>
+        /// Convert Object to XML document.
+        /// </summary>
+        /// <typeparam name="T">The type of the object to convert.</typeparam>
+        /// <param name="value">Object to convert.</param>
+        /// <returns>an xml string</returns>
         private string SerializeToXml<T>(T value)
         {
             if (value == null)
             {
                 return string.Empty;
             }
+
             try
             {
                 var xmlserializer = new XmlSerializer(typeof(T));
                 var stringWriter = new StringWriter();
-                using (var writer = XmlWriter.Create(stringWriter))
-                {
-                    xmlserializer.Serialize(writer, value);
-                    return stringWriter.ToString();
-                }
+                using var writer = XmlWriter.Create(stringWriter);
+                xmlserializer.Serialize(writer, value);
+                return stringWriter.ToString();
             }
             catch (Exception ex)
             {

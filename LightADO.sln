@@ -7,6 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LightADO", "LightADO\LightA
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{D6C38067-82E9-494D-9D6B-63E885ED1D0A}"
 	ProjectSection(SolutionItems) = preProject
+		license.lic = license.lic
 		README.md = README.md
 	EndProjectSection
 EndProject

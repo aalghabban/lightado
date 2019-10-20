@@ -1,20 +1,37 @@
-﻿using System.Data;
+﻿/*
+ * Copyright (C) 2019 ALGHABBAn
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 namespace LightADO
 {
-  public sealed class Parameter
-  {
-    public string Name { get; set; }
+    using System.Data;
 
-    public object Value { get; set; }
-
-    public ParameterDirection Direction { get; set; }
-
-    public Parameter(string name, object value, ParameterDirection direction = ParameterDirection.Input)
+    public sealed class Parameter
     {
-      this.Name = "@" + name;
-      this.Value = value;
-      this.Direction = direction;
+        public string Name { get; set; }
+
+        public object Value { get; set; }
+
+        public ParameterDirection Direction { get; set; }
+
+        public Parameter(string name, object value, ParameterDirection direction = ParameterDirection.Input)
+        {
+            this.Name = "@" + name;
+            this.Value = value;
+            this.Direction = direction;
+        }
     }
-  }
 }
