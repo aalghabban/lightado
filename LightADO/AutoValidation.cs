@@ -24,52 +24,64 @@ namespace LightADO
     /// Set Property to be auto validate before  
     /// sending the object data to the database.
     /// </summary>
-    public abstract class AutoValidation : Attribute
+    public class AutoValidation : Attribute
     {
+        /// <summary>
+        /// create a new instance of Auto Validation, you will need to set 
+        /// the validation method name otherwise auto validation will call 
+        /// Validate
+        /// </summary>
         AutoValidation()
         {
         }
 
-        AutoValidation(string methodName, string errorMessage = null)
+        /// <summary>
+        /// create a new instance of Auto Validation, with method name to be called 
+        /// at runtime as validation method.
+        /// </summary>
+        /// <param name="methodName">the validation method name in your class.</param>
+        AutoValidation(string methodName)
         {
             this.MethodName = methodName;
-            this.ErrorMessage = errorMessage;
         }
 
-        public string ErrorMessage { get; set; }
-
+        /// <summary>
+        /// Get or set custom validation method name 
+        /// to be called at run time.
+        /// </summary>
         public string MethodName { get; set; }
 
-        public abstract bool Validate(object propertyValue);
-
-        internal static bool ValidateObject<T>(T objectToValidate)
+        /// <summary>
+        /// Loop throw each property in object 
+        /// and check if it has an auto validation 
+        /// attribute if yes call the validation 
+        /// method of the class.
+        /// </summary>
+        /// <typeparam name="T">the type of the object to validate</typeparam>
+        /// <param name="objectToValidate">object to validate</param>
+        internal static void ValidateObject<T>(T objectToValidate)
         {
             foreach (PropertyInfo property in objectToValidate.GetType().GetProperties())
             {
-                AutoValidation validation = property.GetCustomAttribute<AutoValidation>(true);
-                if (validation != null)
+                AutoValidation autoValidation = property.GetCustomAttribute<AutoValidation>(true);
+                if (autoValidation != null)
                 {
                     object propertyValue = objectToValidate.GetType().GetProperty(property.Name).GetValue((object)objectToValidate);
-                    AutoValidation.ValidateProperty(validation, propertyValue);
+                    ValidateProperty(autoValidation, propertyValue);
                 }
             }
-            return true;
         }
 
-        private static void ValidateProperty(AutoValidation validationAttribute, object propertyValue)
+        /// <summary>
+        /// Validate a property value against 
+        /// Custom validation method.
+        /// </summary>
+        /// <param name="autoValidation">auto validation settings</param>
+        /// <param name="propertyValue">property value to validate</param>
+        private static void ValidateProperty(AutoValidation autoValidation, object propertyValue)
         {
-            string methodName = string.IsNullOrEmpty(validationAttribute.MethodName) == true ? "Validate" : validationAttribute.MethodName;
-            if (bool.Parse(validationAttribute.GetType().GetMethod(methodName).Invoke(validationAttribute, new object[1] { propertyValue }).ToString()))
-            {
-                return;
-            }
-
-            if (string.IsNullOrEmpty(validationAttribute.ErrorMessage) == false)
-            {
-                throw new LightADOValidationException(validationAttribute.ErrorMessage);
-            }
-
-            throw new LightADOValidationException(string.Format("Violation of {0}, set the error message as [{1}( ErrorMessage=\"This A demo \")]; to display it", validationAttribute.GetType().Name, validationAttribute.GetType().Name));
+            string methodName = string.IsNullOrEmpty(autoValidation.MethodName) == true ? "Validate" : autoValidation.MethodName;
+            autoValidation.GetType().GetMethod(methodName).Invoke(autoValidation, new object[1] { propertyValue });
         }
     }
 }
