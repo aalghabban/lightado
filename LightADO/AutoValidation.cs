@@ -20,9 +20,27 @@ namespace LightADO
     using System;
     using System.Reflection;
 
+    /// <summary>
+    /// Set Property to be auto validate before  
+    /// sending the object data to the database.
+    /// </summary>
     public abstract class AutoValidation : Attribute
     {
+        AutoValidation()
+        {
+        }
+
+        AutoValidation(string methodName, string errorMessage = null)
+        {
+            this.MethodName = methodName;
+            this.ErrorMessage = errorMessage;
+        }
+
         public string ErrorMessage { get; set; }
+
+        public string MethodName { get; set; }
+
+        public abstract bool Validate(object propertyValue);
 
         internal static bool ValidateObject<T>(T objectToValidate)
         {
@@ -40,19 +58,18 @@ namespace LightADO
 
         private static void ValidateProperty(AutoValidation validationAttribute, object propertyValue)
         {
-            if (bool.Parse(validationAttribute.GetType().GetMethod("Validate").Invoke(validationAttribute, new object[1] {propertyValue}).ToString()))
+            string methodName = string.IsNullOrEmpty(validationAttribute.MethodName) == true ? "Validate" : validationAttribute.MethodName;
+            if (bool.Parse(validationAttribute.GetType().GetMethod(methodName).Invoke(validationAttribute, new object[1] { propertyValue }).ToString()))
             {
                 return;
             }
-                
+
             if (string.IsNullOrEmpty(validationAttribute.ErrorMessage) == false)
             {
                 throw new LightADOValidationException(validationAttribute.ErrorMessage);
             }
-                
+
             throw new LightADOValidationException(string.Format("Violation of {0}, set the error message as [{1}( ErrorMessage=\"This A demo \")]; to display it", validationAttribute.GetType().Name, validationAttribute.GetType().Name));
         }
-
-        public abstract bool Validate(object propertyValue);
     }
 }
