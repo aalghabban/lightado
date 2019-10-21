@@ -17,19 +17,38 @@
 
 namespace LightADO
 {
-    using Microsoft.Extensions.Configuration;
     using System.Configuration;
     using System.IO;
+    using Microsoft.Extensions.Configuration;
 
+    /// <summary>
+    /// Provides access to configuration files for client applications.
+    /// </summary>
     internal static class ConfigurationLoader
     {
+        /// <summary>
+        /// The Configuration Sections
+        /// </summary>
         internal enum ConfigurationSections
         {
+            /// <summary>
+            /// Connection String Section
+            /// </summary>
             ConnectionString,
 
+            /// <summary>
+            /// The App Settings section
+            /// </summary>
             AppSettings
         }
 
+        /// <summary>
+        /// returns the value of given key from app settings,
+        /// app.config or web.config file
+        /// </summary>
+        /// <param name="keyName">the key name to read.</param>
+        /// <param name="section">from where to read the key</param>
+        /// <returns>a value of the given key</returns>
         internal static string GetValueOfKey(string keyName, ConfigurationSections section = ConfigurationSections.ConnectionString)
         {
             string value = null;
@@ -45,7 +64,6 @@ namespace LightADO
                     }
                     else
                     {
-
                         value = configRoot.GetConnectionString(keyName);
                     }
 

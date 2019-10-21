@@ -27,29 +27,34 @@ namespace LightADO
     public class AutoValidation : Attribute
     {
         /// <summary>
-        /// create a new instance of Auto Validation, you will need to set 
-        /// the validation method name otherwise auto validation will call 
-        /// Validate
+        /// Initializes a new instance of the <see cref="AutoValidation"/> class , 
+        /// assuming validation method name will be called Validate.
         /// </summary>
-        AutoValidation()
+        public AutoValidation()
         {
+            this.ValidationMethodName = "Validate";
         }
 
         /// <summary>
-        /// create a new instance of Auto Validation, with method name to be called 
-        /// at runtime as validation method.
+        /// Initializes a new instance of the <see cref="AutoValidation"/> class , 
+        /// and set the validation method name to be called at run time. 
         /// </summary>
-        /// <param name="methodName">the validation method name in your class.</param>
-        AutoValidation(string methodName)
+        /// <param name="validationMethodName">The validation method name in your class.</param>
+        public AutoValidation(string validationMethodName)
         {
-            this.MethodName = methodName;
+            if (string.IsNullOrEmpty(validationMethodName))
+            {
+                throw new LightAdoExcption("validation method name can't be null or empty");
+            }
+
+            this.ValidationMethodName = validationMethodName;
         }
 
         /// <summary>
-        /// Get or set custom validation method name 
+        /// Gets or sets custom validation method name 
         /// to be called at run time.
         /// </summary>
-        public string MethodName { get; set; }
+        public string ValidationMethodName { get; set; }
 
         /// <summary>
         /// Loop throw each property in object 
@@ -61,13 +66,21 @@ namespace LightADO
         /// <param name="objectToValidate">object to validate</param>
         internal static void ValidateObject<T>(T objectToValidate)
         {
+            if (objectToValidate == null)
+            {
+                throw new LightAdoExcption("object to validate is null.");
+            }
+
             foreach (PropertyInfo property in objectToValidate.GetType().GetProperties())
             {
-                AutoValidation autoValidation = property.GetCustomAttribute<AutoValidation>(true);
-                if (autoValidation != null)
+                object[] autoValidations = property.GetCustomAttributes(typeof(AutoValidation), true);
+                if (autoValidations != null && autoValidations.Length > 0)
                 {
-                    object propertyValue = objectToValidate.GetType().GetProperty(property.Name).GetValue((object)objectToValidate);
-                    ValidateProperty(autoValidation, propertyValue);
+                    foreach (object autoValidation in autoValidations)
+                    {
+                        object propertyValue = objectToValidate.GetType().GetProperty(property.Name).GetValue(objectToValidate);
+                        ValidateProperty((AutoValidation)autoValidation, propertyValue);
+                    }
                 }
             }
         }
@@ -80,8 +93,17 @@ namespace LightADO
         /// <param name="propertyValue">property value to validate</param>
         private static void ValidateProperty(AutoValidation autoValidation, object propertyValue)
         {
-            string methodName = string.IsNullOrEmpty(autoValidation.MethodName) == true ? "Validate" : autoValidation.MethodName;
-            autoValidation.GetType().GetMethod(methodName).Invoke(autoValidation, new object[1] { propertyValue });
+            if (autoValidation == null)
+            {
+                throw new LightAdoExcption("null auto validation object.");
+            }
+
+            if (autoValidation.GetType().GetMethod(autoValidation.ValidationMethodName) == null)
+            {
+                throw new LightAdoExcption(string.Format("no validation method with name {0} found.", autoValidation.ValidationMethodName));
+            }
+
+            autoValidation.GetType().GetMethod(autoValidation.ValidationMethodName).Invoke(autoValidation, new object[1] { propertyValue });
         }
     }
 }

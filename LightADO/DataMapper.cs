@@ -24,55 +24,90 @@ namespace LightADO
     using System.Reflection;
 
     /// <summary>
-    /// This class used to map object from or to Sql query.
+    /// Provide access to methods that manage vice versa Mapping between SQL and CLI types.
     /// </summary>
     public class DataMapper
     {
+        /// <summary>
+        /// Convert Data table to List of T Object.
+        /// </summary>
+        /// <typeparam name="T">The type of object to convert data table to it.</typeparam>
+        /// <param name="table">the data table to convert.</param>
+        /// <param name="onError">in case of error will throw this event</param>
+        /// <returns>a List of T objects</returns>
         public static List<T> ConvertDataTableToListOfObject<T>(DataTable table, OnError onError = null)
         {
             try
             {
                 PropertyInfo[] properties = typeof(T).GetProperties();
-                if (properties != null && (uint)properties.Length > 0U)
+                if (properties != null && properties.Length > 0)
                 {
                     List<T> objList = new List<T>();
                     foreach (DataRow row in (InternalDataCollectionBase)table.Rows)
+                    {
                         objList.Add(EncryptEngine.EncryptOrDecryptObject<T>(DataMapper.MapDataRowToObject<T>(row, onError), false));
+                    }
+
                     return objList;
                 }
             }
             catch (Exception ex)
             {
-                QueryBase.ThrowExacptionOrEvent(onError, ex, "");
+                QueryBase.ThrowExacptionOrEvent(onError, ex, string.Empty);
             }
-            return (List<T>)null;
+
+            return null;
         }
 
+        /// <summary>
+        /// Convert data table to single object.
+        /// </summary>
+        /// <typeparam name="T">The type of object to convert data table to it.</typeparam>
+        /// <param name="table">the data table to convert.</param>
+        /// <param name="onError">in case of error will throw this event</param>
+        /// <returns>a single T object</returns>
         public static T ConvertDataTableToObject<T>(DataTable table, OnError onError = null)
         {
             try
             {
                 if (table != null && table.Rows.Count > 0)
+                {
                     return EncryptEngine.EncryptOrDecryptObject<T>(DataMapper.MapDataRowToObject<T>(table.Rows[0], onError), false);
+                }
             }
             catch (Exception ex)
             {
-                QueryBase.ThrowExacptionOrEvent(onError, ex, "");
+                QueryBase.ThrowExacptionOrEvent(onError, ex, string.Empty);
             }
-            return default(T);
+
+            return default;
         }
 
+        /// <summary>
+        /// Convert Data Table to DataSet.
+        /// </summary>
+        /// <param name="dataTable">data table to convert.</param>
+        /// <returns>a data set object</returns>
         public static DataSet ConvertDataTableToDataSet(DataTable dataTable)
         {
-            DataSet dataSet = (DataSet)null;
+            DataSet dataSet = null;
+
             if (dataTable != null)
             {
                 dataSet = new DataSet();
                 dataSet.Tables.Add(dataTable);
             }
+
             return dataSet;
         }
 
+        /// <summary>
+        /// Map a data row to a single object.
+        /// </summary>
+        /// <typeparam name="T">the type of object.</typeparam>
+        /// <param name="row">the row to convert to object.</param>
+        /// <param name="onError">in case of error will throw this event</param>
+        /// <returns>the object after it get mapped.</returns>
         public static T MapDataRowToObject<T>(DataRow row, OnError onError)
         {
             try
@@ -82,7 +117,7 @@ namespace LightADO
 
                 foreach (PropertyInfo propertyInfo in properties)
                 {
-                    DataMapper.MapPropertyOfObject<T>(instance, row, propertyInfo, onError);
+                    MapPropertyOfObject(instance, row, propertyInfo, onError);
                 }
 
                 DefaultValue.SetDefaultValus(instance, DefaultValue.Directions.WithQuery);
@@ -90,205 +125,229 @@ namespace LightADO
             }
             catch (Exception ex)
             {
-                QueryBase.ThrowExacptionOrEvent(onError, ex, "");
+                QueryBase.ThrowExacptionOrEvent(onError, ex, string.Empty);
             }
-            return default(T);
+
+            return default;
         }
 
+        /// <summary>
+        /// Map Object properties to stored Procedure parameters.
+        /// </summary>
+        /// <typeparam name="T">the type of object to map.</typeparam>
+        /// <param name="command">The SQL query to map the object to it.</param>
+        /// <param name="objectToMap">object to map to stored Procedure.</param>
+        /// <param name="setting">the database settings</param>
+        /// <param name="onError">in case of error will throw this event</param>
+        /// <param name="parameters">an array of parameters to map to stored Procedure</param>
+        /// <returns>a list of parameters.</returns>
         internal static List<Parameter> MapObjectToStoredProcedure<T>(string command, T objectToMap, LightADOSetting setting, OnError onError, params Parameter[] parameters)
         {
-            Func<PropertyInfo, bool> predicate = (Func<PropertyInfo, bool>)null;
             List<Parameter> parameterList = new List<Parameter>();
             try
             {
                 DefaultValue.SetDefaultValus(objectToMap, DefaultValue.Directions.WithNonQuery);
-                foreach (StoredProcedureParameter parameter1 in new StoredProcedureParameter(command, setting).Parameters)
+                foreach (StoredProcedureParameter parameter in new StoredProcedureParameter(command, setting).Parameters)
                 {
-                    StoredProcedureParameter parameter = parameter1;
-                    string str = parameter.Name.Remove(0, 1);
-                    if (objectToMap.GetType().GetProperty(str) != (PropertyInfo)null)
+                    string storedProcedureParameterName = parameter.Name.Remove(0, 1);
+                    if (objectToMap.GetType().GetProperty(storedProcedureParameterName) != null)
                     {
-                        if (objectToMap.GetType().GetProperty(str).GetCustomAttributes(typeof(ForeignKey), false).Length == 0)
+                        if (objectToMap.GetType().GetProperty(storedProcedureParameterName).GetCustomAttributes(typeof(ForeignKey), false).Length == 0)
                         {
-                            if (objectToMap.GetType().GetProperty(str).PropertyType.IsEnum)
+                            if (objectToMap.GetType().GetProperty(storedProcedureParameterName).PropertyType.IsEnum)
                             {
-                                if (DataMapper.GetCSharpType((SqlDbType)Enum.Parse(typeof(SqlDbType), parameter.TypeName, true)) == typeof(string))
+                                if (GetCSharpType((SqlDbType)Enum.Parse(typeof(SqlDbType), parameter.TypeName, true)) == typeof(string))
                                 {
-                                    parameterList.Add(new Parameter(str, (object)objectToMap.GetType().GetProperty(str).GetValue((object)objectToMap).ToString(), parameter.GetParameterDirection));
+                                    parameterList.Add(new Parameter(storedProcedureParameterName, objectToMap.GetType().GetProperty(storedProcedureParameterName).GetValue(objectToMap).ToString(), parameter.GetParameterDirection));
                                 }
                                 else
                                 {
-                                    parameterList.Add(new Parameter(str, (object)(int)objectToMap.GetType().GetProperty(str).GetValue((object)objectToMap), parameter.GetParameterDirection));
+                                    parameterList.Add(new Parameter(storedProcedureParameterName, (int)objectToMap.GetType().GetProperty(storedProcedureParameterName).GetValue(objectToMap), parameter.GetParameterDirection));
                                 }
                             }
                             else
                             {
-                                parameterList.Add(new Parameter(str, objectToMap.GetType().GetProperty(str).GetValue((object)objectToMap), parameter.GetParameterDirection));
+                                parameterList.Add(new Parameter(storedProcedureParameterName, objectToMap.GetType().GetProperty(storedProcedureParameterName).GetValue(objectToMap), parameter.GetParameterDirection));
                             }
                         }
                         else
                         {
-                            DataMapper.GetPrimaryKeyValueFromSubObject<T>(objectToMap, parameterList, parameter, str, onError);
+                            GetPrimaryKeyValue(objectToMap, parameterList, parameter, storedProcedureParameterName, onError);
                         }
-
                     }
-                    else if (Array.Find<Parameter>(parameters, (Predicate<Parameter>)(x => parameter.Name == x.Name)) != null)
+                    else if (Array.Find(parameters, x => parameter.Name == x.Name) != null)
                     {
-                        parameterList.Add(new Parameter(str, Array.Find<Parameter>(parameters, (Predicate<Parameter>)(x => parameter.Name == x.Name)).Value, parameter.GetParameterDirection));
+                        parameterList.Add(new Parameter(storedProcedureParameterName, Array.Find(parameters, x => parameter.Name == x.Name).Value, parameter.GetParameterDirection));
                     }
                     else
                     {
-                        IEnumerable<PropertyInfo> properties = (IEnumerable<PropertyInfo>)objectToMap.GetType().GetProperties();
-                        if (predicate == null)
-                            predicate = (Func<PropertyInfo, bool>)(p => (uint)p.GetCustomAttributes(typeof(ColumnName), true).Length > 0U);
-                        if (!(properties.Where<PropertyInfo>(predicate).FirstOrDefault<PropertyInfo>() != (PropertyInfo)null))
-                            throw new Exception(string.Format("Stored Procedure expect paramete named: {0},  which was not supplied", (object)parameter.Name.Remove(0, 1)));
-                        DataMapper.SearchForCustomColumnNames<T>(objectToMap, parameterList, parameter, str, onError);
+                        SearchForCustomColumnNames(objectToMap, parameterList, parameter, storedProcedureParameterName, onError);
                     }
                 }
             }
             catch (Exception ex)
             {
-                QueryBase.ThrowExacptionOrEvent(onError, ex, "");
+                QueryBase.ThrowExacptionOrEvent(onError, ex, string.Empty);
             }
+
             return parameterList;
         }
 
+        /// <summary>
+        /// Convert SQL type to CLI
+        /// </summary>
+        /// <param name="sqltype">the SQL type to convert.</param>
+        /// <returns>the CLI Type</returns>
         internal static Type GetCSharpType(SqlDbType sqltype)
         {
-            Type type = (Type)null;
             new Dictionary<SqlDbType, Type>()
-      {
-        {
-          SqlDbType.BigInt,
-          typeof (long)
-        },
-        {
-          SqlDbType.Binary,
-          typeof (byte[])
-        },
-        {
-          SqlDbType.Bit,
-          typeof (bool)
-        },
-        {
-          SqlDbType.Char,
-          typeof (string)
-        },
-        {
-          SqlDbType.Date,
-          typeof (DateTime)
-        },
-        {
-          SqlDbType.DateTime,
-          typeof (DateTime)
-        },
-        {
-          SqlDbType.DateTime2,
-          typeof (DateTime)
-        },
-        {
-          SqlDbType.DateTimeOffset,
-          typeof (DateTimeOffset)
-        },
-        {
-          SqlDbType.Decimal,
-          typeof (Decimal)
-        },
-        {
-          SqlDbType.Float,
-          typeof (double)
-        },
-        {
-          SqlDbType.Image,
-          typeof (byte[])
-        },
-        {
-          SqlDbType.Int,
-          typeof (int)
-        },
-        {
-          SqlDbType.Money,
-          typeof (Decimal)
-        },
-        {
-          SqlDbType.NChar,
-          typeof (string)
-        },
-        {
-          SqlDbType.NText,
-          typeof (string)
-        },
-        {
-          SqlDbType.NVarChar,
-          typeof (string)
-        },
-        {
-          SqlDbType.Real,
-          typeof (float)
-        },
-        {
-          SqlDbType.SmallDateTime,
-          typeof (DateTime)
-        },
-        {
-          SqlDbType.SmallInt,
-          typeof (short)
-        },
-        {
-          SqlDbType.SmallMoney,
-          typeof (Decimal)
-        },
-        {
-          SqlDbType.Text,
-          typeof (string)
-        },
-        {
-          SqlDbType.Time,
-          typeof (TimeSpan)
-        },
-        {
-          SqlDbType.Timestamp,
-          typeof (byte[])
-        },
-        {
-          SqlDbType.TinyInt,
-          typeof (byte)
-        },
-        {
-          SqlDbType.UniqueIdentifier,
-          typeof (Guid)
-        },
-        {
-          SqlDbType.VarBinary,
-          typeof (byte[])
-        },
-        {
-          SqlDbType.VarChar,
-          typeof (string)
-        }
-      }.TryGetValue(sqltype, out type);
+            {
+              {
+                SqlDbType.BigInt,
+                typeof(long)
+              },
+              {
+                SqlDbType.Binary,
+                typeof(byte[])
+              },
+              {
+                SqlDbType.Bit,
+                typeof(bool)
+              },
+              {
+                SqlDbType.Char,
+                typeof(string)
+              },
+              {
+                SqlDbType.Date,
+                typeof(DateTime)
+              },
+              {
+                SqlDbType.DateTime,
+                typeof(DateTime)
+              },
+              {
+                SqlDbType.DateTime2,
+                typeof(DateTime)
+              },
+              {
+                SqlDbType.DateTimeOffset,
+                typeof(DateTimeOffset)
+              },
+              {
+                SqlDbType.Decimal,
+                typeof(decimal)
+              },
+              {
+                SqlDbType.Float,
+                typeof(double)
+              },
+              {
+                SqlDbType.Image,
+                typeof(byte[])
+              },
+              {
+                SqlDbType.Int,
+                typeof(int)
+              },
+              {
+                SqlDbType.Money,
+                typeof(decimal)
+              },
+              {
+                SqlDbType.NChar,
+                typeof(string)
+              },
+              {
+                SqlDbType.NText,
+                typeof(string)
+              },
+              {
+               SqlDbType.NVarChar,
+               typeof(string)
+              },
+              {
+               SqlDbType.Real,
+               typeof(float)
+              },
+              {
+                SqlDbType.SmallDateTime,
+                typeof(DateTime)
+              },
+              {
+                SqlDbType.SmallInt,
+                typeof(short)
+              },
+              {
+                SqlDbType.SmallMoney,
+                typeof(decimal)
+              },
+              {
+                SqlDbType.Text,
+                typeof(string)
+              },
+              {
+                SqlDbType.Time,
+                typeof(TimeSpan)
+              },
+              {
+                SqlDbType.Timestamp,
+                typeof(byte[])
+              },
+              {
+                SqlDbType.TinyInt,
+                typeof(byte)
+              },
+              {
+                SqlDbType.UniqueIdentifier,
+                typeof(Guid)
+              },
+              {
+                SqlDbType.VarBinary,
+                typeof(byte[])
+              },
+              {
+                SqlDbType.VarChar,
+                typeof(string)
+              }
+            }.TryGetValue(sqltype, out Type type);
+
             return type;
         }
 
+        /// <summary>
+        /// Search for property with custom column name 
+        /// attributes attached to it.
+        /// </summary>
+        /// <typeparam name="T">the Type of object to search in it's properties.</typeparam>
+        /// <param name="objectToMap">object to search in.</param>
+        /// <param name="mappedParameters">the mapped parameters</param>
+        /// <param name="parameter">the parameter to search for.</param>
+        /// <param name="currentParameteNameInStoredProcedure">current parameter in the stored procedure.</param>
+        /// <param name="onError">in case of error will throw this event</param>
         private static void SearchForCustomColumnNames<T>(T objectToMap, List<Parameter> mappedParameters, StoredProcedureParameter parameter, string currentParameteNameInStoredProcedure, OnError onError)
         {
-            Func<PropertyInfo, bool> predicate = (Func<PropertyInfo, bool>)null;
+            Func<PropertyInfo, bool> predicate = null;
+
             try
             {
-                IEnumerable<PropertyInfo> properties = (IEnumerable<PropertyInfo>)objectToMap.GetType().GetProperties();
+                IEnumerable<PropertyInfo> properties = objectToMap.GetType().GetProperties();
                 if (predicate == null)
-                    predicate = (Func<PropertyInfo, bool>)(p => (uint)p.GetCustomAttributes(typeof(ColumnName), true).Length > 0U);
-                foreach (PropertyInfo propertyInfo in properties.Where<PropertyInfo>(predicate))
                 {
-                    string columnName = DataMapper.GetColumnName(propertyInfo, onError);
+                    predicate = p => (uint)p.GetCustomAttributes(typeof(ColumnName), true).Length > 0;
+                }
+
+                foreach (PropertyInfo propertyInfo in properties.Where(predicate))
+                {
+                    string columnName = GetColumnName(propertyInfo, onError);
                     if (columnName == currentParameteNameInStoredProcedure)
                     {
-                        if ((uint)objectToMap.GetType().GetProperty(propertyInfo.Name).GetCustomAttributes(typeof(ForeignKey), false).Length > 0U)
+                        if (objectToMap.GetType().GetProperty(propertyInfo.Name).GetCustomAttributes(typeof(ForeignKey), false).Length > 0)
                         {
-                            DataMapper.GetPrimaryKeyValueFromSubObject<T>(objectToMap, mappedParameters, parameter, columnName, propertyInfo.Name, onError);
+                            GetPrimaryKeyValue(objectToMap, mappedParameters, parameter, columnName, propertyInfo.Name, onError);
                             break;
                         }
+
                         mappedParameters.Add(new Parameter(currentParameteNameInStoredProcedure, objectToMap.GetType().GetProperty(propertyInfo.Name).GetValue((object)objectToMap), parameter.GetParameterDirection));
                         break;
                     }
@@ -296,62 +355,60 @@ namespace LightADO
             }
             catch (Exception ex)
             {
-                QueryBase.ThrowExacptionOrEvent(onError, ex, "");
+                QueryBase.ThrowExacptionOrEvent(onError, ex, string.Empty);
             }
         }
 
-        private static bool GetPrimaryKeyValueFromSubObject<T>(T objectToMap, List<Parameter> parameters, StoredProcedureParameter parameter, string currentParameteName, string propertyName, OnError onError)
-        {
-            try
-            {
-                object obj = objectToMap.GetType().GetProperty(propertyName).GetValue((object)objectToMap);
-                foreach (PropertyInfo property in obj.GetType().GetProperties())
-                {
-                    if ((uint)obj.GetType().GetProperty(property.Name).GetCustomAttributes(typeof(PrimaryKey), false).Length > 0U)
-                    {
-                        parameters.Add(new Parameter(currentParameteName, obj.GetType().GetProperty(property.Name).GetValue(obj), parameter.GetParameterDirection));
-                        return true;
-                    }
-                }
-                throw new Exception(string.Format("primary key is Not defined in {0}", (object)obj.GetType().ToString()));
-            }
-            catch (Exception ex)
-            {
-                QueryBase.ThrowExacptionOrEvent(onError, ex, "");
-            }
-            return false;
-        }
-
+        /// <summary>
+        /// Map Property Of Object 
+        /// </summary>
+        /// <typeparam name="T">the T type of the object.</typeparam>
+        /// <param name="item">the object to map.</param>
+        /// <param name="row">the data row to map.</param>
+        /// <param name="propertyInfo">the property info to map</param>
+        /// <param name="onError">in case any error</param>
         private static void MapPropertyOfObject<T>(T item, DataRow row, PropertyInfo propertyInfo, OnError onError)
         {
-            bool flag = (uint)propertyInfo.GetCustomAttributes(typeof(ForeignKey), false).Length > 0U;
+            bool isForignKey = propertyInfo.GetCustomAttributes(typeof(ForeignKey), false).Length > 0;
             string columnName = DataMapper.GetColumnName(propertyInfo, onError);
             try
             {
                 if (row.Table.Columns[columnName] == null)
+                {
                     return;
-                if (!flag)
+                }
+
+                if (isForignKey == false)
                 {
                     if (DBNull.Value.Equals(row[columnName]))
-                        propertyInfo.SetValue((object)item, (object)null);
+                    {
+                        propertyInfo.SetValue(item, null);
+                    }
                     else if (propertyInfo.PropertyType.IsEnum)
-                        propertyInfo.SetValue((object)item, Enum.Parse(propertyInfo.PropertyType, row[columnName].ToString(), true));
+                    {
+                        propertyInfo.SetValue(item, Enum.Parse(propertyInfo.PropertyType, row[columnName].ToString(), true));
+                    }
                     else if (row[columnName] is string)
                     {
-                        propertyInfo.SetValue((object)item, Convert.ChangeType((object)new string(row[columnName].ToString().Trim().Where<char>((Func<char, bool>)(c => !char.IsControl(c))).ToArray<char>()), propertyInfo.PropertyType));
+                        propertyInfo.SetValue(item, Convert.ChangeType(new string(row[columnName].ToString().Trim().Where(c => !char.IsControl(c)).ToArray()), propertyInfo.PropertyType));
                     }
                     else
                     {
                         Type type = Nullable.GetUnderlyingType(propertyInfo.PropertyType);
-                        if ((object)type == null)
+                        if (type is null)
+                        {
                             type = propertyInfo.PropertyType;
+                        }
+
                         Type conversionType = type;
-                        object obj = row[columnName] == null ? (object)null : Convert.ChangeType(row[columnName], conversionType);
-                        propertyInfo.SetValue((object)item, obj);
+                        object obj = row[columnName] == null ? null : Convert.ChangeType(row[columnName], conversionType);
+                        propertyInfo.SetValue(item, obj);
                     }
                 }
                 else
-                    DataMapper.MapForeignObject<T>(item, row, propertyInfo, onError);
+                {
+                    MapForeignObject(item, row, propertyInfo, onError);
+                }
             }
             catch (Exception ex)
             {
@@ -359,71 +416,121 @@ namespace LightADO
             }
         }
 
+        /// <summary>
+        /// Get The custom column name.
+        /// </summary>
+        /// <param name="propertyInfo">property to read the column name.</param>
+        /// <param name="onError">in case any error</param>
+        /// <returns>the name of column.</returns>
         private static string GetColumnName(PropertyInfo propertyInfo, OnError onError)
         {
             try
             {
                 string name = propertyInfo.Name;
-                object[] customAttributes = propertyInfo.GetCustomAttributes(true);
-                if (customAttributes != null && (uint)customAttributes.Length > 0U)
+                ColumnName columnName = propertyInfo.GetCustomAttribute<ColumnName>(true);
+
+                if (columnName != null)
                 {
-                    foreach (object obj in customAttributes)
-                    {
-                        if (obj.GetType().Name == "ColumnName")
-                            name = obj.GetType().GetProperty("Name").GetValue(obj).ToString();
-                    }
+                    name = columnName.Name;
                 }
+
                 return name;
             }
             catch (Exception ex)
             {
-                QueryBase.ThrowExacptionOrEvent(onError, ex, "");
+                QueryBase.ThrowExacptionOrEvent(onError, ex, string.Empty);
             }
-            return (string)null;
+
+            return null;
         }
 
+        /// <summary>
+        /// Fire the foreign key object Constructor.
+        /// </summary>
+        /// <typeparam name="T">the T type of the object to map.</typeparam>
+        /// <param name="item">the object to map</param>
+        /// <param name="row">the row data to convert.</param>
+        /// <param name="propertyInfo">the property info to red.</param>
+        /// <param name="onError">in case any error</param>
         private static void MapForeignObject<T>(T item, DataRow row, PropertyInfo propertyInfo, OnError onError)
         {
             try
             {
                 Type propertyType = propertyInfo.PropertyType;
-                if (!(propertyType.GetConstructor(new Type[1]
+
+                if (propertyType.GetConstructor(new Type[1] { row[propertyInfo.Name].GetType() }) == null)
                 {
-          row[propertyInfo.Name].GetType()
-                }) != (ConstructorInfo)null))
                     return;
+                }
+
                 object instance = Activator.CreateInstance(propertyType, row[propertyInfo.Name]);
-                typeof(T).InvokeMember(propertyInfo.Name, BindingFlags.SetProperty, (System.Reflection.Binder)null, (object)item, new object[1]
-                {
-          instance
-                });
+                typeof(T).InvokeMember(propertyInfo.Name, BindingFlags.SetProperty, null, item, new object[1] { instance });
             }
             catch (Exception ex)
             {
-                QueryBase.ThrowExacptionOrEvent(onError, ex, "");
+                QueryBase.ThrowExacptionOrEvent(onError, ex, string.Empty);
             }
         }
 
-        private static bool GetPrimaryKeyValueFromSubObject<T>(T objectToMap, List<Parameter> parameters, StoredProcedureParameter parameter, string currentParameteName, OnError onError)
+        /// <summary>
+        /// Get Primary key value
+        /// </summary>
+        /// <typeparam name="T">the T type of object</typeparam>
+        /// <param name="objectToMap">object to map</param>
+        /// <param name="parameters">the list of parameters to map.</param>
+        /// <param name="parameter">the parameter to check.</param>
+        /// <param name="currentParameteName">current Parameter Name</param>
+        /// <param name="onError">in case any error</param>
+        private static void GetPrimaryKeyValue<T>(T objectToMap, List<Parameter> parameters, StoredProcedureParameter parameter, string currentParameteName, OnError onError)
         {
             try
             {
                 object obj = objectToMap.GetType().GetProperty(currentParameteName).GetValue(objectToMap);
                 foreach (PropertyInfo property in obj.GetType().GetProperties())
                 {
-                    if (obj.GetType().GetProperty(property.Name).GetCustomAttributes(typeof(PrimaryKey), false).Length > 0U)
+                    if (obj.GetType().GetProperty(property.Name).GetCustomAttributes(typeof(PrimaryKey), false).Length > 0)
                     {
                         parameters.Add(new Parameter(currentParameteName, obj.GetType().GetProperty(property.Name).GetValue(obj), parameter.GetParameterDirection));
-                        return true;
                     }
                 }
+
                 throw new Exception(string.Format("primary key is Not defined in {0}", obj.GetType().ToString()));
             }
             catch (Exception ex)
             {
-                QueryBase.ThrowExacptionOrEvent(onError, ex, "");
+                QueryBase.ThrowExacptionOrEvent(onError, ex, string.Empty);
             }
-            return false;
+        }
+
+        /// <summary>
+        /// Get Primary key value
+        /// </summary>
+        /// <typeparam name="T">the T type of object</typeparam>
+        /// <param name="objectToMap">object to map</param>
+        /// <param name="parameters">the list of parameters to map.</param>
+        /// <param name="parameter">the parameter to check.</param>
+        /// <param name="currentParameteName">current Parameter Name</param>
+        /// <param name="propertyName">property Name to check.</param>
+        /// <param name="onError">in case any error</param>
+        private static void GetPrimaryKeyValue<T>(T objectToMap, List<Parameter> parameters, StoredProcedureParameter parameter, string currentParameteName, string propertyName, OnError onError)
+        {
+            try
+            {
+                object obj = objectToMap.GetType().GetProperty(propertyName).GetValue(objectToMap);
+                foreach (PropertyInfo property in obj.GetType().GetProperties())
+                {
+                    if (obj.GetType().GetProperty(property.Name).GetCustomAttributes(typeof(PrimaryKey), false).Length > 0)
+                    {
+                        parameters.Add(new Parameter(currentParameteName, obj.GetType().GetProperty(property.Name).GetValue(obj), parameter.GetParameterDirection));
+                    }
+                }
+
+                throw new Exception(string.Format("primary key is Not defined in {0}", obj.GetType().ToString()));
+            }
+            catch (Exception ex)
+            {
+                QueryBase.ThrowExacptionOrEvent(onError, ex, string.Empty);
+            }
         }
     }
 }

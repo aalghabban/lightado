@@ -26,19 +26,17 @@ namespace LightADO
     public class ColumnName : Attribute
     {
         /// <summary>
-        /// Get or set the Column Name in database
-        /// </summary>
-        public string Name { get; set; }
-
-        /// <summary>
-        /// Change the property name to 
-        /// the database column name before 
-        /// execute to the database.
+        /// Initializes a new instance of the <see cref="ColumnName"/> class.
         /// </summary>
         /// <param name="name">the name of the column</param>
         public ColumnName(string name)
         {
             this.Name = name;
         }
+
+        /// <summary>
+        /// Gets or sets the Column Name in database
+        /// </summary>
+        public string Name { get; set; }
     }
 }

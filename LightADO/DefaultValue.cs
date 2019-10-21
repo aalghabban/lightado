@@ -20,30 +20,69 @@ namespace LightADO
     using System;
     using System.Reflection;
 
+    /// <summary>
+    /// Provide an option to set a default value for the property before it 
+    /// get mapped from or to the database.
+    /// </summary>
     public sealed class DefaultValue : Attribute
     {
+        /// <summary>
+        /// The direction of setting 
+        /// up the default value.
+        /// </summary>
         public enum Directions
         {
+            /// <summary>
+            /// Only with Query.
+            /// </summary>
             WithQuery,
 
+            /// <summary>
+            /// Only with non Query.
+            /// </summary>
             WithNonQuery,
 
+            /// <summary>
+            /// With both of them.
+            /// </summary>
             WithBoth
         }
 
+        /// <summary>
+        /// The type of the passed value.
+        /// </summary>
         public enum ValueTypes
         {
+            /// <summary>
+            /// Get the value from the Object Property.
+            /// </summary>
             Properties,
 
+            /// <summary>
+            /// Get The type from the object methods.
+            /// </summary>
             Methods,
 
+            /// <summary>
+            /// straightforward value
+            /// </summary>
             Value
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DefaultValue"/> class.
+        /// </summary>
         public DefaultValue()
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DefaultValue"/> class.
+        /// </summary>
+        /// <param name="value">the default value to set.</param>
+        /// <param name="valueType">where to look for the default value</param>
+        /// <param name="direction">the direction of the setting default value</param>
+        /// <param name="parameters">any parameters to sent to a method</param>
         public DefaultValue(string value, ValueTypes valueType = ValueTypes.Value, Directions direction = Directions.WithNonQuery, params object[] parameters)
         {
             this.Value = value;
