@@ -20,14 +20,29 @@ namespace LightADO
     using System.Collections.Generic;
     using System.Data;
 
+    /// <summary>
+    /// Provide a way to handle Transaction.
+    /// </summary>
     public class Transaction
     {
+        /// <summary>
+        /// Gets or sets data of Transaction.
+        /// </summary>
         public object Data { get; set; }
 
+        /// <summary>
+        /// Gets or sets the Transaction command.
+        /// </summary>
         public string Command { get; set; }
 
+        /// <summary>
+        /// Gets or sets the Transaction command type.
+        /// </summary>
         public CommandType CommandType { get; set; }
 
+        /// <summary>
+        /// Gets or sets the parameters list.
+        /// </summary>
         public Parameter[] Parameters { get; set; }
     }
 }

@@ -20,42 +20,74 @@ namespace LightADO
     using System.Collections.Generic;
     using System.Data;
 
+    /// <summary>
+    /// Provide a way to handle the stored procedure parameters.
+    /// </summary>
     internal class StoredProcedureParameter
-  {
-    private string storedProcedureName;
-
-    public string Name { get; set; }
-
-    public string Mode { get; set; }
-
-    public string TypeName { get; set; }
-
-    internal ParameterDirection GetParameterDirection
     {
-      get
-      {
-        return !(this.Mode == "INOUT") ? ParameterDirection.Input : ParameterDirection.Output;
-      }
-    }
+        /// <summary>
+        /// stored Procedure Name
+        /// </summary>
+        private string storedProcedureName;
 
-    internal LightADOSetting LightAdoSetting { get; set; }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StoredProcedureParameter"/> class.
+        /// </summary>
+        public StoredProcedureParameter()
+        {
+        }
 
-    internal List<StoredProcedureParameter> Parameters
-    {
-      get
-      {
-        return new Query(this.LightAdoSetting.ConnectionString, false).ExecuteToListOfObject<StoredProcedureParameter>("select PARAMETER_NAME as Name, PARAMETER_MODE as Mode, Data_Type as TypeName from information_schema.parameters where specific_name= @StoredProcedureName", CommandType.Text, new Parameter("StoredProcedureName", (object) this.storedProcedureName, ParameterDirection.Input));
-      }
-    }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StoredProcedureParameter"/> class.
+        /// </summary>
+        /// <param name="storedProcedureName">the stored procedure name.</param>
+        /// <param name="setting">light ADO settings</param>
+        internal StoredProcedureParameter(string storedProcedureName, LightADOSetting setting)
+        {
+            this.storedProcedureName = storedProcedureName;
+            this.LightAdoSetting = setting;
+        }
 
-    public StoredProcedureParameter()
-    {
-    }
+        /// <summary>
+        /// Gets or sets the name of parameter.
+        /// </summary>
+        public string Name { get; set; }
 
-    internal StoredProcedureParameter(string storedProcedureName, LightADOSetting setting)
-    {
-      this.storedProcedureName = storedProcedureName;
-      this.LightAdoSetting = setting;
+        /// <summary>
+        /// Gets or sets the parameter mode.
+        /// </summary>
+        public string Mode { get; set; }
+
+        /// <summary>
+        /// Gets or sets the parameter type name.
+        /// </summary>
+        public string TypeName { get; set; }
+
+        /// <summary>
+        /// Gets or sets light ADO settings.
+        /// </summary>
+        internal LightADOSetting LightAdoSetting { get; set; }
+
+        /// <summary>
+        /// Gets Parameter Direction
+        /// </summary>
+        internal ParameterDirection GetParameterDirection
+        {
+            get
+            {
+                return !(this.Mode == "INOUT") ? ParameterDirection.Input : ParameterDirection.Output;
+            }
+        }
+
+        /// <summary>
+        /// Gets the parameters of stored procedure.
+        /// </summary>
+        internal List<StoredProcedureParameter> Parameters
+        {
+            get
+            {
+                return new Query(this.LightAdoSetting.ConnectionString, false).ExecuteToListOfObject<StoredProcedureParameter>("select PARAMETER_NAME as Name, PARAMETER_MODE as Mode, Data_Type as TypeName from information_schema.parameters where specific_name= @StoredProcedureName", CommandType.Text, new Parameter("StoredProcedureName", (object)this.storedProcedureName, ParameterDirection.Input));
+            }
+        }
     }
-  }
 }

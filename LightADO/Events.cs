@@ -18,11 +18,40 @@
 namespace LightADO
 {
     using System;
+
+    /// <summary>
+    /// Will be fired after the connection closed.
+    /// </summary>
     public delegate void AfterCloseConnection();
+
+    /// <summary>
+    /// Will be fired After query get Executed.
+    /// </summary>
     public delegate void AfterExecute();
+
+    /// <summary>
+    /// Will be fired After Open Connection.
+    /// </summary>
     public delegate void AfterOpenConnection();
+
+    /// <summary>
+    /// Will be fired Before Close Connection.
+    /// </summary>
     public delegate void BeforeCloseConnection();
+
+    /// <summary>
+    /// Will be fired Before Execute.
+    /// </summary>
     public delegate void BeforeExecute();
+
+    /// <summary>
+    /// Will be fired Before Open Connection.
+    /// </summary>
     public delegate void BeforeOpenConnection();
+
+    /// <summary>
+    /// Will be fired On Error.
+    /// </summary>
+    /// <param name="ex">the error to throw</param>
     public delegate void OnError(Exception ex);
 }

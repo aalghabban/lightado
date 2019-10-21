@@ -17,9 +17,19 @@
 
 namespace LightADO
 {
+    /// <summary>
+    /// Type of supported Format.
+    /// </summary>
     public enum FormatType
     {
+        /// <summary>
+        /// As Xml
+        /// </summary>
         XML,
+
+        /// <summary>
+        /// As JSON
+        /// </summary>
         Json,
     }
 }

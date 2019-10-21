@@ -19,17 +19,33 @@ namespace LightADO
 {
     using System;
 
+    /// <summary>
+    /// Provider a light ado exception object.
+    /// </summary>
     public sealed class LightADOValidationException : Exception
     {
-        public new string Message { get; internal set; }
-
-        public string Code { get; internal set; }
-
-        public new string Source { get; set; }
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LightADOValidationException"/> class.
+        /// </summary>
+        /// <param name="message">The message to set</param>
         internal LightADOValidationException(string message)
         {
             this.Message = message;
         }
+
+        /// <summary>
+        /// Gets the error message.
+        /// </summary>
+        public new string Message { get; internal set; }
+
+        /// <summary>
+        /// Gets the error code.
+        /// </summary>
+        public string Code { get; internal set; }
+
+        /// <summary>
+        /// Gets or sets the Error Source.
+        /// </summary>
+        public new string Source { get; set; }
     }
 }

@@ -19,27 +19,46 @@ namespace LightADO
 {
     using System;
 
+    /// <summary>
+    /// Provides shared functions between Query and Non Query.
+    /// </summary>
     public class QueryBase
     {
-        public LightADOSetting LightAdoSetting { get; set; }
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="QueryBase"/> class.
+        /// </summary>
         public QueryBase()
         {
             this.LightAdoSetting = new LightADOSetting();
         }
 
-        public QueryBase(string connectionString, bool loadFromConfigrationFile)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="QueryBase"/> class.
+        /// </summary>
+        /// <param name="connectionString">the database connection string</param>
+        public QueryBase(string connectionString)
         {
-            this.LightAdoSetting = new LightADOSetting(connectionString, loadFromConfigrationFile);
+            this.LightAdoSetting = new LightADOSetting(connectionString);
         }
 
-        internal static void ThrowExacptionOrEvent(
-          OnError onError,
-          Exception exception,
-          string extraInfo = "")
+        /// <summary>
+        /// Gets or sets light ADO settings
+        /// </summary>
+        public LightADOSetting LightAdoSetting { get; set; }
+
+        /// <summary>
+        /// Throw exception or event if it's not null.
+        /// </summary>
+        /// <param name="onError">the error to throw</param>
+        /// <param name="exception">the exception to throw</param>
+        /// <param name="extraInfo">any more details</param>
+        internal static void ThrowExacptionOrEvent(OnError onError, Exception exception, string extraInfo = "")
         {
             if (onError == null)
+            {
                 throw exception;
+            }
+                
             exception.Source = extraInfo;
             onError(exception);
         }

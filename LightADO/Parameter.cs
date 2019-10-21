@@ -19,19 +19,37 @@ namespace LightADO
 {
     using System.Data;
 
+    /// <summary>
+    /// Providers a way send parameters to SQL command.
+    /// </summary>
     public sealed class Parameter
     {
-        public string Name { get; set; }
-
-        public object Value { get; set; }
-
-        public ParameterDirection Direction { get; set; }
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Parameter"/> class.
+        /// </summary>
+        /// <param name="name">name of the Parameter</param>
+        /// <param name="value">value of the Parameter</param>
+        /// <param name="direction">the direction of the Parameter</param>
         public Parameter(string name, object value, ParameterDirection direction = ParameterDirection.Input)
         {
             this.Name = "@" + name;
             this.Value = value;
             this.Direction = direction;
         }
+
+        /// <summary>
+        /// Gets or sets the name of the Parameter.
+        /// </summary>
+        public string Name { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Parameter value.
+        /// </summary>
+        public object Value { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Direction of the Parameter.
+        /// </summary>
+        public ParameterDirection Direction { get; set; }
     }
 }

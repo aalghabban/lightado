@@ -19,6 +19,9 @@ namespace LightADO
 {
     using System;
 
+    /// <summary>
+    /// Marked Property as Foreign Key
+    /// </summary>
     public sealed class ForeignKey : Attribute
     {
     }

@@ -20,9 +20,20 @@ namespace LightADO
     using System.Data;
     using System.Data.SqlClient;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SqlCommandFactory"/> class.
+    /// </summary>
     internal class SqlCommandFactory
     {
-        internal static SqlCommand Create(string commnadName, CommandType commandType, LightADOSetting lightAdoSetting,params Parameter[] parameters)
+        /// <summary>
+        /// Create a new SQL Command.
+        /// </summary>
+        /// <param name="commnadName">command name</param>
+        /// <param name="commandType">wither command is text or stored procedure</param>
+        /// <param name="lightAdoSetting">light ADO settings</param>
+        /// <param name="parameters">parameters to send to the command</param>
+        /// <returns>A SQL Command ready to execute.</returns>
+        internal static SqlCommand Create(string commnadName, CommandType commandType, LightADOSetting lightAdoSetting, params Parameter[] parameters)
         {
             SqlCommand sqlCommand = new SqlCommand(commnadName, new SqlConnection(lightAdoSetting.ConnectionString));
             sqlCommand.CommandType = commandType;
@@ -37,9 +48,19 @@ namespace LightADO
                     sqlCommand.Parameters.Add(sqlParameter);
                 }
             }
+
             return sqlCommand;
         }
 
+        /// <summary>
+        /// Create a new SQL Command.
+        /// </summary>
+        /// <param name="commnadName">command name</param>
+        /// <param name="commandType">command type or text.</param>
+        /// <param name="lightAdoSetting">Light ADO settings.</param>
+        /// <param name="transaction">transaction to execute.</param>
+        /// <param name="parameters">parameters of the command.</param>
+        /// <returns>SQL Command to execute.</returns>
         internal static SqlCommand Create(string commnadName, CommandType commandType, LightADOSetting lightAdoSetting, SqlTransaction transaction, params Parameter[] parameters)
         {
             SqlCommand sqlCommand = new SqlCommand(commnadName, transaction.Connection);
@@ -57,6 +78,7 @@ namespace LightADO
                     sqlCommand.Parameters.Add(sqlParameter);
                 }
             }
+
             return sqlCommand;
         }
     }

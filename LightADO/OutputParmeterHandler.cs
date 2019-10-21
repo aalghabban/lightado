@@ -24,40 +24,55 @@ namespace LightADO
     using System.Data.SqlClient;
     using System.Reflection;
 
+    /// <summary>
+    /// Providers a way to get the output parameters from a SQL command execution.
+    /// </summary>
     internal class OutputParmeterHandler
     {
+        /// <summary>
+        /// Get Output Parameters
+        /// </summary>
+        /// <param name="sqlCommand">SQL Command</param>
+        /// <returns>the list of parameters</returns>
         internal static List<Parameter> GetOutputParamters(SqlCommand sqlCommand)
         {
             List<Parameter> parameterList = new List<Parameter>();
             foreach (SqlParameter parameter in (DbParameterCollection)sqlCommand.Parameters)
             {
                 if (parameter.Direction == ParameterDirection.Output)
+                {
                     parameterList.Add(new Parameter(parameter.ParameterName, parameter.Value, ParameterDirection.Input));
+                }
             }
+
             return parameterList;
         }
 
-        internal static void SetOutputParameter<T>(SqlCommand sqlCommand, T objectToMap)
-        {
-            List<Parameter> outputParamters = OutputParmeterHandler.GetOutputParamters(sqlCommand);
-            if (outputParamters == null || outputParamters.Count <= 0)
-                return;
-            foreach (Parameter parameter in outputParamters)
-                objectToMap.GetType().GetProperty(parameter.Name.Remove(0, 2)).SetValue((object)objectToMap, parameter.Value);
-        }
-
+        /// <summary>
+        /// Set Output Parameter
+        /// </summary>
+        /// <typeparam name="T">type T of object</typeparam>
+        /// <param name="sqlCommand">the SQL command to get the output parameter from it.</param>
+        /// <param name="objectToMap">object to map</param>
+        /// <param name="parameters">parameters to map</param>
         internal static void SetOutputParameter<T>(SqlCommand sqlCommand, T objectToMap, params Parameter[] parameters)
         {
             List<Parameter> outputParamters = OutputParmeterHandler.GetOutputParamters(sqlCommand);
             if (outputParamters == null || outputParamters.Count <= 0)
-                return;
-            foreach (Parameter parameter1 in outputParamters)
             {
-                Parameter parameter = parameter1;
-                if (objectToMap.GetType().GetProperty(parameter.Name.Remove(0, 2)) != (PropertyInfo)null)
+                return;
+            }
+                
+            foreach (Parameter parameter in outputParamters)
+            {
+                if (objectToMap.GetType().GetProperty(parameter.Name.Remove(0, 2)) != null)
+                {
                     objectToMap.GetType().GetProperty(parameter.Name.Remove(0, 2)).SetValue((object)objectToMap, parameter.Value);
-                else if (Array.Find<Parameter>(parameters, (Predicate<Parameter>)(x => parameter.Name.Remove(0, 1) == x.Name)) != null)
-                    Array.Find<Parameter>(parameters, (Predicate<Parameter>)(x => parameter.Name.Remove(0, 1) == x.Name)).Value = parameter.Value;
+                }
+                else if (Array.Find(parameters, x => parameter.Name.Remove(0, 1) == x.Name) != null)
+                {
+                    Array.Find(parameters, x => parameter.Name.Remove(0, 1) == x.Name).Value = parameter.Value;
+                }
             }
         }
     }

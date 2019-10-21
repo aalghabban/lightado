@@ -17,7 +17,6 @@
 
 namespace LightADO
 {
-    using Newtonsoft.Json;
     using System;
     using System.Collections.Generic;
     using System.Data;
@@ -26,135 +25,156 @@ namespace LightADO
     using System.Reflection;
     using System.Xml;
     using System.Xml.Serialization;
+    using Newtonsoft.Json;
 
+    /// <summary>
+    /// Provides a way to execute, map object from - to SQL Command.
+    /// </summary>
     public class Query : QueryBase
     {
-        public event BeforeExecute BeforeQueryExecute;
-
-        public event AfterExecute AfterQueryExecute;
-
-        public event BeforeOpenConnection BeforeConnectionOpened;
-
-        public event BeforeCloseConnection BeforeConnectionClosed;
-
-        public event AfterOpenConnection AfterConnectionOpened;
-
-        public event AfterCloseConnection AfterConnectionClosed;
-
-        public event LightADO.OnError OnError;
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Query"/> class.
+        /// </summary>
         public Query() : base()
         {
         }
 
-        public Query(string connectionString, bool loadFromConfigrationFile)
-          : base(connectionString, loadFromConfigrationFile)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Query"/> class.
+        /// </summary>
+        /// <param name="connectionString">connection string or key name</param>
+        public Query(string connectionString)
+          : base(connectionString)
         {
         }
 
-        public DataTable ExecuteToDataTable(
-          string command,
-          CommandType commandType = CommandType.StoredProcedure,
-          params Parameter[] parameters)
+        /// <summary>
+        /// will be fired before the Non Query get execute.
+        /// </summary>
+        public event BeforeExecute BeforeNonQueryExecute;
+
+        /// <summary>
+        /// will be fired after the Non Query get execute.
+        /// </summary>
+        public event AfterExecute AfterNonQueryExecute;
+
+        /// <summary>
+        /// will be fired Before Open Connection.
+        /// </summary>
+        public event BeforeOpenConnection BeforeConnectionOpened;
+
+        /// <summary>
+        /// will be fired Before Connection Closed.
+        /// </summary>
+        public event BeforeCloseConnection BeforeConnectionClosed;
+
+        /// <summary>
+        /// will be fired After Connection Opened.
+        /// </summary>
+        public event AfterOpenConnection AfterConnectionOpened;
+
+        /// <summary>
+        /// will be fired After Connection Closed.
+        /// </summary>
+        public event AfterCloseConnection AfterConnectionClosed;
+
+        /// <summary>
+        /// will be fired Before Query Execute
+        /// </summary>
+        public event BeforeExecute BeforeQueryExecute;
+
+        /// <summary>
+        /// will be fired After Query Execute
+        /// </summary>
+        public event BeforeExecute AfterQueryExecute;
+
+        /// <summary>
+        /// will be fired On Error.
+        /// </summary>
+        public event LightADO.OnError OnError;
+
+        /// <summary>
+        /// Execute To Data Table
+        /// </summary>
+        /// <param name="command">SQL Command To Execute.</param>
+        /// <param name="commandType">Command Type text or SP</param>
+        /// <param name="parameters">parameters of the command</param>
+        /// <returns>a data table object</returns>
+        public DataTable ExecuteToDataTable(string command, CommandType commandType = CommandType.StoredProcedure, params Parameter[] parameters)
         {
             return this.ExecuteToDataTable(SqlCommandFactory.Create(command, commandType, this.LightAdoSetting, parameters));
         }
 
-        public DataTable ExecuteToDataTable(
-          string command,
-          Exception nullException,
-          CommandType commandType = CommandType.StoredProcedure,
-          params Parameter[] parameters)
-        {
-            return this.CheckNull<DataTable>(this.ExecuteToDataTable(SqlCommandFactory.Create(command, commandType, this.LightAdoSetting, parameters)), nullException);
-        }
-
-        public DataSet ExecuteToDataSet(
-          string command,
-          CommandType commandType = CommandType.StoredProcedure,
-          params Parameter[] parameters)
+        /// <summary>
+        /// Execute To Data Set
+        /// </summary>
+        /// <param name="command">SQL Command To Execute.</param>
+        /// <param name="commandType">Command Type text or SP</param>
+        /// <param name="parameters">parameters of the command</param>
+        /// <returns>a data Set object</returns>
+        public DataSet ExecuteToDataSet(string command, CommandType commandType = CommandType.StoredProcedure, params Parameter[] parameters)
         {
             return DataMapper.ConvertDataTableToDataSet(this.ExecuteToDataTable(SqlCommandFactory.Create(command, commandType, this.LightAdoSetting, parameters)));
         }
 
-        public DataSet ExecuteToDataSet(
-          string command,
-          Exception nullException,
-          CommandType commandType = CommandType.StoredProcedure,
-          params Parameter[] parameters)
-        {
-            return this.CheckNull<DataSet>(DataMapper.ConvertDataTableToDataSet(this.ExecuteToDataTable(SqlCommandFactory.Create(command, commandType, this.LightAdoSetting, parameters))), nullException);
-        }
-
-        public T ExecuteToObject<T>(
-          string command,
-          CommandType commandType = CommandType.StoredProcedure,
-          params Parameter[] parameters)
+        /// <summary>
+        /// Execute Command and map result to Object
+        /// </summary>
+        /// <typeparam name="T">The T Type of the object</typeparam>
+        /// <param name="command">Command To Execute.</param>
+        /// <param name="commandType">the command type text or SP</param>
+        /// <param name="parameters">the parameters of the Command</param>
+        /// <returns>a single T object</returns>
+        public T ExecuteToObject<T>(string command, CommandType commandType = CommandType.StoredProcedure, params Parameter[] parameters)
         {
             return DataMapper.ConvertDataTableToObject<T>(this.ExecuteToDataTable(SqlCommandFactory.Create(command, commandType, this.LightAdoSetting, parameters)), this.OnError);
         }
 
-        public T ExecuteToObject<T>(
-          string command,
-          Exception nullException,
-          CommandType commandType = CommandType.StoredProcedure,
-          params Parameter[] parameters)
-        {
-            return this.CheckNull<T>(DataMapper.ConvertDataTableToObject<T>(this.ExecuteToDataTable(SqlCommandFactory.Create(command, commandType, this.LightAdoSetting, parameters)), this.OnError), nullException);
-        }
-
-        public void ExecuteToObject<T>(
-          string command,
-          T mapResultToThisObject,
-          CommandType commandType = CommandType.StoredProcedure,
-          params Parameter[] parameters)
+        /// <summary>
+        /// Execute Command and map result to Object
+        /// </summary>
+        /// <typeparam name="T">The T Type of the object</typeparam>
+        /// <param name="command">Command To Execute.</param>
+        /// <param name="mapResultToThisObject">Map result to this object</param>
+        /// <param name="commandType">the command type text or SP</param>
+        /// <param name="parameters">the parameters of the Command</param>
+        public void ExecuteToObject<T>(string command, T mapResultToThisObject, CommandType commandType = CommandType.StoredProcedure, params Parameter[] parameters)
         {
             T obj = DataMapper.ConvertDataTableToObject<T>(this.ExecuteToDataTable(SqlCommandFactory.Create(command, commandType, this.LightAdoSetting, parameters)), this.OnError);
             if ((object)obj == null)
-                return;
-            foreach (PropertyInfo property in obj.GetType().GetProperties())
-                mapResultToThisObject.GetType().GetProperty(property.Name).SetValue((object)mapResultToThisObject, property.GetValue((object)obj));
-        }
-
-        public void ExecuteToObject<T>(
-          string command,
-          Exception nullException,
-          T mapResultToThisObject,
-          CommandType commandType = CommandType.StoredProcedure,
-          params Parameter[] parameters)
-        {
-            T obj = DataMapper.ConvertDataTableToObject<T>(this.ExecuteToDataTable(SqlCommandFactory.Create(command, commandType, this.LightAdoSetting, parameters)), this.OnError);
-            if ((object)obj != null)
             {
-                foreach (PropertyInfo property in obj.GetType().GetProperties())
-                    mapResultToThisObject.GetType().GetProperty(property.Name).SetValue((object)mapResultToThisObject, property.GetValue((object)obj));
+                return;
             }
-            else
-                QueryBase.ThrowExacptionOrEvent(this.OnError, nullException, "");
+
+            foreach (PropertyInfo property in obj.GetType().GetProperties())
+            {
+                mapResultToThisObject.GetType().GetProperty(property.Name).SetValue((object)mapResultToThisObject, property.GetValue((object)obj));
+            }
         }
 
-        public List<T> ExecuteToListOfObject<T>(
-          string command,
-          CommandType commandType = CommandType.StoredProcedure,
-          params Parameter[] parameters)
+        /// <summary>
+        /// Execute To List Of Object
+        /// </summary>
+        /// <typeparam name="T">The type T of object</typeparam>
+        /// <param name="command">command to execute.</param>
+        /// <param name="commandType">command type text or SP.</param>
+        /// <param name="parameters">parameters of the commands</param>
+        /// <returns>a list of T.</returns>
+        public List<T> ExecuteToListOfObject<T>(string command, CommandType commandType = CommandType.StoredProcedure, params Parameter[] parameters)
         {
             return DataMapper.ConvertDataTableToListOfObject<T>(this.ExecuteToDataTable(SqlCommandFactory.Create(command, commandType, this.LightAdoSetting, parameters)), this.OnError);
         }
 
-        public List<T> ExecuteToListOfObject<T>(
-          string command,
-          Exception nullException,
-          CommandType commandType = CommandType.StoredProcedure,
-          params Parameter[] parameters)
-        {
-            return this.CheckNullList<T>(DataMapper.ConvertDataTableToListOfObject<T>(this.ExecuteToDataTable(SqlCommandFactory.Create(command, commandType, this.LightAdoSetting, parameters)), this.OnError), nullException);
-        }
-
-        public string ExecuteToObject<T>(
-          string command,
-          CommandType commandType = CommandType.StoredProcedure,
-          FormatType formatType = FormatType.XML,
-          params Parameter[] parameters)
+        /// <summary>
+        /// Execute command and get JSON or XML file.
+        /// </summary>
+        /// <typeparam name="T">the T type of the object</typeparam>
+        /// <param name="command">command or SP name.</param>
+        /// <param name="commandType">command as text or SP name</param>
+        /// <param name="formatType">what format the result should be.</param>
+        /// <param name="parameters">the command parameters.</param>
+        /// <returns>a JSON or XML of the an object</returns>
+        public string ExecuteToObject<T>(string command, CommandType commandType = CommandType.StoredProcedure, FormatType formatType = FormatType.XML, params Parameter[] parameters)
         {
             T obj = this.ExecuteToObject<T>(command, commandType, parameters);
             if ((object)obj != null)
@@ -167,14 +187,20 @@ namespace LightADO
                         return JsonConvert.SerializeObject(obj);
                 }
             }
+
             return (string)null;
         }
 
-        public List<string> ExecuteToListOfObject<T>(
-          string command,
-          CommandType commandType = CommandType.StoredProcedure,
-          FormatType formatType = FormatType.XML,
-          params Parameter[] parameters)
+        /// <summary>
+        /// Execute command and get JSON or XML file.
+        /// </summary>
+        /// <typeparam name="T">the T type of the object</typeparam>
+        /// <param name="command">command or SP name.</param>
+        /// <param name="commandType">command as text or SP name</param>
+        /// <param name="formatType">what format the result should be.</param>
+        /// <param name="parameters">the command parameters.</param>
+        /// <returns>a List of JSON or XML of the an object</returns>
+        public List<string> ExecuteToListOfObject<T>(string command, CommandType commandType = CommandType.StoredProcedure, FormatType formatType = FormatType.XML, params Parameter[] parameters)
         {
             List<T> listOfObject = this.ExecuteToListOfObject<T>(command, commandType, parameters);
             List<string> stringList1;
@@ -193,56 +219,22 @@ namespace LightADO
                             break;
                     }
                 }
+
                 stringList1 = stringList2;
             }
             else
+            {
                 stringList1 = (List<string>)null;
+            }
+
             return stringList1;
         }
 
-        public string ExecuteToObject<T>(string command, Exception nullException, CommandType commandType = CommandType.StoredProcedure, FormatType formatType = FormatType.XML, params Parameter[] parameters)
-        {
-            string str = this.ExecuteToObject<T>(command, commandType, formatType, parameters);
-            if (string.IsNullOrWhiteSpace(str))
-            {
-                return str;
-            }
-
-            throw nullException;
-        }
-
-        public List<string> ExecuteToListOfObject<T>(string command, Exception nullException, CommandType commandType = CommandType.StoredProcedure, FormatType formatType = FormatType.XML,
-          params Parameter[] parameters)
-        {
-            List<string> listOfObject = this.ExecuteToListOfObject<T>(command, commandType, formatType, parameters);
-            if (listOfObject != null && listOfObject.Count > 0)
-            {
-                return listOfObject;
-            }
-
-            throw nullException;
-        }
-
-        private T CheckNull<T>(T objectToCheck, Exception exception)
-        {
-            if (objectToCheck == null)
-            {
-                ThrowExacptionOrEvent(this.OnError, exception, "");
-            }
-
-            return objectToCheck;
-        }
-
-        private List<T> CheckNullList<T>(List<T> objectToCheck, Exception exception)
-        {
-            if (objectToCheck == null || objectToCheck.Count == 0)
-            {
-                QueryBase.ThrowExacptionOrEvent(this.OnError, exception, "");
-            }
-
-            return objectToCheck;
-        }
-
+        /// <summary>
+        /// Execute Command And Get Data table.
+        /// </summary>
+        /// <param name="command">command to execute</param>
+        /// <returns>a data table object</returns>
         private DataTable ExecuteToDataTable(SqlCommand command)
         {
             DataTable dataTable = (DataTable)null;
@@ -266,7 +258,7 @@ namespace LightADO
             }
             catch (Exception ex)
             {
-                ThrowExacptionOrEvent(this.OnError, ex, "");
+                QueryBase.ThrowExacptionOrEvent(this.OnError, ex, string.Empty);
             }
             finally
             {
@@ -278,6 +270,7 @@ namespace LightADO
 
                 this.AfterConnectionClosed?.Invoke();
             }
+
             return dataTable;
         }
 
@@ -298,9 +291,11 @@ namespace LightADO
             {
                 var xmlserializer = new XmlSerializer(typeof(T));
                 var stringWriter = new StringWriter();
-                using var writer = XmlWriter.Create(stringWriter);
-                xmlserializer.Serialize(writer, value);
-                return stringWriter.ToString();
+                using (var writer = XmlWriter.Create(stringWriter))
+                {
+                    xmlserializer.Serialize(writer, value);
+                    return stringWriter.ToString();
+                }
             }
             catch (Exception ex)
             {

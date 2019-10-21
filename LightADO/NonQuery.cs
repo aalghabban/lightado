@@ -22,31 +22,69 @@ namespace LightADO
     using System.Data;
     using System.Data.SqlClient;
 
+    /// <summary>
+    /// Providers a methods to execute non queries into a database.
+    /// </summary>
     public class NonQuery : QueryBase
     {
-        public event BeforeExecute BeforeNonQueryExecute;
-
-        public event AfterExecute AfterNonQueryExecute;
-
-        public event BeforeOpenConnection BeforeConnectionOpened;
-
-        public event BeforeCloseConnection BeforeConnectionClosed;
-
-        public event AfterOpenConnection AfterConnectionOpened;
-
-        public event AfterCloseConnection AfterConnectionClosed;
-
-        public event LightADO.OnError OnError;
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NonQuery"/> class.
+        /// </summary>
         public NonQuery()
         {
         }
 
-        public NonQuery(string connectionString, bool loadFromConfigration)
-          : base(connectionString, loadFromConfigration)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NonQuery"/> class.
+        /// </summary>
+        /// <param name="connectionString">The connection string or a key name in the configuration file</param>
+        public NonQuery(string connectionString)
+          : base(connectionString)
         {
         }
 
+        /// <summary>
+        /// will be fired before the Non Query get execute.
+        /// </summary>
+        public event BeforeExecute BeforeNonQueryExecute;
+
+        /// <summary>
+        /// will be fired after the Non Query get execute.
+        /// </summary>
+        public event AfterExecute AfterNonQueryExecute;
+
+        /// <summary>
+        /// will be fired Before Open Connection.
+        /// </summary>
+        public event BeforeOpenConnection BeforeConnectionOpened;
+
+        /// <summary>
+        /// will be fired Before Connection Closed.
+        /// </summary>
+        public event BeforeCloseConnection BeforeConnectionClosed;
+
+        /// <summary>
+        /// will be fired After Connection Opened.
+        /// </summary>
+        public event AfterOpenConnection AfterConnectionOpened;
+
+        /// <summary>
+        /// will be fired After Connection Closed.
+        /// </summary>
+        public event AfterCloseConnection AfterConnectionClosed;
+
+        /// <summary>
+        /// will be fired On Error.
+        /// </summary>
+        public event LightADO.OnError OnError;
+
+        /// <summary>
+        /// Execute Non Query
+        /// </summary>
+        /// <param name="command">the SP or the SQL command as text.</param>
+        /// <param name="commandType">the command type</param>
+        /// <param name="parameters">any parameters needed by the query.</param>
+        /// <returns>true if the query get Executes</returns>
         public bool Execute(string command, CommandType commandType = CommandType.Text, params Parameter[] parameters)
         {
             try
@@ -55,11 +93,20 @@ namespace LightADO
             }
             catch (Exception ex)
             {
-                QueryBase.ThrowExacptionOrEvent(this.OnError, ex, "");
+                QueryBase.ThrowExacptionOrEvent(this.OnError, ex, string.Empty);
             }
+
             return false;
         }
 
+        /// <summary>
+        /// Execute Non Query
+        /// </summary>
+        /// <typeparam name="T">the Type of object to map</typeparam>
+        /// <param name="command">the SP or the SQL command as text.</param>
+        /// <param name="objectToMap">object to map</param>
+        /// <param name="parameters">any parameters needed by the query.</param>
+        /// <returns>true if the query get Executed</returns>
         public bool Execute<T>(string command, T objectToMap, params Parameter[] parameters)
         {
             try
@@ -70,11 +117,18 @@ namespace LightADO
             }
             catch (Exception ex)
             {
-                QueryBase.ThrowExacptionOrEvent(this.OnError, ex, "");
+                QueryBase.ThrowExacptionOrEvent(this.OnError, ex, string.Empty);
             }
+
             return false;
         }
 
+        /// <summary>
+        /// Execute a Non Query Transaction Command.
+        /// </summary>
+        /// <param name="transactions">Transaction list to Execute</param>
+        /// <param name="rollbackOnError">wither to Rollback or not</param>
+        /// <returns>true if all Transaction Execute</returns>
         public bool Execute(List<Transaction> transactions, bool rollbackOnError = true)
         {
             SqlConnection connection = new SqlConnection(this.LightAdoSetting.ConnectionString);
@@ -85,9 +139,7 @@ namespace LightADO
             {
                 foreach (Transaction transaction in transactions)
                 {
-                    this.ExcecuteNonQueryCommand(
-                        SqlCommandFactory.Create(transaction.Command, transaction.CommandType, this.LightAdoSetting, sqlTransaction, DataMapper.MapObjectToStoredProcedure(transaction.Command, transaction.Data, this.LightAdoSetting, this.OnError, transaction.Parameters).ToArray()),
-                        transaction.Data, true, transaction.Parameters);
+                    this.ExcecuteNonQueryCommand(SqlCommandFactory.Create(transaction.Command, transaction.CommandType, this.LightAdoSetting, sqlTransaction, DataMapper.MapObjectToStoredProcedure(transaction.Command, transaction.Data, this.LightAdoSetting, this.OnError, transaction.Parameters).ToArray()), transaction.Data, true, transaction.Parameters);
                 }
 
                 sqlTransaction.Commit();
@@ -100,62 +152,88 @@ namespace LightADO
                     sqlTransaction.Rollback();
                 }
 
-                QueryBase.ThrowExacptionOrEvent(this.OnError, ex, "");
+                QueryBase.ThrowExacptionOrEvent(this.OnError, ex, string.Empty);
             }
 
             return false;
         }
 
+        /// <summary>
+        /// Execute NonQuery Command and get SQL command
+        /// </summary>
+        /// <param name="sqlCommand">the SQL commend to Execute or SP name</param>
+        /// <param name="keepConnectionOpend">wither to keep the connection open or not.</param>
+        /// <returns>SQL Command Object</returns>
         private SqlCommand ExcecuteNonQueryAndGetSqlCommand(SqlCommand sqlCommand, bool keepConnectionOpend = false)
         {
             try
             {
-                if (this.BeforeConnectionOpened != null)
-                    this.BeforeConnectionOpened();
+                this.BeforeConnectionOpened?.Invoke();
                 if (sqlCommand.Connection.State == ConnectionState.Closed)
+                {
                     sqlCommand.Connection.Open();
-                if (this.AfterConnectionOpened != null)
-                    this.AfterConnectionOpened();
-                if (this.BeforeNonQueryExecute != null)
-                    this.BeforeNonQueryExecute();
+                }
+
+                this.AfterConnectionOpened?.Invoke();
+                this.BeforeNonQueryExecute?.Invoke();
                 sqlCommand.ExecuteNonQuery();
-                if (this.AfterNonQueryExecute != null)
-                    this.AfterNonQueryExecute();
+                this.AfterNonQueryExecute?.Invoke();
             }
             catch (Exception ex)
             {
-                QueryBase.ThrowExacptionOrEvent(this.OnError, ex, "");
+                QueryBase.ThrowExacptionOrEvent(this.OnError, ex, string.Empty);
             }
             finally
             {
-                if(keepConnectionOpend == false)
+                if (keepConnectionOpend == false)
                 {
-                    if (this.BeforeConnectionClosed != null)
-                        this.BeforeConnectionClosed();
+                    this.BeforeConnectionClosed?.Invoke();
                     if (sqlCommand.Connection.State == ConnectionState.Open)
+                    {
                         sqlCommand.Connection.Close();
-                    if (this.AfterConnectionClosed != null)
-                        this.AfterConnectionClosed();
+                    }
+
+                    this.AfterConnectionClosed?.Invoke();
                 }
             }
+
             return sqlCommand;
         }
 
+        /// <summary>
+        /// Execute NonQuery Command
+        /// </summary>
+        /// <param name="sqlCommand">the SQL commend to Execute or SP name</param>
+        /// <returns>true if the query get Execute</returns>
         private bool ExcecuteNonQueryCommand(SqlCommand sqlCommand)
         {
             this.ExcecuteNonQueryAndGetSqlCommand(sqlCommand);
             return true;
         }
 
-        private bool ExcecuteNonQueryCommand<T>(
-          SqlCommand sqlCommand,
-          T objectToMap,
-          params Parameter[] parameters)
+        /// <summary>
+        /// Execute NonQuery Command
+        /// </summary>
+        /// <typeparam name="T">The T Type of the object to map.</typeparam>
+        /// <param name="sqlCommand">the SQL commend to execute or SP name</param>
+        /// <param name="objectToMap">the object to map</param>
+        /// <param name="parameters">the list of parameters to map.</param>
+        /// <returns>true if the query get Execute</returns>
+        private bool ExcecuteNonQueryCommand<T>(SqlCommand sqlCommand, T objectToMap, params Parameter[] parameters)
         {
             OutputParmeterHandler.SetOutputParameter<T>(this.ExcecuteNonQueryAndGetSqlCommand(sqlCommand), objectToMap, parameters);
             return true;
         }
 
+        /// <summary>
+        /// Execute NonQuery Command
+        /// </summary>
+        /// <typeparam name="T">The T Type of the object to map.</typeparam>
+        /// <param name="sqlCommand">the SQL commend to execute or SP name</param>
+        /// <param name="objectToMap">the object to map</param>
+        /// <param name="keepConnectionOpend">wither to keep the connection open or not.</param>
+        /// <param name="parameters">the list of parameters to map.</param>
+        /// <returns>true if the query get Execute</returns>
         private bool ExcecuteNonQueryCommand<T>(SqlCommand sqlCommand, T objectToMap, bool keepConnectionOpend = false, params Parameter[] parameters)
         {
             OutputParmeterHandler.SetOutputParameter<T>(this.ExcecuteNonQueryAndGetSqlCommand(sqlCommand, keepConnectionOpend), objectToMap, parameters);

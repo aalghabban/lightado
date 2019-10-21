@@ -27,6 +27,28 @@ namespace LightADO
     public sealed class DefaultValue : Attribute
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="DefaultValue"/> class.
+        /// </summary>
+        public DefaultValue()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DefaultValue"/> class.
+        /// </summary>
+        /// <param name="value">the default value to set.</param>
+        /// <param name="valueType">where to look for the default value</param>
+        /// <param name="direction">the direction of the setting default value</param>
+        /// <param name="parameters">any parameters to sent to a method</param>
+        public DefaultValue(string value, ValueTypes valueType = ValueTypes.Value, Directions direction = Directions.WithNonQuery, params object[] parameters)
+        {
+            this.Value = value;
+            this.Direction = direction;
+            this.Parameters = parameters;
+            this.ValueType = valueType;
+        }
+
+        /// <summary>
         /// The direction of setting 
         /// up the default value.
         /// </summary>
@@ -70,27 +92,33 @@ namespace LightADO
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DefaultValue"/> class.
+        /// Gets the default values.
         /// </summary>
-        public DefaultValue()
-        {
-        }
+        internal object Value { get; private set; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DefaultValue"/> class.
+        /// Gets the direction of the default values.
         /// </summary>
-        /// <param name="value">the default value to set.</param>
-        /// <param name="valueType">where to look for the default value</param>
-        /// <param name="direction">the direction of the setting default value</param>
-        /// <param name="parameters">any parameters to sent to a method</param>
-        public DefaultValue(string value, ValueTypes valueType = ValueTypes.Value, Directions direction = Directions.WithNonQuery, params object[] parameters)
-        {
-            this.Value = value;
-            this.Direction = direction;
-            this.Parameters = parameters;
-            this.ValueType = valueType;
-        }
+        internal Directions Direction { get; private set; }
 
+        /// <summary>
+        /// Gets the parameters of the default values.
+        /// </summary>
+        internal object[] Parameters { get; private set; }
+
+        /// <summary>
+        /// Gets the value types.
+        /// </summary>
+        internal ValueTypes ValueType { get; private set; }
+
+        /// <summary>
+        /// Loop throw each property in object
+        /// and set the default property for it.
+        /// </summary>
+        /// <typeparam name="T">the T type of the object to set default values.</typeparam>
+        /// <param name="objectToMapDefaultValues">object to set it's default values.</param>
+        /// <param name="directions">in which direct to set the default values.</param>
+        /// <returns>objectToMapDefaultValues after default values was set</returns>
         internal static T SetDefaultValus<T>(T objectToMapDefaultValues, Directions directions = Directions.WithBoth)
         {
             foreach (PropertyInfo property in objectToMapDefaultValues.GetType().GetProperties())
@@ -113,9 +141,17 @@ namespace LightADO
             return objectToMapDefaultValues;
         }
 
+        /// <summary>
+        /// Set Default Values for property
+        /// </summary>
+        /// <typeparam name="T">the T type of object.</typeparam>
+        /// <param name="objectToMapDefaultValues">object To Map Default Values</param>
+        /// <param name="defaultValueSettings">default Value Settings</param>
+        /// <param name="property">property to set it's value</param>
+        /// <returns>the property after setting the values</returns>
         private static T SetDefaultValue<T>(T objectToMapDefaultValues, DefaultValue defaultValueSettings, PropertyInfo property)
         {
-            object valueAfterTypedChanged = null;
+            object valueAfterTypedChanged;
             if (defaultValueSettings.ValueType == ValueTypes.Value)
             {
                 valueAfterTypedChanged = Convert.ChangeType(defaultValueSettings.Value, property.PropertyType);
@@ -136,13 +172,5 @@ namespace LightADO
 
             return objectToMapDefaultValues;
         }
-
-        internal object Value { get; private set; }
-
-        internal Directions Direction { get; private set; }
-
-        internal object[] Parameters { get; private set; }
-
-        internal ValueTypes ValueType { get; private set; }
     }
 }

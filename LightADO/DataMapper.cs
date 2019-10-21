@@ -45,7 +45,7 @@ namespace LightADO
                     List<T> objList = new List<T>();
                     foreach (DataRow row in (InternalDataCollectionBase)table.Rows)
                     {
-                        objList.Add(EncryptEngine.EncryptOrDecryptObject<T>(DataMapper.MapDataRowToObject<T>(row, onError), false));
+                        objList.Add(EncryptEngine.EncryptOrDecryptObject<T>(MapDataRowToObject<T>(row, onError), false));
                     }
 
                     return objList;

@@ -19,6 +19,9 @@ namespace LightADO
 {
     using System;
 
+    /// <summary>
+    /// Providers a way to mark a property as primary key
+    /// </summary>
     public sealed class PrimaryKey : Attribute
     {
     }
