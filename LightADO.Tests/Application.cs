@@ -33,6 +33,16 @@ namespace LightADO.Tests
         [PrimaryKey]
         public int ID { get; set; }
 
+        public Application()
+        {
+        }
+
+        public Application(int id)
+        {
+            new Query().ExecuteToObject("Applications_GetByID", this, System.Data.CommandType.StoredProcedure, new Parameter("ID", id));
+        }
+
+        [Encrypto]
         public string Name { get; set; }
 
         public string Description { get; set; }

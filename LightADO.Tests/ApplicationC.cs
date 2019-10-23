@@ -1,5 +1,6 @@
 ﻿namespace LightADO.Tests
 {
+ 
     public class ApplicationC : Application
     {
         [ColumnName("Name")]

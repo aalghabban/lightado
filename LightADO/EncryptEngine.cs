@@ -72,6 +72,7 @@ namespace LightADO
 
         private static void EncryptOrDecryptProperties<T>(T objectToEncrypt, OprationType oprationType)
         {
+            object encryptAttribute = objectToEncrypt.GetType().GetCustomAttribute(typeof(EncryptEngine), true);
             foreach (PropertyInfo property in objectToEncrypt.GetType().GetProperties())
             {
                 if (property.GetValue(objectToEncrypt) != null && property.GetValue(objectToEncrypt) is string)
@@ -82,7 +83,7 @@ namespace LightADO
                     }
                     else
                     {
-                        property.SetValue(objectToEncrypt, CallDecryptMethod(((MemberInfo)property).GetCustomAttribute(typeof(EncryptEngine), true), property.GetValue(objectToEncrypt).ToString()));
+                        property.SetValue(objectToEncrypt, CallDecryptMethod(encryptAttribute, property.GetValue(objectToEncrypt).ToString()));
                     }
                 }
             }

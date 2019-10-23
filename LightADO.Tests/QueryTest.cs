@@ -14,6 +14,30 @@
         }
 
         [Fact]
+        public void ExecuteQueryAsTextAndGetObjectWithDecryptSingleProperty()
+        {
+            Assert.True(new Query().ExecuteToObject<Application>(
+                "select * from Applications where ID = 1",
+                System.Data.CommandType.Text).Name == "Decrypted");
+        }
+
+        [Fact]
+        public void ExecuteQueryAsTextAndGetObjectWithDecryptAllProperty()
+        {
+            Assert.True(new Query().ExecuteToObject<Token>(
+                "select * from Tokens where ID = 1",
+                System.Data.CommandType.Text).Key == "Decrypted");
+        }
+
+        [Fact]
+        public void ExecuteQueryWithForignKeys()
+        {
+            Assert.True(new Query().ExecuteToObject<Token>(
+                "select * from Tokens where ID = 1",
+                System.Data.CommandType.Text).Application.ID == 1);
+        }
+
+        [Fact]
         public void ExecuteQueryAsTextAndMapToObject()
         {
             Application application = new Application();
@@ -25,7 +49,7 @@
         public void ExecuteQueryAsStoredProcedureAndGetDataTabel()
         {
             Assert.True(new Query().ExecuteToDataTable(
-                 "Get_Applications_ByID",
+                 "Applications_GetByID",
                  System.Data.CommandType.StoredProcedure,
                  new Parameter("ID", 1)) != null);
         }
@@ -40,7 +64,7 @@
         public void ExecuteQueryAsStoredProcedureAndGetDataSet()
         {
             Assert.True(new Query().ExecuteToDataSet(
-                 "Get_Applications_ByID",
+                 "Applications_GetByID",
                  System.Data.CommandType.StoredProcedure,
                  new Parameter("ID", 1)) != null);
         }
@@ -63,7 +87,7 @@
         public void ExecuteQueryAsStoredProcedureAndGetObject()
         {
             Assert.True(new Query().ExecuteToObject<Application>(
-                "Get_Applications_ByID",
+                "Applications_GetByID",
                 System.Data.CommandType.StoredProcedure,
                 new Parameter("ID", 1)) != null);
         }
@@ -72,7 +96,7 @@
         public void TestLightAdoColumnName()
         {
             ApplicationC application = new Query().ExecuteToObject<ApplicationC>(
-                "Get_Applications_ByID",
+                "Applications_GetByID",
                 System.Data.CommandType.StoredProcedure,
                 new Parameter("ID", 1));
 
@@ -83,7 +107,7 @@
         public void TestLightAdoDefaultValue()
         {
             ApplicationC application = new Query().ExecuteToObject<ApplicationC>(
-                "Get_Applications_ByID",
+                "Applications_GetByID",
                 System.Data.CommandType.StoredProcedure,
                 new Parameter("ID", 1));
 
@@ -94,7 +118,7 @@
         public void TestLightAdoDefaultValueWithOnlyNonQuery()
         {
             ApplicationC application = new Query().ExecuteToObject<ApplicationC>(
-                "Get_Applications_ByID",
+                "Applications_GetByID",
                 System.Data.CommandType.StoredProcedure,
                 new Parameter("ID", 1));
 
@@ -105,7 +129,7 @@
         public void TestLightAdoDefaultValueWithOnlyQuery()
         {
             ApplicationC application = new Query().ExecuteToObject<ApplicationC>(
-                "Get_Applications_ByID",
+                "Applications_GetByID",
                 System.Data.CommandType.StoredProcedure,
                 new Parameter("ID", 1));
 
@@ -116,7 +140,7 @@
         public void ExecuteQueryAsStoredProcedureAndGetListOfObject()
         {
             Assert.True(new Query().ExecuteToListOfObject<Application>(
-                "Get_Applications",
+                "Applications_Gets",
                 System.Data.CommandType.StoredProcedure) != null);
         }
 
@@ -139,7 +163,7 @@
         public void ExecuteQueryAsStoredProcedureAndGetJson()
         {
             Assert.True(new Query().ExecuteToObject<Application>(
-                "Get_Applications_ByID",
+                "Applications_GetByID",
                 System.Data.CommandType.StoredProcedure,
                 FormatType.Json,
                 new Parameter("ID", 1)) != null);
@@ -149,7 +173,7 @@
         public void ExecuteQueryAsStoredProcedureAndGetListOfJson()
         {
             Assert.True(new Query().ExecuteToListOfObject<Application>(
-                "Get_Applications",
+                "Applications_Gets",
                 System.Data.CommandType.StoredProcedure,
                 FormatType.Json) != null);
         }
@@ -158,7 +182,7 @@
         public void ExecuteQueryAsStoredProcedureAndGetXml()
         {
             Assert.True(new Query().ExecuteToObject<Application>(
-                "Get_Applications_ByID",
+                "Applications_GetByID",
                 System.Data.CommandType.StoredProcedure,
                 FormatType.XML,
                 new Parameter("ID", 1)) != null);
@@ -168,7 +192,7 @@
         public void ExecuteQueryAsStoredProcedureAndGetListOfXml()
         {
             Assert.True(new Query().ExecuteToListOfObject<Application>(
-                "Get_Applications",
+                "Applications_Gets",
                 System.Data.CommandType.StoredProcedure,
                 FormatType.XML) != null);
         }
