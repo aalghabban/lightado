@@ -5,3 +5,4 @@ C:\Users\aalgh\Documents\Visual Studio 2019\Projects\lightado\LightADO\obj\Debug
 C:\Users\aalgh\Documents\Visual Studio 2019\Projects\lightado\LightADO\obj\Debug\netcoreapp3.0\LightADO.AssemblyInfo.cs
 C:\Users\aalgh\Documents\Visual Studio 2019\Projects\lightado\LightADO\obj\Debug\netcoreapp3.0\LightADO.dll
 C:\Users\aalgh\Documents\Visual Studio 2019\Projects\lightado\LightADO\obj\Debug\netcoreapp3.0\LightADO.pdb
+C:\Users\aalgh\Documents\Visual Studio 2019\Projects\lightado\LightADO\obj\Debug\netcoreapp3.0\LightADO.csprojAssemblyReference.cache

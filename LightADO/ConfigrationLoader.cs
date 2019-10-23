@@ -17,7 +17,6 @@
 
 namespace LightADO
 {
-    using System.Configuration;
     using System.IO;
     using Microsoft.Extensions.Configuration;
 
@@ -53,32 +52,19 @@ namespace LightADO
         {
             string value = null;
             IConfigurationBuilder builder = new ConfigurationBuilder();
-            IConfigurationRoot configRoot = builder.AddJsonFile(Path.Combine(Directory.GetCurrentDirectory(), "appsettings.json")).Build();
-
-            switch (section)
+            if (File.Exists(Path.Combine(Directory.GetCurrentDirectory(), "appsettings.json")))
             {
-                case ConfigurationSections.ConnectionString:
-                    if (ConfigurationManager.ConnectionStrings[keyName] != null)
-                    {
-                        value = ConfigurationManager.ConnectionStrings[keyName].ConnectionString;
-                    }
-                    else
-                    {
+                IConfigurationRoot configRoot = builder.AddJsonFile(Path.Combine(Directory.GetCurrentDirectory(), "appsettings.json")).Build();
+                switch (section)
+                {
+                    case ConfigurationSections.ConnectionString:
                         value = configRoot.GetConnectionString(keyName);
-                    }
-
-                    break;
-                case ConfigurationSections.AppSettings:
-                    if (ConfigurationManager.AppSettings[keyName] != null)
-                    {
-                        return ConfigurationManager.AppSettings[keyName];
-                    }
-                    else
-                    {
+                        break;
+                    case ConfigurationSections.AppSettings:
                         value = configRoot.GetSection("AppSettings" + ":" + keyName).Value;
-                    }
 
-                    break;
+                        break;
+                }
             }
 
             return value;

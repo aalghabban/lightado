@@ -85,7 +85,7 @@ namespace LightADO
             string connectionString = ConfigurationLoader.GetValueOfKey(connectionStringName);
             if (connectionString == null)
             {
-                throw new Exception("Lightado did not find a connection string with name DefaultConnection, in both appsettings.json or the app.confg");
+                throw new LightAdoExcption("Lightado did not find a connection string with name DefaultConnection, in both appsettings.json or the app.confg");
             }
 
             return connectionString;

@@ -21,17 +21,8 @@ $ dotnet add package LightAdo.net
 ```
 
 Now say we like to get a list of all employess in from HR database, setting up the connection string will be 
-the start point, open the appsettings.json, app.config or web.config and modify the ConnectionString 
+the start point, open the appsettings.json and modify the ConnectionString 
 section to add a new connection with name DefaultConnection: 
-
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-<configuration>
-  <connectionStrings>
-      <add name="DefaultConnection" connectionString="...."/>  
-  </connectionStrings>
-</configuration>
-```
 
 ```json
 {
@@ -96,7 +87,6 @@ That's very much it, Done! things should be that simple and clean.
 - SQL Server Transcation supported. 
 - Change type of property on runtime before send it to SQL Server. 
 - Use C# naming conventions to replace the naming conventions for SQL server. 
-- Suppoer multiple configurations files format. 
 - Convert object vice verrsa between Json and XML and CLI.
 - Go old schoole and get straight-forward Data set or datatable.
 - Send Bulks of objects for insert, update and delete with support for workflow and Relationship.

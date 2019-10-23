@@ -45,7 +45,7 @@ namespace LightADO
                     List<T> objList = new List<T>();
                     foreach (DataRow row in (InternalDataCollectionBase)table.Rows)
                     {
-                        objList.Add(EncryptEngine.EncryptOrDecryptObject<T>(MapDataRowToObject<T>(row, onError), false));
+                        objList.Add(EncryptEngine.EncryptOrDecryptObject<T>(MapDataRowToObject<T>(row, onError), EncryptEngine.OprationType.Descrypt));
                     }
 
                     return objList;
@@ -72,7 +72,7 @@ namespace LightADO
             {
                 if (table != null && table.Rows.Count > 0)
                 {
-                    return EncryptEngine.EncryptOrDecryptObject<T>(DataMapper.MapDataRowToObject<T>(table.Rows[0], onError), false);
+                    return EncryptEngine.EncryptOrDecryptObject<T>(DataMapper.MapDataRowToObject<T>(table.Rows[0], onError), EncryptEngine.OprationType.Descrypt);
                 }
             }
             catch (Exception ex)

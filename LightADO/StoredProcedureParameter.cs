@@ -86,7 +86,7 @@ namespace LightADO
         {
             get
             {
-                return new Query(this.LightAdoSetting.ConnectionString, false).ExecuteToListOfObject<StoredProcedureParameter>("select PARAMETER_NAME as Name, PARAMETER_MODE as Mode, Data_Type as TypeName from information_schema.parameters where specific_name= @StoredProcedureName", CommandType.Text, new Parameter("StoredProcedureName", (object)this.storedProcedureName, ParameterDirection.Input));
+                return new Query(this.LightAdoSetting.ConnectionString).ExecuteToListOfObject<StoredProcedureParameter>("select PARAMETER_NAME as Name, PARAMETER_MODE as Mode, Data_Type as TypeName from information_schema.parameters where specific_name= @StoredProcedureName", CommandType.Text, new Parameter("StoredProcedureName", (object)this.storedProcedureName, ParameterDirection.Input));
             }
         }
     }

@@ -112,7 +112,7 @@ namespace LightADO
             try
             {
                 AutoValidation.ValidateObject<T>(objectToMap);
-                EncryptEngine.EncryptOrDecryptObject<T>(objectToMap, true);
+                EncryptEngine.EncryptOrDecryptObject<T>(objectToMap, EncryptEngine.OprationType.Encrypt);
                 return this.ExcecuteNonQueryCommand<T>(SqlCommandFactory.Create(command, CommandType.StoredProcedure, this.LightAdoSetting, DataMapper.MapObjectToStoredProcedure<T>(command, objectToMap, this.LightAdoSetting, this.OnError, parameters).ToArray()), objectToMap, parameters);
             }
             catch (Exception ex)

@@ -49,16 +49,6 @@ namespace LightADO
         }
 
         /// <summary>
-        /// will be fired before the Non Query get execute.
-        /// </summary>
-        public event BeforeExecute BeforeNonQueryExecute;
-
-        /// <summary>
-        /// will be fired after the Non Query get execute.
-        /// </summary>
-        public event AfterExecute AfterNonQueryExecute;
-
-        /// <summary>
         /// will be fired Before Open Connection.
         /// </summary>
         public event BeforeOpenConnection BeforeConnectionOpened;
@@ -176,19 +166,19 @@ namespace LightADO
         /// <returns>a JSON or XML of the an object</returns>
         public string ExecuteToObject<T>(string command, CommandType commandType = CommandType.StoredProcedure, FormatType formatType = FormatType.XML, params Parameter[] parameters)
         {
-            T obj = this.ExecuteToObject<T>(command, commandType, parameters);
-            if ((object)obj != null)
+            T convertedObject = this.ExecuteToObject<T>(command, commandType, parameters);
+            if (convertedObject != null)
             {
                 switch (formatType)
                 {
                     case FormatType.XML:
-                        return this.SerializeToXml<T>(obj);
+                        return this.SerializeToXml(convertedObject);
                     case FormatType.Json:
-                        return JsonConvert.SerializeObject(obj);
+                        return JsonConvert.SerializeObject(convertedObject);
                 }
             }
 
-            return (string)null;
+            return null;
         }
 
         /// <summary>
@@ -203,31 +193,25 @@ namespace LightADO
         public List<string> ExecuteToListOfObject<T>(string command, CommandType commandType = CommandType.StoredProcedure, FormatType formatType = FormatType.XML, params Parameter[] parameters)
         {
             List<T> listOfObject = this.ExecuteToListOfObject<T>(command, commandType, parameters);
-            List<string> stringList1;
+            List<string> convertedObjectList = null;
             if (listOfObject != null && listOfObject.Count > 0)
             {
-                List<string> stringList2 = new List<string>();
+                convertedObjectList = new List<string>();
                 foreach (T obj in listOfObject)
                 {
                     switch (formatType)
                     {
                         case FormatType.XML:
-                            stringList2.Add(this.SerializeToXml<T>(obj));
+                            convertedObjectList.Add(this.SerializeToXml<T>(obj));
                             break;
                         case FormatType.Json:
-                            stringList2.Add(JsonConvert.SerializeObject(obj));
+                            convertedObjectList.Add(JsonConvert.SerializeObject(obj));
                             break;
                     }
                 }
-
-                stringList1 = stringList2;
-            }
-            else
-            {
-                stringList1 = (List<string>)null;
             }
 
-            return stringList1;
+            return convertedObjectList;
         }
 
         /// <summary>

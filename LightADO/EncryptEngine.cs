@@ -18,6 +18,7 @@
 namespace LightADO
 {
     using System;
+    using System.Linq;
     using System.Reflection;
 
     /// <summary>
@@ -25,6 +26,22 @@ namespace LightADO
     /// </summary>
     public abstract class EncryptEngine : Attribute
     {
+        /// <summary>
+        /// Encrypt Engine Options
+        /// </summary>
+        internal enum OprationType
+        {
+            /// <summary>
+            /// Encrypt string.
+            /// </summary>
+            Encrypt,
+
+            /// <summary>
+            /// decrypt string.
+            /// </summary>
+            Descrypt
+        }
+
         /// <summary>
         /// Encrypt as string.
         /// </summary>
@@ -39,54 +56,54 @@ namespace LightADO
         /// <returns>the value after it get Decrypted</returns>
         public abstract string Decrypt(string valueToDecrypt);
 
-        /// <summary>
-        /// Encrypt or Decrypt Object
-        /// </summary>
-        /// <typeparam name="T">the T type of the object</typeparam>
-        /// <param name="objectToEncrypt">object To Encrypt</param>
-        /// <param name="encryptOrDecrypt">encrypt Or Decrypt</param>
-        /// <returns>the object after setting encryptions</returns>
-        internal static T EncryptOrDecryptObject<T>(T objectToEncrypt, bool encryptOrDecrypt)
+        internal static T EncryptOrDecryptObject<T>(T objectToEncrypt, OprationType oprationType)
         {
-            if (Attribute.IsDefined(typeof(T), typeof(EncryptEngine), true) == true)
+            if (IsDefined(typeof(T), typeof(EncryptEngine), true) == true)
             {
-                EncryptOrDecryptAllProperties(objectToEncrypt, encryptOrDecrypt, true);
+                EncryptOrDecryptProperties(objectToEncrypt, oprationType);
             }
             else
             {
-                EncryptOrDecryptAllProperties(objectToEncrypt, encryptOrDecrypt, false);
+                EncrypOrDecrypProperty(objectToEncrypt, oprationType);
             }
                 
             return objectToEncrypt;
         }
 
-        /// <summary>
-        /// Encrypt Or Decrypt All Properties
-        /// </summary>
-        /// <typeparam name="T">the T type of object</typeparam>
-        /// <param name="objectToEncrypt">object To Encrypt</param>
-        /// <param name="callEncryptMethod">call Encrypt Method</param>
-        /// <param name="callForProperty">call For Property</param>
-        private static void EncryptOrDecryptAllProperties<T>(T objectToEncrypt, bool callEncryptMethod = true, bool callForProperty = false)
+        private static void EncryptOrDecryptProperties<T>(T objectToEncrypt, OprationType oprationType)
         {
             foreach (PropertyInfo property in objectToEncrypt.GetType().GetProperties())
             {
-                if (property.GetValue(objectToEncrypt) is string)
+                if (property.GetValue(objectToEncrypt) != null && property.GetValue(objectToEncrypt) is string)
                 {
-                    object propertyValue = objectToEncrypt.GetType().GetProperty(property.Name).GetValue(objectToEncrypt);
-                    if (propertyValue is string)
+                    if (oprationType == OprationType.Encrypt)
                     {
-                        if (callForProperty)
-                        {
-                            if (Attribute.IsDefined((MemberInfo)property, typeof(EncryptEngine), true))
-                            {
-                                EncrypOrDecrypProperty(objectToEncrypt, callEncryptMethod, callForProperty, property, propertyValue);
-                            }
-                        }
-                        else
-                        {
-                            EncrypOrDecrypProperty(objectToEncrypt, callEncryptMethod, callForProperty, property, propertyValue);
-                        }
+                        property.SetValue(objectToEncrypt, CallEncryptMethod(((MemberInfo)property).GetCustomAttribute(typeof(EncryptEngine), true), property.GetValue(objectToEncrypt).ToString()));
+                    }
+                    else
+                    {
+                        property.SetValue(objectToEncrypt, CallDecryptMethod(((MemberInfo)property).GetCustomAttribute(typeof(EncryptEngine), true), property.GetValue(objectToEncrypt).ToString()));
+                    }
+                }
+            }
+        }
+
+        private static void EncrypOrDecrypProperty<T>(T objectToEncrypt, OprationType oprationType)
+        {
+           var properties = objectToEncrypt.GetType().GetProperties()
+                                       .Where(prop => prop.IsDefined(typeof(EncryptEngine), false));
+
+            foreach (PropertyInfo property in properties)
+            {
+                if (property.GetValue(objectToEncrypt) != null && property.GetValue(objectToEncrypt) is string)
+                {
+                    if(oprationType == OprationType.Encrypt)
+                    {
+                        property.SetValue(objectToEncrypt, CallEncryptMethod(((MemberInfo)property).GetCustomAttribute(typeof(EncryptEngine), true), property.GetValue(objectToEncrypt).ToString()));
+                    }
+                    else
+                    {
+                        property.SetValue(objectToEncrypt, CallDecryptMethod(((MemberInfo)property).GetCustomAttribute(typeof(EncryptEngine), true), property.GetValue(objectToEncrypt).ToString()));
                     }
                 }
             }
@@ -95,7 +112,6 @@ namespace LightADO
         /// <summary>
         /// Call an encryption method.
         /// </summary>
-        /// <param name="customEncryptObject">custom Encrypt Object</param>
         /// <param name="value">value to to send to the function.</param>
         /// <returns>a value after it get encrypted</returns>
         private static string CallEncryptMethod(object customEncryptObject, string value)
@@ -114,41 +130,5 @@ namespace LightADO
             return customEncryptObject.GetType().GetMethod("Decrypt").Invoke(customEncryptObject, new object[1] { (object)value }).ToString();
         }
 
-        /// <summary>
-        /// Encrypt or Decrypt property.
-        /// </summary>
-        /// <typeparam name="T">the T type of object.</typeparam>
-        /// <param name="objectToEncrypt">object To Encrypt</param>
-        /// <param name="callEncryptMethod">call Encrypt Method</param>
-        /// <param name="callForProperty">call For Property</param>
-        /// <param name="propertyInfo">property Info</param>
-        /// <param name="propertyValue">property Value</param>
-        private static void EncrypOrDecrypProperty<T>(T objectToEncrypt, bool callEncryptMethod, bool callForProperty, PropertyInfo propertyInfo, object propertyValue)
-        {
-            if (propertyValue == null)
-            {
-                return;
-            }
-
-            if (callEncryptMethod)
-            {
-                if (callForProperty)
-                {
-                    propertyInfo.SetValue(objectToEncrypt, CallEncryptMethod(((MemberInfo)propertyInfo).GetCustomAttribute(typeof(EncryptEngine), true), propertyValue.ToString()));
-                }
-                else
-                {
-                    propertyInfo.SetValue(objectToEncrypt, CallEncryptMethod(((MemberInfo)objectToEncrypt.GetType()).GetCustomAttribute(typeof(EncryptEngine), true), propertyValue.ToString()));
-                }
-            }
-            else if (callForProperty)
-            {
-                propertyInfo.SetValue(objectToEncrypt, EncryptEngine.CallDecryptMethod(((MemberInfo)propertyInfo).GetCustomAttribute(typeof(EncryptEngine), true), propertyValue.ToString()));
-            }
-            else
-            {
-                propertyInfo.SetValue(objectToEncrypt, EncryptEngine.CallDecryptMethod(((MemberInfo)objectToEncrypt.GetType()).GetCustomAttribute(typeof(EncryptEngine), true), propertyValue.ToString()));
-            }  
-        }
     }
 }

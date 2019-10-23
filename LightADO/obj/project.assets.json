@@ -1998,7 +1998,6 @@
   },
   "projectFileDependencyGroups": {
     ".NETCoreApp,Version=v3.0": [
-      "Microsoft.Extensions.Configuration >= 3.0.0",
       "Microsoft.Extensions.Configuration.Abstractions >= 3.0.0",
       "Microsoft.Extensions.Configuration.FileExtensions >= 3.0.0",
       "Microsoft.Extensions.Configuration.Json >= 3.0.0",
@@ -2046,10 +2045,6 @@
     "frameworks": {
       "netcoreapp3.0": {
         "dependencies": {
-          "Microsoft.Extensions.Configuration": {
-            "target": "Package",
-            "version": "[3.0.0, )"
-          },
           "Microsoft.Extensions.Configuration.Abstractions": {
             "target": "Package",
             "version": "[3.0.0, )"
