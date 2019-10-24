@@ -56,6 +56,13 @@ namespace LightADO
         /// <returns>the value after it get Decrypted</returns>
         public abstract string Decrypt(string valueToDecrypt);
 
+        /// <summary>
+        /// Encrypt Or Decrypt object
+        /// </summary>
+        /// <typeparam name="T">type T of the object</typeparam>
+        /// <param name="objectToEncrypt">object To Encrypt</param>
+        /// <param name="oprationType">encrypt or decrypt</param>
+        /// <returns>the object after decrypt or encrypt</returns>
         internal static T EncryptOrDecryptObject<T>(T objectToEncrypt, OprationType oprationType)
         {
             if (IsDefined(typeof(T), typeof(EncryptEngine), true) == true)
@@ -70,6 +77,12 @@ namespace LightADO
             return objectToEncrypt;
         }
 
+        /// <summary>
+        /// Encrypt Or Decrypt All Properties for object.
+        /// </summary>
+        /// <typeparam name="T">the type T of object</typeparam>
+        /// <param name="objectToEncrypt">object To Encrypt</param>
+        /// <param name="oprationType">oprationType wither to encrypt or decrypt</param>
         private static void EncryptOrDecryptProperties<T>(T objectToEncrypt, OprationType oprationType)
         {
             object encryptAttribute = objectToEncrypt.GetType().GetCustomAttribute(typeof(EncryptEngine), true);
@@ -79,7 +92,7 @@ namespace LightADO
                 {
                     if (oprationType == OprationType.Encrypt)
                     {
-                        property.SetValue(objectToEncrypt, CallEncryptMethod(((MemberInfo)property).GetCustomAttribute(typeof(EncryptEngine), true), property.GetValue(objectToEncrypt).ToString()));
+                        property.SetValue(objectToEncrypt, CallEncryptMethod(encryptAttribute, property.GetValue(objectToEncrypt).ToString()));
                     }
                     else
                     {
@@ -89,6 +102,12 @@ namespace LightADO
             }
         }
 
+        /// <summary>
+        /// Encrypt Or Decrypt All Properties for object.
+        /// </summary>
+        /// <typeparam name="T">the type T of obejct</typeparam>
+        /// <param name="objectToEncrypt">object To Encrypt</param>
+        /// <param name="oprationType">oprationType wither to encrypt or decrypt</param>
         private static void EncrypOrDecrypProperty<T>(T objectToEncrypt, OprationType oprationType)
         {
            var properties = objectToEncrypt.GetType().GetProperties()
@@ -130,6 +149,5 @@ namespace LightADO
         {
             return customEncryptObject.GetType().GetMethod("Decrypt").Invoke(customEncryptObject, new object[1] { (object)value }).ToString();
         }
-
     }
 }

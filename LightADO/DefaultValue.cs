@@ -129,11 +129,7 @@ namespace LightADO
                     if (customAttribute.Direction == Directions.WithBoth || customAttribute.Direction == directions)
                     {
                         DefaultValue defaultValue = customAttribute;
-                        object value = objectToMapDefaultValues.GetType().GetProperty(property.Name).GetValue(objectToMapDefaultValues);
-                        if (value == null)
-                        {
-                            SetDefaultValue(objectToMapDefaultValues, customAttribute, objectToMapDefaultValues.GetType().GetProperty(property.Name));
-                        }
+                        SetDefaultValue(objectToMapDefaultValues, customAttribute, objectToMapDefaultValues.GetType().GetProperty(property.Name));
                     }
                 }
             }
@@ -169,7 +165,6 @@ namespace LightADO
             }
 
             objectToMapDefaultValues.GetType().GetProperty(property.Name).SetValue(objectToMapDefaultValues, valueAfterTypedChanged);
-
             return objectToMapDefaultValues;
         }
     }

@@ -491,6 +491,7 @@ namespace LightADO
                     if (obj.GetType().GetProperty(property.Name).GetCustomAttributes(typeof(PrimaryKey), false).Length > 0)
                     {
                         parameters.Add(new Parameter(currentParameteName, obj.GetType().GetProperty(property.Name).GetValue(obj), parameter.GetParameterDirection));
+                        return;
                     }
                 }
 
@@ -522,6 +523,7 @@ namespace LightADO
                     if (obj.GetType().GetProperty(property.Name).GetCustomAttributes(typeof(PrimaryKey), false).Length > 0)
                     {
                         parameters.Add(new Parameter(currentParameteName, obj.GetType().GetProperty(property.Name).GetValue(obj), parameter.GetParameterDirection));
+                        return;
                     }
                 }
 
