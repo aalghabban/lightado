@@ -13,12 +13,15 @@ using System.Reflection;
 
 [assembly: System.Reflection.AssemblyCompanyAttribute("Quad Microsystem")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
-[assembly: System.Reflection.AssemblyDescriptionAttribute(@"LightADO is a ORM Interested in serving the integration developers with functionalities like:
+[assembly: System.Reflection.AssemblyDescriptionAttribute(@"Let's face it Open, close, execute and handle errors for ADO is drag. That's why we wrote **LightAdo dotNet**
 
-Parsing json or xml object to C# object and vice versa.
-connecting to multiple sql server databases.
-Logges and encryption built in, default values on inserting objects.
-This Data Access Layer for SQL Server will handle all of the legacy that come when dealing with ADO like "" open connections, create sqlcommand, loop throw DataReader, Get a Data Table , convert Data table to Object or data set, close connection, get output and parameters values.. etc , with lightAdo.net you can Execute Query and Non Query, get direct object or even dynamic object, auto mapping stored procedures to object properties set foreign key to get sub object details, Validation nulls without writing single if statement and more with just simple one line of code.")]
+Employ employ = new Query().ExecuteToObject(
+                ""Employes_GetByID"",
+                System.Data.CommandType.StoredProcedure,
+                new Parameter(""ID"", id));
+
+LightAdo provides a straight-forward, ORM solution to handle ADO for your application data. 
+It includes built-in casting, validation,  encryption, bulks , logs and more out of the box.")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("5.3.0.0")]
 [assembly: System.Reflection.AssemblyInformationalVersionAttribute("5.3.0")]
 [assembly: System.Reflection.AssemblyProductAttribute("LightAdo.net")]

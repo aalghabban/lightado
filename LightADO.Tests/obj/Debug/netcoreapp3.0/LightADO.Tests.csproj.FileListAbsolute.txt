@@ -1,6 +1,7 @@
 C:\Users\aalgh\Documents\Visual Studio 2019\Projects\lightado\LightADO.Tests\bin\Debug\netcoreapp3.0\xunit.runner.visualstudio.dotnetcore.testadapter.dll
 C:\Users\aalgh\Documents\Visual Studio 2019\Projects\lightado\LightADO.Tests\bin\Debug\netcoreapp3.0\xunit.runner.reporters.netcoreapp10.dll
 C:\Users\aalgh\Documents\Visual Studio 2019\Projects\lightado\LightADO.Tests\bin\Debug\netcoreapp3.0\xunit.runner.utility.netcoreapp10.dll
+C:\Users\aalgh\Documents\Visual Studio 2019\Projects\lightado\LightADO.Tests\bin\Debug\netcoreapp3.0\appsettings.json
 C:\Users\aalgh\Documents\Visual Studio 2019\Projects\lightado\LightADO.Tests\bin\Debug\netcoreapp3.0\LightADO.Tests.deps.json
 C:\Users\aalgh\Documents\Visual Studio 2019\Projects\lightado\LightADO.Tests\bin\Debug\netcoreapp3.0\LightADO.Tests.runtimeconfig.json
 C:\Users\aalgh\Documents\Visual Studio 2019\Projects\lightado\LightADO.Tests\bin\Debug\netcoreapp3.0\LightADO.Tests.runtimeconfig.dev.json
@@ -119,4 +120,3 @@ C:\Users\aalgh\Documents\Visual Studio 2019\Projects\lightado\LightADO.Tests\obj
 C:\Users\aalgh\Documents\Visual Studio 2019\Projects\lightado\LightADO.Tests\obj\Debug\netcoreapp3.0\LightADO.Tests.csproj.CopyComplete
 C:\Users\aalgh\Documents\Visual Studio 2019\Projects\lightado\LightADO.Tests\obj\Debug\netcoreapp3.0\LightADO.Tests.dll
 C:\Users\aalgh\Documents\Visual Studio 2019\Projects\lightado\LightADO.Tests\obj\Debug\netcoreapp3.0\LightADO.Tests.pdb
-C:\Users\aalgh\Documents\Visual Studio 2019\Projects\lightado\LightADO.Tests\bin\Debug\netcoreapp3.0\appsettings.json
