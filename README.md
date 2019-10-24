@@ -96,6 +96,11 @@ That's very much it, Done! things should be that simple and clean.
 - Multi Mapping convert result to multiple types of objects.
 
 # Chanage Logs
+ #### 5.3.0
+- This release is all about Performance, reducing the execution time by removing cleaning and sharping the code. 
+- Fixing bugs with default values. 
+- Remove support for app.config files.
+- Upgrading all packages dependencies to last version and start fixing some issues.
 
 #### 5.2.7 
 - upgrading to core 3.0. 
