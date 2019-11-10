@@ -49,13 +49,13 @@ namespace LightADO.Tests
 
         public string Logo { get; set; }
 
-        [DefaultValue("Now", DefaultValue.ValueTypes.Properties, DefaultValue.Directions.WithNonQuery)]
+        [DefaultValue("Now", Types.ValueTypes.Properties, Types.Directions.WithNonQuery)]
         public DateTime CreateDate { get; set; }
 
-        [DefaultValue("False", DefaultValue.ValueTypes.Value)]
+        [DefaultValue("False", Types.ValueTypes.Value)]
         public bool IsEnabled { get; set; }
 
-        [DefaultValue("https://www.google.com", DefaultValue.ValueTypes.Value)]
+        [DefaultValue("https://www.google.com", Types.ValueTypes.Value)]
         public string OriginUrl { get; set; }
 
         [ColumnName("IP")]

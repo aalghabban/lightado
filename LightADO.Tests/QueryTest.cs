@@ -165,7 +165,7 @@
             Assert.True(new Query().ExecuteToObject<Application>(
                 "Applications_GetByID",
                 System.Data.CommandType.StoredProcedure,
-                FormatType.Json,
+                Types.FormatType.Json,
                 new Parameter("ID", 1)) != null);
         }
 
@@ -175,7 +175,7 @@
             Assert.True(new Query().ExecuteToListOfObject<Application>(
                 "Applications_Gets",
                 System.Data.CommandType.StoredProcedure,
-                FormatType.Json) != null);
+                Types.FormatType.Json) != null);
         }
 
         [Fact]
@@ -184,7 +184,7 @@
             Assert.True(new Query().ExecuteToObject<Application>(
                 "Applications_GetByID",
                 System.Data.CommandType.StoredProcedure,
-                FormatType.XML,
+                Types.FormatType.XML,
                 new Parameter("ID", 1)) != null);
         }
 
@@ -194,7 +194,7 @@
             Assert.True(new Query().ExecuteToListOfObject<Application>(
                 "Applications_Gets",
                 System.Data.CommandType.StoredProcedure,
-                FormatType.XML) != null);
+                Types.FormatType.XML) != null);
         }
     }
 }

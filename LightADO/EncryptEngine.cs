@@ -20,28 +20,14 @@ namespace LightADO
     using System;
     using System.Linq;
     using System.Reflection;
+    using static LightADO.Types;
 
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Property)]
     /// <summary>
     /// Providers a options to call an Encryption/decryption method at run time.
     /// </summary>
     public abstract class EncryptEngine : Attribute
     {
-        /// <summary>
-        /// Encrypt Engine Options
-        /// </summary>
-        internal enum OprationType
-        {
-            /// <summary>
-            /// Encrypt string.
-            /// </summary>
-            Encrypt,
-
-            /// <summary>
-            /// decrypt string.
-            /// </summary>
-            Descrypt
-        }
-
         /// <summary>
         /// Encrypt as string.
         /// </summary>
@@ -73,7 +59,7 @@ namespace LightADO
             {
                 EncrypOrDecrypProperty(objectToEncrypt, oprationType);
             }
-                
+
             return objectToEncrypt;
         }
 
@@ -110,14 +96,14 @@ namespace LightADO
         /// <param name="oprationType">oprationType wither to encrypt or decrypt</param>
         private static void EncrypOrDecrypProperty<T>(T objectToEncrypt, OprationType oprationType)
         {
-           var properties = objectToEncrypt.GetType().GetProperties()
-                                       .Where(prop => prop.IsDefined(typeof(EncryptEngine), false));
+            var properties = objectToEncrypt.GetType().GetProperties()
+                                        .Where(prop => prop.IsDefined(typeof(EncryptEngine), false));
 
             foreach (PropertyInfo property in properties)
             {
                 if (property.GetValue(objectToEncrypt) != null && property.GetValue(objectToEncrypt) is string)
                 {
-                    if(oprationType == OprationType.Encrypt)
+                    if (oprationType == OprationType.Encrypt)
                     {
                         property.SetValue(objectToEncrypt, CallEncryptMethod(((MemberInfo)property).GetCustomAttribute(typeof(EncryptEngine), true), property.GetValue(objectToEncrypt).ToString()));
                     }

@@ -22,6 +22,7 @@ namespace LightADO
     using System.Data;
     using System.Linq;
     using System.Reflection;
+    using static LightADO.Types;
 
     /// <summary>
     /// Provide access to methods that manage vice versa Mapping between SQL and CLI types.
@@ -45,7 +46,7 @@ namespace LightADO
                     List<T> objList = new List<T>();
                     foreach (DataRow row in (InternalDataCollectionBase)table.Rows)
                     {
-                        objList.Add(EncryptEngine.EncryptOrDecryptObject<T>(MapDataRowToObject<T>(row, onError), EncryptEngine.OprationType.Descrypt));
+                        objList.Add(EncryptEngine.EncryptOrDecryptObject<T>(MapDataRowToObject<T>(row, onError), OprationType.Descrypt));
                     }
 
                     return objList;
@@ -72,7 +73,7 @@ namespace LightADO
             {
                 if (table != null && table.Rows.Count > 0)
                 {
-                    return EncryptEngine.EncryptOrDecryptObject<T>(DataMapper.MapDataRowToObject<T>(table.Rows[0], onError), EncryptEngine.OprationType.Descrypt);
+                    return EncryptEngine.EncryptOrDecryptObject<T>(DataMapper.MapDataRowToObject<T>(table.Rows[0], onError), OprationType.Descrypt);
                 }
             }
             catch (Exception ex)
@@ -91,7 +92,6 @@ namespace LightADO
         public static DataSet ConvertDataTableToDataSet(DataTable dataTable)
         {
             DataSet dataSet = null;
-
             if (dataTable != null)
             {
                 dataSet = new DataSet();
@@ -114,13 +114,12 @@ namespace LightADO
             {
                 PropertyInfo[] properties = typeof(T).GetProperties();
                 T instance = Activator.CreateInstance<T>();
-
                 foreach (PropertyInfo propertyInfo in properties)
                 {
                     MapPropertyOfObject(instance, row, propertyInfo, onError);
                 }
 
-                DefaultValue.SetDefaultValus(instance, DefaultValue.Directions.WithQuery);
+                DefaultValue.SetDefaultValus(instance, Directions.WithQuery);
                 return instance;
             }
             catch (Exception ex)
@@ -146,28 +145,30 @@ namespace LightADO
             List<Parameter> parameterList = new List<Parameter>();
             try
             {
-                DefaultValue.SetDefaultValus(objectToMap, DefaultValue.Directions.WithNonQuery);
+                DefaultValue.SetDefaultValus(objectToMap, Directions.WithNonQuery);
                 foreach (StoredProcedureParameter parameter in new StoredProcedureParameter(command, setting).Parameters)
                 {
                     string storedProcedureParameterName = parameter.Name.Remove(0, 1);
-                    if (objectToMap.GetType().GetProperty(storedProcedureParameterName) != null)
+                    PropertyInfo property = objectToMap.GetType().GetProperty(storedProcedureParameterName);
+                    if (property != null)
                     {
-                        if (objectToMap.GetType().GetProperty(storedProcedureParameterName).GetCustomAttributes(typeof(ForeignKey), false).Length == 0)
+                        if (property.GetCustomAttributes(typeof(ForeignKey), false).Length == 0)
                         {
-                            if (objectToMap.GetType().GetProperty(storedProcedureParameterName).PropertyType.IsEnum)
+                            object propertyValue = property.GetValue(objectToMap);
+                            if (property.PropertyType.IsEnum)
                             {
                                 if (GetCSharpType((SqlDbType)Enum.Parse(typeof(SqlDbType), parameter.TypeName, true)) == typeof(string))
                                 {
-                                    parameterList.Add(new Parameter(storedProcedureParameterName, objectToMap.GetType().GetProperty(storedProcedureParameterName).GetValue(objectToMap).ToString(), parameter.GetParameterDirection));
+                                    parameterList.Add(new Parameter(storedProcedureParameterName, propertyValue.ToString(), parameter.GetParameterDirection));
                                 }
                                 else
                                 {
-                                    parameterList.Add(new Parameter(storedProcedureParameterName, (int)objectToMap.GetType().GetProperty(storedProcedureParameterName).GetValue(objectToMap), parameter.GetParameterDirection));
+                                    parameterList.Add(new Parameter(storedProcedureParameterName, (int)propertyValue, parameter.GetParameterDirection));
                                 }
                             }
                             else
                             {
-                                parameterList.Add(new Parameter(storedProcedureParameterName, objectToMap.GetType().GetProperty(storedProcedureParameterName).GetValue(objectToMap), parameter.GetParameterDirection));
+                                parameterList.Add(new Parameter(storedProcedureParameterName, propertyValue, parameter.GetParameterDirection));
                             }
                         }
                         else
@@ -194,128 +195,6 @@ namespace LightADO
         }
 
         /// <summary>
-        /// Convert SQL type to CLI
-        /// </summary>
-        /// <param name="sqltype">the SQL type to convert.</param>
-        /// <returns>the CLI Type</returns>
-        internal static Type GetCSharpType(SqlDbType sqltype)
-        {
-            new Dictionary<SqlDbType, Type>()
-            {
-              {
-                SqlDbType.BigInt,
-                typeof(long)
-              },
-              {
-                SqlDbType.Binary,
-                typeof(byte[])
-              },
-              {
-                SqlDbType.Bit,
-                typeof(bool)
-              },
-              {
-                SqlDbType.Char,
-                typeof(string)
-              },
-              {
-                SqlDbType.Date,
-                typeof(DateTime)
-              },
-              {
-                SqlDbType.DateTime,
-                typeof(DateTime)
-              },
-              {
-                SqlDbType.DateTime2,
-                typeof(DateTime)
-              },
-              {
-                SqlDbType.DateTimeOffset,
-                typeof(DateTimeOffset)
-              },
-              {
-                SqlDbType.Decimal,
-                typeof(decimal)
-              },
-              {
-                SqlDbType.Float,
-                typeof(double)
-              },
-              {
-                SqlDbType.Image,
-                typeof(byte[])
-              },
-              {
-                SqlDbType.Int,
-                typeof(int)
-              },
-              {
-                SqlDbType.Money,
-                typeof(decimal)
-              },
-              {
-                SqlDbType.NChar,
-                typeof(string)
-              },
-              {
-                SqlDbType.NText,
-                typeof(string)
-              },
-              {
-               SqlDbType.NVarChar,
-               typeof(string)
-              },
-              {
-               SqlDbType.Real,
-               typeof(float)
-              },
-              {
-                SqlDbType.SmallDateTime,
-                typeof(DateTime)
-              },
-              {
-                SqlDbType.SmallInt,
-                typeof(short)
-              },
-              {
-                SqlDbType.SmallMoney,
-                typeof(decimal)
-              },
-              {
-                SqlDbType.Text,
-                typeof(string)
-              },
-              {
-                SqlDbType.Time,
-                typeof(TimeSpan)
-              },
-              {
-                SqlDbType.Timestamp,
-                typeof(byte[])
-              },
-              {
-                SqlDbType.TinyInt,
-                typeof(byte)
-              },
-              {
-                SqlDbType.UniqueIdentifier,
-                typeof(Guid)
-              },
-              {
-                SqlDbType.VarBinary,
-                typeof(byte[])
-              },
-              {
-                SqlDbType.VarChar,
-                typeof(string)
-              }
-            }.TryGetValue(sqltype, out Type type);
-
-            return type;
-        }
-
-        /// <summary>
         /// Search for property with custom column name 
         /// attributes attached to it.
         /// </summary>
@@ -331,25 +210,24 @@ namespace LightADO
 
             try
             {
-                IEnumerable<PropertyInfo> properties = objectToMap.GetType().GetProperties();
-                if (predicate == null)
+                PropertyInfo[] properties = objectToMap.GetType().GetProperties();
+                predicate = p => p.GetCustomAttributes(typeof(ColumnName), true).Length > 0;
+                if (predicate != null)
                 {
-                    predicate = p => (uint)p.GetCustomAttributes(typeof(ColumnName), true).Length > 0;
-                }
-
-                foreach (PropertyInfo propertyInfo in properties.Where(predicate))
-                {
-                    string columnName = GetColumnName(propertyInfo, onError);
-                    if (columnName == currentParameteNameInStoredProcedure)
+                    foreach (PropertyInfo propertyInfo in properties.Where(predicate))
                     {
-                        if (objectToMap.GetType().GetProperty(propertyInfo.Name).GetCustomAttributes(typeof(ForeignKey), false).Length > 0)
+                        string columnName = GetColumnName(propertyInfo, onError);
+                        if (columnName == currentParameteNameInStoredProcedure)
                         {
-                            GetPrimaryKeyValue(objectToMap, mappedParameters, parameter, columnName, propertyInfo.Name, onError);
+                            if (objectToMap.GetType().GetProperty(propertyInfo.Name).GetCustomAttributes(typeof(ForeignKey), false).Length > 0)
+                            {
+                                GetPrimaryKeyValue(objectToMap, mappedParameters, parameter, columnName, propertyInfo.Name, onError);
+                                break;
+                            }
+
+                            mappedParameters.Add(new Parameter(currentParameteNameInStoredProcedure, objectToMap.GetType().GetProperty(propertyInfo.Name).GetValue(objectToMap), parameter.GetParameterDirection));
                             break;
                         }
-
-                        mappedParameters.Add(new Parameter(currentParameteNameInStoredProcedure, objectToMap.GetType().GetProperty(propertyInfo.Name).GetValue((object)objectToMap), parameter.GetParameterDirection));
-                        break;
                     }
                 }
             }
@@ -371,6 +249,7 @@ namespace LightADO
         {
             bool isForignKey = propertyInfo.GetCustomAttributes(typeof(ForeignKey), false).Length > 0;
             string columnName = DataMapper.GetColumnName(propertyInfo, onError);
+
             try
             {
                 if (row.Table.Columns[columnName] == null)
@@ -533,6 +412,128 @@ namespace LightADO
             {
                 QueryBase.ThrowExacptionOrEvent(onError, ex, string.Empty);
             }
+        }
+
+        /// <summary>
+        /// Convert SQL type to CLI
+        /// </summary>
+        /// <param name="sqltype">the SQL type to convert.</param>
+        /// <returns>the CLI Type</returns>
+        private static Type GetCSharpType(SqlDbType sqltype)
+        {
+            new Dictionary<SqlDbType, Type>()
+            {
+              {
+                SqlDbType.BigInt,
+                typeof(long)
+              },
+              {
+                SqlDbType.Binary,
+                typeof(byte[])
+              },
+              {
+                SqlDbType.Bit,
+                typeof(bool)
+              },
+              {
+                SqlDbType.Char,
+                typeof(string)
+              },
+              {
+                SqlDbType.Date,
+                typeof(DateTime)
+              },
+              {
+                SqlDbType.DateTime,
+                typeof(DateTime)
+              },
+              {
+                SqlDbType.DateTime2,
+                typeof(DateTime)
+              },
+              {
+                SqlDbType.DateTimeOffset,
+                typeof(DateTimeOffset)
+              },
+              {
+                SqlDbType.Decimal,
+                typeof(decimal)
+              },
+              {
+                SqlDbType.Float,
+                typeof(double)
+              },
+              {
+                SqlDbType.Image,
+                typeof(byte[])
+              },
+              {
+                SqlDbType.Int,
+                typeof(int)
+              },
+              {
+                SqlDbType.Money,
+                typeof(decimal)
+              },
+              {
+                SqlDbType.NChar,
+                typeof(string)
+              },
+              {
+                SqlDbType.NText,
+                typeof(string)
+              },
+              {
+               SqlDbType.NVarChar,
+               typeof(string)
+              },
+              {
+               SqlDbType.Real,
+               typeof(float)
+              },
+              {
+                SqlDbType.SmallDateTime,
+                typeof(DateTime)
+              },
+              {
+                SqlDbType.SmallInt,
+                typeof(short)
+              },
+              {
+                SqlDbType.SmallMoney,
+                typeof(decimal)
+              },
+              {
+                SqlDbType.Text,
+                typeof(string)
+              },
+              {
+                SqlDbType.Time,
+                typeof(TimeSpan)
+              },
+              {
+                SqlDbType.Timestamp,
+                typeof(byte[])
+              },
+              {
+                SqlDbType.TinyInt,
+                typeof(byte)
+              },
+              {
+                SqlDbType.UniqueIdentifier,
+                typeof(Guid)
+              },
+              {
+                SqlDbType.VarBinary,
+                typeof(byte[])
+              },
+              {
+                SqlDbType.VarChar,
+                typeof(string)
+              }
+            }.TryGetValue(sqltype, out Type type);
+
+            return type;
         }
     }
 }

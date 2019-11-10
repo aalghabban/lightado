@@ -17,7 +17,6 @@
 
 namespace LightADO
 {
-    using System.Collections.Generic;
     using System.Data;
 
     /// <summary>

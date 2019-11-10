@@ -21,6 +21,7 @@ namespace LightADO
     using System.Collections.Generic;
     using System.Data;
     using System.Data.SqlClient;
+    using static LightADO.Types;
 
     /// <summary>
     /// Providers a methods to execute non queries into a database.
@@ -112,7 +113,7 @@ namespace LightADO
             try
             {
                 AutoValidation.ValidateObject<T>(objectToMap);
-                EncryptEngine.EncryptOrDecryptObject<T>(objectToMap, EncryptEngine.OprationType.Encrypt);
+                EncryptEngine.EncryptOrDecryptObject<T>(objectToMap, OprationType.Encrypt);
                 return this.ExcecuteNonQueryCommand<T>(SqlCommandFactory.Create(command, CommandType.StoredProcedure, this.LightAdoSetting, DataMapper.MapObjectToStoredProcedure<T>(command, objectToMap, this.LightAdoSetting, this.OnError, parameters).ToArray()), objectToMap, parameters);
             }
             catch (Exception ex)
@@ -138,7 +139,7 @@ namespace LightADO
                 foreach (T obj in objectToMap)
                 {
                     AutoValidation.ValidateObject<T>(obj);
-                    EncryptEngine.EncryptOrDecryptObject<T>(obj, EncryptEngine.OprationType.Encrypt);
+                    EncryptEngine.EncryptOrDecryptObject<T>(obj, OprationType.Encrypt);
                     return this.ExcecuteNonQueryCommand<T>(SqlCommandFactory.Create(command, CommandType.StoredProcedure, this.LightAdoSetting, DataMapper.MapObjectToStoredProcedure<T>(command, obj, this.LightAdoSetting, this.OnError, parameters).ToArray()), obj, parameters);
                 }
             }

@@ -19,6 +19,7 @@ namespace LightADO
 {
     using System;
 
+    [AttributeUsage(AttributeTargets.Property)]
     /// <summary>
     /// Use this class to rename the property 
     /// to database name.
@@ -31,6 +32,11 @@ namespace LightADO
         /// <param name="name">the name of the column</param>
         public ColumnName(string name)
         {
+            if (string.IsNullOrEmpty(name) == true)
+            {
+                throw new LightAdoExcption("Column name can't be null");
+            }
+
             this.Name = name;
         }
 

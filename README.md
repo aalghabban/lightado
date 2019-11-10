@@ -97,22 +97,22 @@ That's very much it, Done! things should be that simple and clean.
 
 # Chanage Logs
  ### 5.4.0 (2020/01/01)
-- Claening more code and adding null check Statement.
+- Claening more code and adding some null check Statement (Closed).
 - Bulk Execute NonQuery (Closed).
 - Workflow, now you can send list of object with relationship to insert.
 - Property ignore during data mapping. 
 - Fix some issues with changing data types during mapping. 
 - Base class for CRUD operations.
 - Default values now support multi level. so now you can say DateTime.Now.ToString, Guid.Now.ToString.
-- Moving all enums to be located in one class named Types.
+- Moving all enums to be located in one class named Types (Closed).
 - Adding Validation for Max, Min, Not null, Not Empty and Unique.
 - Change the log driver to Log4net Unstated of GeniusesCode.Log class.
 - Support Asynchronous Calls.
 - Supporting Multiple Primary Keys with object types.
-- Supporting Multiple Foreign kyes with objects types.
 - Supporting reading connection string from system Environment variable.
 - Supporting Microservices architecture by calling Multiple databases.
 - Supporting Multiple DataTables with one query.
+- Unified all Exception to throw LightAdo, unstad of multiple types.
 
  #### 5.3.0
 - This release is all about Performance, reducing the execution time by removing cleaning and sharping the code. 

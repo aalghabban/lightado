@@ -19,7 +19,9 @@ namespace LightADO
 {
     using System;
     using System.Reflection;
+    using static LightADO.Types;
 
+    [AttributeUsage(AttributeTargets.Property)]
     /// <summary>
     /// Provide an option to set a default value for the property before it 
     /// get mapped from or to the database.
@@ -46,49 +48,6 @@ namespace LightADO
             this.Direction = direction;
             this.Parameters = parameters;
             this.ValueType = valueType;
-        }
-
-        /// <summary>
-        /// The direction of setting 
-        /// up the default value.
-        /// </summary>
-        public enum Directions
-        {
-            /// <summary>
-            /// Only with Query.
-            /// </summary>
-            WithQuery,
-
-            /// <summary>
-            /// Only with non Query.
-            /// </summary>
-            WithNonQuery,
-
-            /// <summary>
-            /// With both of them.
-            /// </summary>
-            WithBoth
-        }
-
-        /// <summary>
-        /// The type of the passed value.
-        /// </summary>
-        public enum ValueTypes
-        {
-            /// <summary>
-            /// Get the value from the Object Property.
-            /// </summary>
-            Properties,
-
-            /// <summary>
-            /// Get The type from the object methods.
-            /// </summary>
-            Methods,
-
-            /// <summary>
-            /// straightforward value
-            /// </summary>
-            Value
         }
 
         /// <summary>

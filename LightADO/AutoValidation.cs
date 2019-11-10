@@ -20,6 +20,7 @@ namespace LightADO
     using System;
     using System.Reflection;
 
+    [AttributeUsage(AttributeTargets.Property)]
     /// <summary>
     /// Set Property to be auto validate before  
     /// sending the object data to the database.

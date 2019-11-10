@@ -26,6 +26,7 @@ namespace LightADO
     using System.Xml;
     using System.Xml.Serialization;
     using Newtonsoft.Json;
+    using static LightADO.Types;
 
     /// <summary>
     /// Provides a way to execute, map object from - to SQL Command.

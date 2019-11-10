@@ -19,6 +19,7 @@ namespace LightADO
 {
     using System;
 
+    [AttributeUsage(AttributeTargets.Property)]
     /// <summary>
     /// Marked Property as Foreign Key
     /// </summary>

@@ -19,6 +19,7 @@ namespace LightADO
 {
     using System;
 
+    [AttributeUsage(AttributeTargets.Property)]
     /// <summary>
     /// Providers a way to mark a property as primary key
     /// </summary>
