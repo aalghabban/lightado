@@ -124,6 +124,33 @@ namespace LightADO
         }
 
         /// <summary>
+        /// Execute Stored Procedure with list of objects.
+        /// </summary>
+        /// <typeparam name="T">the Type of object to map</typeparam>
+        /// <param name="command">the SP or the SQL command as text.</param>
+        /// <param name="objectToMap">object to map</param>
+        /// <param name="parameters">any parameters needed by the query.</param>
+        /// <returns>true if the query get Executed</returns>
+        public bool Execute<T>(string command, List<T> objectToMap, params Parameter[] parameters)
+        {
+            try
+            {
+                foreach (T obj in objectToMap)
+                {
+                    AutoValidation.ValidateObject<T>(obj);
+                    EncryptEngine.EncryptOrDecryptObject<T>(obj, EncryptEngine.OprationType.Encrypt);
+                    return this.ExcecuteNonQueryCommand<T>(SqlCommandFactory.Create(command, CommandType.StoredProcedure, this.LightAdoSetting, DataMapper.MapObjectToStoredProcedure<T>(command, obj, this.LightAdoSetting, this.OnError, parameters).ToArray()), obj, parameters);
+                }
+            }
+            catch (Exception ex)
+            {
+                QueryBase.ThrowExacptionOrEvent(this.OnError, ex, string.Empty);
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// Execute a Non Query Transaction Command.
         /// </summary>
         /// <param name="transactions">Transaction list to Execute</param>

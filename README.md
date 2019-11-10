@@ -97,7 +97,8 @@ That's very much it, Done! things should be that simple and clean.
 
 # Chanage Logs
  ### 5.4.0 (2020/01/01)
-- Bulk Execute NonQuery.
+- Claening more code and adding null check Statement.
+- Bulk Execute NonQuery (Closed).
 - Workflow, now you can send list of object with relationship to insert.
 - Property ignore during data mapping. 
 - Fix some issues with changing data types during mapping. 
