@@ -33,9 +33,17 @@
             this.Message = message;
         }
 
+        public LightAdoExcption(Exception ex, string message = "An error occurred, check the error details for more.")
+        {
+            this.Message = message;
+            this.Details = ex;
+        }
+
         /// <summary>
         /// Gets the error Messages
         /// </summary>
         public new string Message { get; private set; }
+
+        public Exception Details {get;set;}
     }
 }

@@ -21,6 +21,7 @@ namespace LightADO
     using System.Collections.Generic;
     using System.Data;
     using System.Data.SqlClient;
+    using System.Threading.Tasks;
     using static LightADO.Types;
 
     /// <summary>
@@ -103,6 +104,31 @@ namespace LightADO
         /// <summary>
         /// Execute Non Query
         /// </summary>
+        /// <param name="command">the SP or the SQL command as text.</param>
+        /// <param name="commandType">the command type</param>
+        /// <param name="parameters">any parameters needed by the query.</param>
+        /// <returns>true if the query get Executes</returns>
+        public Task<bool> ExecuteAsync(string command, CommandType commandType = CommandType.Text, params Parameter[] parameters)
+        {
+            return Task.FromResult<bool>(this.Execute(command, commandType, parameters));
+        }
+
+        /// <summary>
+        /// Execute Non Query
+        /// </summary>
+        /// <typeparam name="T">the Type of object to map</typeparam>
+        /// <param name="command">the SP or the SQL command as text.</param>
+        /// <param name="objectToMap">object to map</param>
+        /// <param name="parameters">any parameters needed by the query.</param>
+        /// <returns>true if the query get Executed</returns>
+        public Task<bool> ExecuteAsync<T>(string command, T objectToMap, params Parameter[] parameters)
+        {
+            return Task.FromResult<bool>(this.Execute(command, objectToMap, parameters));
+        }
+
+        /// <summary>
+        /// Execute Non Query
+        /// </summary>
         /// <typeparam name="T">the Type of object to map</typeparam>
         /// <param name="command">the SP or the SQL command as text.</param>
         /// <param name="objectToMap">object to map</param>
@@ -132,6 +158,19 @@ namespace LightADO
         /// <param name="objectToMap">object to map</param>
         /// <param name="parameters">any parameters needed by the query.</param>
         /// <returns>true if the query get Executed</returns>
+        public Task<bool> ExecuteAsync<T>(string command, List<T> objectToMap, params Parameter[] parameters)
+        {
+            return Task.FromResult<bool>(this.Execute(command, objectToMap, parameters));
+        }
+
+        /// <summary>
+        /// Execute Stored Procedure with list of objects.
+        /// </summary>
+        /// <typeparam name="T">the Type of object to map</typeparam>
+        /// <param name="command">the SP or the SQL command as text.</param>
+        /// <param name="objectToMap">object to map</param>
+        /// <param name="parameters">any parameters needed by the query.</param>
+        /// <returns>true if the query get Executed</returns>
         public bool Execute<T>(string command, List<T> objectToMap, params Parameter[] parameters)
         {
             try
@@ -149,6 +188,17 @@ namespace LightADO
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Execute a Non Query Transaction Command.
+        /// </summary>
+        /// <param name="transactions">Transaction list to Execute</param>
+        /// <param name="rollbackOnError">wither to Rollback or not</param>
+        /// <returns>true if all Transaction Execute</returns>
+        public Task<bool> ExecuteAsync(List<Transaction> transactions, bool rollbackOnError = true)
+        {
+            return Task.FromResult<bool>(this.Execute(transactions, rollbackOnError));
         }
 
         /// <summary>

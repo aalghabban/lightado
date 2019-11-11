@@ -39,7 +39,7 @@ namespace LightADO
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw new LightAdoExcption(ex);
             }
         }
 

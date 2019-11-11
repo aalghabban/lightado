@@ -53,5 +53,5 @@ namespace LightADO
     /// Will be fired On Error.
     /// </summary>
     /// <param name="ex">the error to throw</param>
-    public delegate void OnError(Exception ex);
+    public delegate void OnError(LightAdoExcption ex);
 }

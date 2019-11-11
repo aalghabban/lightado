@@ -104,7 +104,7 @@ namespace LightADO
                 throw new LightAdoExcption(string.Format("no validation method with name {0} found.", autoValidation.ValidationMethodName));
             }
 
-            autoValidation.GetType().GetMethod(autoValidation.ValidationMethodName).Invoke(autoValidation, new object[1] { propertyValue });
+            autoValidation.GetType().GetMethod(autoValidation.ValidationMethodName).Invoke(null, new object[1] { propertyValue });
         }
     }
 }

@@ -56,11 +56,11 @@ namespace LightADO
         {
             if (onError == null)
             {
-                throw exception;
+                throw new LightAdoExcption(exception);
             }
                 
             exception.Source = extraInfo;
-            onError(exception);
+            onError(new LightAdoExcption(exception));
         }
     }
 }

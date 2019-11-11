@@ -114,9 +114,12 @@ namespace LightADO
             {
                 PropertyInfo[] properties = typeof(T).GetProperties();
                 T instance = Activator.CreateInstance<T>();
-                foreach (PropertyInfo propertyInfo in properties)
+                foreach (PropertyInfo property in properties)
                 {
-                    MapPropertyOfObject(instance, row, propertyInfo, onError);
+                    if (property.GetCustomAttributes(typeof(Ignore), false).Length == 0)
+                    {
+                        MapPropertyOfObject(instance, row, property, onError);
+                    }
                 }
 
                 DefaultValue.SetDefaultValus(instance, Directions.WithQuery);
@@ -173,7 +176,21 @@ namespace LightADO
                         }
                         else
                         {
-                            GetPrimaryKeyValue(objectToMap, parameterList, parameter, storedProcedureParameterName, onError);
+                            if (property.GetCustomAttributes(typeof(CreateOnNotExists), false).Length > 0)
+                            {
+                                string crerateOnNotExisitMethodName = ((CreateOnNotExists)property.GetCustomAttribute(typeof(CreateOnNotExists), false)).UseThisMethod;
+                                if (property.GetType().GetMethod(crerateOnNotExisitMethodName) == null)
+                                {
+                                    throw new LightAdoExcption(string.Format("The object {0}, dont't have a method named {1}", property.GetType().ToString(), crerateOnNotExisitMethodName));
+                                }
+                                property.SetValue(objectToMap, property.GetType().GetMethod(crerateOnNotExisitMethodName).Invoke(null, new object[1] { property.GetValue(objectToMap) }));
+                                GetPrimaryKeyValue(objectToMap, parameterList, parameter, storedProcedureParameterName, onError);
+                            }
+                            else
+                            {
+                                GetPrimaryKeyValue(objectToMap, parameterList, parameter, storedProcedureParameterName, onError);
+                            }
+
                         }
                     }
                     else if (Array.Find(parameters, x => parameter.Name == x.Name) != null)
@@ -374,7 +391,7 @@ namespace LightADO
                     }
                 }
 
-                throw new Exception(string.Format("primary key is Not defined in {0}", obj.GetType().ToString()));
+                throw new LightAdoExcption(string.Format("primary key is Not defined in {0}", obj.GetType().ToString()));
             }
             catch (Exception ex)
             {
@@ -406,7 +423,7 @@ namespace LightADO
                     }
                 }
 
-                throw new Exception(string.Format("primary key is Not defined in {0}", obj.GetType().ToString()));
+                throw new LightAdoExcption(string.Format("primary key is Not defined in {0}", obj.GetType().ToString()));
             }
             catch (Exception ex)
             {

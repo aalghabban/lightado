@@ -68,7 +68,7 @@ namespace LightADO
             {
                 if (string.IsNullOrWhiteSpace(value))
                 {
-                    throw new Exception("Can't set null or empty as connection string");
+                    throw new LightAdoExcption("Can't set null or empty as connection string");
                 }
 
                 this.connectionStirng = SqlConnectionHandler.ValdiateGivenConnectionString(value);
