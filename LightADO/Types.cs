@@ -1,12 +1,9 @@
-namespace LightADO
-{
-    public class Types
-    {
+namespace LightADO {
+    public class Types {
         /// <summary>
         /// The Configuration Sections
         /// </summary>
-        internal enum ConfigurationSections
-        {
+        internal enum ConfigurationSections {
             /// <summary>
             /// Connection String Section
             /// </summary>
@@ -22,8 +19,7 @@ namespace LightADO
         /// The direction of setting 
         /// up the default value.
         /// </summary>
-        public enum Directions
-        {
+        public enum Directions {
             /// <summary>
             /// Only with Query.
             /// </summary>
@@ -43,8 +39,7 @@ namespace LightADO
         /// <summary>
         /// The type of the passed value.
         /// </summary>
-        public enum ValueTypes
-        {
+        public enum ValueTypes {
             /// <summary>
             /// Get the value from the Object Property.
             /// </summary>
@@ -64,8 +59,7 @@ namespace LightADO
         /// <summary>
         /// Encrypt Engine Options
         /// </summary>
-        internal enum OprationType
-        {
+        internal enum OprationType {
             /// <summary>
             /// Encrypt string.
             /// </summary>
@@ -80,8 +74,7 @@ namespace LightADO
         /// <summary>
         /// Type of supported Format.
         /// </summary>
-        public enum FormatType
-        {
+        public enum FormatType {
             /// <summary>
             /// As Xml
             /// </summary>

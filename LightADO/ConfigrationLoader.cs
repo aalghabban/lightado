@@ -50,6 +50,10 @@ namespace LightADO
                         break;
                 }
             }
+            else 
+            {
+                value = System.Environment.GetEnvironmentVariable(keyName);
+            }
 
             return value;
         }

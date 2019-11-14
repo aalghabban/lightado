@@ -15,15 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace LightADO
-{
+namespace LightADO {
     using System;
 
-    [AttributeUsage(AttributeTargets.Property)]
+    [AttributeUsage (AttributeTargets.Property)]
     /// <summary>
     /// Marked Property as Foreign Key
     /// </summary>
-    public sealed class ForeignKey : Attribute
-    {
-    }
+    public sealed class ForeignKey : Attribute { }
 }

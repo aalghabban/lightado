@@ -15,15 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace LightADO
-{
+namespace LightADO {
     using System;
 
-    [AttributeUsage(AttributeTargets.Property)]
+    [AttributeUsage (AttributeTargets.Property)]
     /// <summary>
     /// Providers a way to mark a property as primary key
     /// </summary>
-    public sealed class PrimaryKey : Attribute
-    {
-    }
+    public sealed class PrimaryKey : Attribute { }
 }

@@ -15,15 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace LightADO
-{
+namespace LightADO {
     using System.Data;
 
     /// <summary>
     /// Provide a way to handle Transaction.
     /// </summary>
-    public class Transaction
-    {
+    public class Transaction {
         /// <summary>
         /// Gets or sets data of Transaction.
         /// </summary>

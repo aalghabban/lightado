@@ -15,31 +15,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace LightADO
-{
-    using System;
+namespace LightADO {
     using System.Data.SqlClient;
+    using System;
 
     /// <summary>
     /// provides options to handle any connections matter
     /// </summary>
-    internal class SqlConnectionHandler
-    {
+    internal class SqlConnectionHandler {
         /// <summary>
         /// Check if connection string is valid connection string.
         /// </summary>
         /// <param name="value">the value to check.</param>
         /// <returns>the connection string after it get validated</returns>
-        internal static string ValdiateGivenConnectionString(string value)
-        {
-            try
-            {
-                SqlConnection sqlConnection = new SqlConnection(value);
+        internal static string ValdiateGivenConnectionString (string value) {
+            try {
+                SqlConnection sqlConnection = new SqlConnection (value);
                 return value;
-            }
-            catch (Exception ex)
-            {
-                throw new LightAdoExcption(ex);
+            } catch (Exception ex) {
+                throw new LightAdoExcption (ex);
             }
         }
 
@@ -48,15 +42,11 @@ namespace LightADO
         /// </summary>
         /// <param name="connectionString">connection string to validate</param>
         /// <returns>true if connection is valid otherwise it throw false</returns>
-        internal static bool IsConnectionStringValid(string connectionString)
-        {
-            try
-            {
-                ValdiateGivenConnectionString(connectionString);
+        internal static bool IsConnectionStringValid (string connectionString) {
+            try {
+                ValdiateGivenConnectionString (connectionString);
                 return true;
-            }
-            catch (Exception)
-            {
+            } catch (Exception) {
                 return false;
             }
         }

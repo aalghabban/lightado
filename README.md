@@ -104,13 +104,13 @@ That's very much it, Done! things should be that simple and clean.
 - Fix some issues with changing data types during mapping. 
 - Base class for CRUD operations.
 - Default values now support multi level. so now you can say DateTime.Now.ToString, Guid.Now.ToString.
-- Moving all enums to be located in one class named Types **(closed)**.
+- Moving all enums to be located in one class named Types. **(closed)**
 - Adding Validation for Max, Min, Not null, Not Empty and Unique.
 - Change the log driver to Log4net Unstated of GeniusesCode.Log class.
-- Supporting Asynchronous Calls **(closed)**.
+- Supporting Asynchronous Calls. **(closed)**
 - Supporting Multiple Primary Keys with object types.
-- Supporting reading connection string from system Environment variable.
-- Supporting Microservices architecture by calling Multiple databases.
+- Supporting reading connection string from system Environment variable. **(closed)**
+- Supporting Microservices architecture by calling Multiple databases. **(closed)**
 - Supporting Multiple DataTables with one query.
 - Unified all Exception to throw LightAdo, Unstated of multiple types. **(closed)**
 

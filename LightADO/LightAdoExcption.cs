@@ -14,27 +14,23 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
- 
- namespace LightADO
-{
+
+namespace LightADO {
     using System;
 
     /// <summary>
     /// Provider exception for light ADO errors.
     /// </summary>
-    public class LightAdoExcption : Exception
-    {
+    public class LightAdoExcption : Exception {
         /// <summary>
         /// Initializes a new instance of the <see cref="LightAdoExcption"/> class.
         /// </summary>
         /// <param name="message">the error details</param>
-        public LightAdoExcption(string message)
-        {
+        public LightAdoExcption (string message) {
             this.Message = message;
         }
 
-        public LightAdoExcption(Exception ex, string message = "An error occurred, check the error details for more.")
-        {
+        public LightAdoExcption (Exception ex, string message = "An error occurred, check the error details for more.") {
             this.Message = message;
             this.Details = ex;
         }
@@ -44,6 +40,6 @@
         /// </summary>
         public new string Message { get; private set; }
 
-        public Exception Details {get;set;}
+        public Exception Details { get; set; }
     }
 }
