@@ -103,7 +103,7 @@ That's very much it, Done! things should be that simple and clean.
 - Property ignore during data mapping. **(closed)**
 - Default values now support multi level. so now you can say DateTime.Now.ToString, Guid.Now.ToString.
 - Moving all enums to be located in one class named Types. **(closed)**
-- Adding Validation for Max, Min, Not null, Not Empty and Unique.
+- Adding Validation for Max, Min, Not null, Not Empty. **(closed)**
 - Change the log driver to Log4net Unstated of GeniusesCode.Log class. **(closed)**
 - Supporting Asynchronous Calls. **(closed)**
 - Supporting reading connection string from system Environment variable. **(closed)**
