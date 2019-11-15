@@ -15,26 +15,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace LightADO {
+namespace LightADO
+{
     using System;
 
     /// <summary>
     /// Provides shared functions between Query and Non Query.
     /// </summary>
-    public class QueryBase {
+    public class QueryBase
+    {
         /// <summary>
         /// Initializes a new instance of the <see cref="QueryBase"/> class.
         /// </summary>
-        public QueryBase () {
-            this.LightAdoSetting = new LightADOSetting ();
+        public QueryBase()
+        {
+            this.LightAdoSetting = new LightADOSetting();
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="QueryBase"/> class.
         /// </summary>
         /// <param name="connectionString">the database connection string</param>
-        public QueryBase (string connectionString) {
-            this.LightAdoSetting = new LightADOSetting (connectionString);
+        public QueryBase(string connectionString)
+        {
+            this.LightAdoSetting = new LightADOSetting(connectionString);
         }
 
         /// <summary>
@@ -48,13 +52,15 @@ namespace LightADO {
         /// <param name="onError">the error to throw</param>
         /// <param name="exception">the exception to throw</param>
         /// <param name="extraInfo">any more details</param>
-        internal static void ThrowExacptionOrEvent (OnError onError, Exception exception, string extraInfo = "") {
-            if (onError == null) {
-                throw new LightAdoExcption (exception);
+        internal static void ThrowExacptionOrEvent(OnError onError, Exception exception, string extraInfo = "")
+        {
+            if (onError == null)
+            {
+                throw new LightAdoExcption(exception);
             }
 
             exception.Source = extraInfo;
-            onError (new LightAdoExcption (exception));
+            onError(new LightAdoExcption(exception));
         }
     }
 }

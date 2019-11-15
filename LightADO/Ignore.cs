@@ -15,9 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace LightADO {
+namespace LightADO
+{
     using System;
 
-    [AttributeUsage (AttributeTargets.Property)]
+    [AttributeUsage(AttributeTargets.Property)]
     public class Ignore : Attribute { }
 }

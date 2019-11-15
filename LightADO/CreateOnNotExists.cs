@@ -15,13 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace LightADO {
+namespace LightADO
+{
     using System.Collections.Generic;
     using System;
 
-    [AttributeUsage (AttributeTargets.Property)]
-    public class CreateOnNotExists : Attribute {
-        public CreateOnNotExists (string useThisMethod = "IsExists", List<string> searchWithThoseParameters = null) {
+    [AttributeUsage(AttributeTargets.Property)]
+    public class CreateOnNotExists : Attribute
+    {
+        public CreateOnNotExists(string useThisMethod = "IsExists", List<string> searchWithThoseParameters = null)
+        {
             this.UseThisMethod = useThisMethod;
             this.SearchWithThoseParameters = searchWithThoseParameters;
         }

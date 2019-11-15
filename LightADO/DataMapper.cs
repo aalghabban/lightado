@@ -15,7 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace LightADO {
+namespace LightADO
+{
     using System.Collections.Generic;
     using System.Data;
     using System.Linq;
@@ -26,7 +27,8 @@ namespace LightADO {
     /// <summary>
     /// Provide access to methods that manage vice versa Mapping between SQL and CLI types.
     /// </summary>
-    public class DataMapper {
+    public class DataMapper
+    {
         /// <summary>
         /// Convert Data table to List of T Object.
         /// </summary>
@@ -34,19 +36,25 @@ namespace LightADO {
         /// <param name="table">the data table to convert.</param>
         /// <param name="onError">in case of error will throw this event</param>
         /// <returns>a List of T objects</returns>
-        public static List<T> ConvertDataTableToListOfObject<T> (DataTable table, OnError onError = null) {
-            try {
-                PropertyInfo[] properties = typeof (T).GetProperties ();
-                if (properties != null && properties.Length > 0) {
-                    List<T> objList = new List<T> ();
-                    foreach (DataRow row in (InternalDataCollectionBase) table.Rows) {
-                        objList.Add (EncryptEngine.EncryptOrDecryptObject<T> (MapDataRowToObject<T> (row, onError), OprationType.Descrypt));
+        public static List<T> ConvertDataTableToListOfObject<T>(DataTable table, OnError onError = null)
+        {
+            try
+            {
+                PropertyInfo[] properties = typeof(T).GetProperties();
+                if (properties != null && properties.Length > 0)
+                {
+                    List<T> objList = new List<T>();
+                    foreach (DataRow row in (InternalDataCollectionBase)table.Rows)
+                    {
+                        objList.Add(EncryptEngine.EncryptOrDecryptObject<T>(MapDataRowToObject<T>(row, onError), OprationType.Descrypt));
                     }
 
                     return objList;
                 }
-            } catch (Exception ex) {
-                QueryBase.ThrowExacptionOrEvent (onError, ex, string.Empty);
+            }
+            catch (Exception ex)
+            {
+                QueryBase.ThrowExacptionOrEvent(onError, ex, string.Empty);
             }
 
             return null;
@@ -59,13 +67,18 @@ namespace LightADO {
         /// <param name="table">the data table to convert.</param>
         /// <param name="onError">in case of error will throw this event</param>
         /// <returns>a single T object</returns>
-        public static T ConvertDataTableToObject<T> (DataTable table, OnError onError = null) {
-            try {
-                if (table != null && table.Rows.Count > 0) {
-                    return EncryptEngine.EncryptOrDecryptObject<T> (DataMapper.MapDataRowToObject<T> (table.Rows[0], onError), OprationType.Descrypt);
+        public static T ConvertDataTableToObject<T>(DataTable table, OnError onError = null)
+        {
+            try
+            {
+                if (table != null && table.Rows.Count > 0)
+                {
+                    return EncryptEngine.EncryptOrDecryptObject<T>(DataMapper.MapDataRowToObject<T>(table.Rows[0], onError), OprationType.Descrypt);
                 }
-            } catch (Exception ex) {
-                QueryBase.ThrowExacptionOrEvent (onError, ex, string.Empty);
+            }
+            catch (Exception ex)
+            {
+                QueryBase.ThrowExacptionOrEvent(onError, ex, string.Empty);
             }
 
             return default;
@@ -76,11 +89,13 @@ namespace LightADO {
         /// </summary>
         /// <param name="dataTable">data table to convert.</param>
         /// <returns>a data set object</returns>
-        public static DataSet ConvertDataTableToDataSet (DataTable dataTable) {
+        public static DataSet ConvertDataTableToDataSet(DataTable dataTable)
+        {
             DataSet dataSet = null;
-            if (dataTable != null) {
-                dataSet = new DataSet ();
-                dataSet.Tables.Add (dataTable);
+            if (dataTable != null)
+            {
+                dataSet = new DataSet();
+                dataSet.Tables.Add(dataTable);
             }
 
             return dataSet;
@@ -93,20 +108,26 @@ namespace LightADO {
         /// <param name="row">the row to convert to object.</param>
         /// <param name="onError">in case of error will throw this event</param>
         /// <returns>the object after it get mapped.</returns>
-        public static T MapDataRowToObject<T> (DataRow row, OnError onError) {
-            try {
-                PropertyInfo[] properties = typeof (T).GetProperties ();
-                T instance = Activator.CreateInstance<T> ();
-                foreach (PropertyInfo property in properties) {
-                    if (property.GetCustomAttributes (typeof (Ignore), false).Length == 0) {
-                        MapPropertyOfObject (instance, row, property, onError);
+        public static T MapDataRowToObject<T>(DataRow row, OnError onError)
+        {
+            try
+            {
+                PropertyInfo[] properties = typeof(T).GetProperties();
+                T instance = Activator.CreateInstance<T>();
+                foreach (PropertyInfo property in properties)
+                {
+                    if (property.GetCustomAttributes(typeof(Ignore), false).Length == 0)
+                    {
+                        MapPropertyOfObject(instance, row, property, onError);
                     }
                 }
 
-                DefaultValue.SetDefaultValus (instance, Directions.WithQuery);
+                DefaultValue.SetDefaultValus(instance, Directions.WithQuery);
                 return instance;
-            } catch (Exception ex) {
-                QueryBase.ThrowExacptionOrEvent (onError, ex, string.Empty);
+            }
+            catch (Exception ex)
+            {
+                QueryBase.ThrowExacptionOrEvent(onError, ex, string.Empty);
             }
 
             return default;
@@ -122,46 +143,69 @@ namespace LightADO {
         /// <param name="onError">in case of error will throw this event</param>
         /// <param name="parameters">an array of parameters to map to stored Procedure</param>
         /// <returns>a list of parameters.</returns>
-        internal static List<Parameter> MapObjectToStoredProcedure<T> (string command, T objectToMap, LightADOSetting setting, OnError onError, params Parameter[] parameters) {
-            List<Parameter> parameterList = new List<Parameter> ();
-            try {
-                DefaultValue.SetDefaultValus (objectToMap, Directions.WithNonQuery);
-                foreach (StoredProcedureParameter parameter in new StoredProcedureParameter (command, setting).Parameters) {
-                    string storedProcedureParameterName = parameter.Name.Remove (0, 1);
-                    PropertyInfo property = objectToMap.GetType ().GetProperty (storedProcedureParameterName);
-                    if (property != null) {
-                        if (property.GetCustomAttributes (typeof (ForeignKey), false).Length == 0) {
-                            object propertyValue = property.GetValue (objectToMap);
-                            if (property.PropertyType.IsEnum) {
-                                if (GetCSharpType ((SqlDbType) Enum.Parse (typeof (SqlDbType), parameter.TypeName, true)) == typeof (string)) {
-                                    parameterList.Add (new Parameter (storedProcedureParameterName, propertyValue.ToString (), parameter.GetParameterDirection));
-                                } else {
-                                    parameterList.Add (new Parameter (storedProcedureParameterName, (int) propertyValue, parameter.GetParameterDirection));
+        internal static List<Parameter> MapObjectToStoredProcedure<T>(string command, T objectToMap, LightADOSetting setting, OnError onError, params Parameter[] parameters)
+        {
+            List<Parameter> parameterList = new List<Parameter>();
+            try
+            {
+                DefaultValue.SetDefaultValus(objectToMap, Directions.WithNonQuery);
+                foreach (StoredProcedureParameter parameter in new StoredProcedureParameter(command, setting).Parameters)
+                {
+                    string storedProcedureParameterName = parameter.Name.Remove(0, 1);
+                    PropertyInfo property = objectToMap.GetType().GetProperty(storedProcedureParameterName);
+                    if (property != null)
+                    {
+                        if (property.GetCustomAttributes(typeof(ForeignKey), false).Length == 0)
+                        {
+                            object propertyValue = property.GetValue(objectToMap);
+                            if (property.PropertyType.IsEnum)
+                            {
+                                if (GetCSharpType((SqlDbType)Enum.Parse(typeof(SqlDbType), parameter.TypeName, true)) == typeof(string))
+                                {
+                                    parameterList.Add(new Parameter(storedProcedureParameterName, propertyValue.ToString(), parameter.GetParameterDirection));
                                 }
-                            } else {
-                                parameterList.Add (new Parameter (storedProcedureParameterName, propertyValue, parameter.GetParameterDirection));
+                                else
+                                {
+                                    parameterList.Add(new Parameter(storedProcedureParameterName, (int)propertyValue, parameter.GetParameterDirection));
+                                }
                             }
-                        } else {
-                            if (property.GetCustomAttributes (typeof (CreateOnNotExists), false).Length > 0) {
-                                string crerateOnNotExisitMethodName = ((CreateOnNotExists) property.GetCustomAttribute (typeof (CreateOnNotExists), false)).UseThisMethod;
-                                if (property.GetType ().GetMethod (crerateOnNotExisitMethodName) == null) {
-                                    throw new LightAdoExcption (string.Format ("The object {0}, dont't have a method named {1}", property.GetType ().ToString (), crerateOnNotExisitMethodName));
+                            else
+                            {
+                                parameterList.Add(new Parameter(storedProcedureParameterName, propertyValue, parameter.GetParameterDirection));
+                            }
+                        }
+                        else
+                        {
+                            if (property.GetCustomAttributes(typeof(CreateOnNotExists), false).Length > 0)
+                            {
+                                string crerateOnNotExisitMethodName = ((CreateOnNotExists)property.GetCustomAttribute(typeof(CreateOnNotExists), false)).UseThisMethod;
+                                if (property.GetType().GetMethod(crerateOnNotExisitMethodName) == null)
+                                {
+                                    throw new LightAdoExcption(string.Format("The object {0}, dont't have a method named {1}", property.GetType().ToString(), crerateOnNotExisitMethodName));
                                 }
-                                property.SetValue (objectToMap, property.GetType ().GetMethod (crerateOnNotExisitMethodName).Invoke (null, new object[1] { property.GetValue (objectToMap) }));
-                                GetPrimaryKeyValue (objectToMap, parameterList, parameter, storedProcedureParameterName, onError);
-                            } else {
-                                GetPrimaryKeyValue (objectToMap, parameterList, parameter, storedProcedureParameterName, onError);
+                                property.SetValue(objectToMap, property.GetType().GetMethod(crerateOnNotExisitMethodName).Invoke(null, new object[1] { property.GetValue(objectToMap) }));
+                                GetPrimaryKeyValue(objectToMap, parameterList, parameter, storedProcedureParameterName, onError);
+                            }
+                            else
+                            {
+                                GetPrimaryKeyValue(objectToMap, parameterList, parameter, storedProcedureParameterName, onError);
                             }
 
                         }
-                    } else if (Array.Find (parameters, x => parameter.Name == x.Name) != null) {
-                        parameterList.Add (new Parameter (storedProcedureParameterName, Array.Find (parameters, x => parameter.Name == x.Name).Value, parameter.GetParameterDirection));
-                    } else {
-                        SearchForCustomColumnNames (objectToMap, parameterList, parameter, storedProcedureParameterName, onError);
+                    }
+                    else if (Array.Find(parameters, x => parameter.Name == x.Name) != null)
+                    {
+                        parameterList.Add(new Parameter(storedProcedureParameterName, Array.Find(parameters, x => parameter.Name == x.Name).Value, parameter.GetParameterDirection));
+                    }
+                    else
+                    {
+                        SearchForCustomColumnNames(objectToMap, parameterList, parameter, storedProcedureParameterName, onError);
                     }
                 }
-            } catch (Exception ex) {
-                QueryBase.ThrowExacptionOrEvent (onError, ex, string.Empty);
+            }
+            catch (Exception ex)
+            {
+                QueryBase.ThrowExacptionOrEvent(onError, ex, string.Empty);
             }
 
             return parameterList;
@@ -177,28 +221,36 @@ namespace LightADO {
         /// <param name="parameter">the parameter to search for.</param>
         /// <param name="currentParameteNameInStoredProcedure">current parameter in the stored procedure.</param>
         /// <param name="onError">in case of error will throw this event</param>
-        private static void SearchForCustomColumnNames<T> (T objectToMap, List<Parameter> mappedParameters, StoredProcedureParameter parameter, string currentParameteNameInStoredProcedure, OnError onError) {
+        private static void SearchForCustomColumnNames<T>(T objectToMap, List<Parameter> mappedParameters, StoredProcedureParameter parameter, string currentParameteNameInStoredProcedure, OnError onError)
+        {
             Func<PropertyInfo, bool> predicate = null;
 
-            try {
-                PropertyInfo[] properties = objectToMap.GetType ().GetProperties ();
-                predicate = p => p.GetCustomAttributes (typeof (ColumnName), true).Length > 0;
-                if (predicate != null) {
-                    foreach (PropertyInfo propertyInfo in properties.Where (predicate)) {
-                        string columnName = GetColumnName (propertyInfo, onError);
-                        if (columnName == currentParameteNameInStoredProcedure) {
-                            if (objectToMap.GetType ().GetProperty (propertyInfo.Name).GetCustomAttributes (typeof (ForeignKey), false).Length > 0) {
-                                GetPrimaryKeyValue (objectToMap, mappedParameters, parameter, columnName, propertyInfo.Name, onError);
+            try
+            {
+                PropertyInfo[] properties = objectToMap.GetType().GetProperties();
+                predicate = p => p.GetCustomAttributes(typeof(ColumnName), true).Length > 0;
+                if (predicate != null)
+                {
+                    foreach (PropertyInfo propertyInfo in properties.Where(predicate))
+                    {
+                        string columnName = GetColumnName(propertyInfo, onError);
+                        if (columnName == currentParameteNameInStoredProcedure)
+                        {
+                            if (objectToMap.GetType().GetProperty(propertyInfo.Name).GetCustomAttributes(typeof(ForeignKey), false).Length > 0)
+                            {
+                                GetPrimaryKeyValue(objectToMap, mappedParameters, parameter, columnName, propertyInfo.Name, onError);
                                 break;
                             }
 
-                            mappedParameters.Add (new Parameter (currentParameteNameInStoredProcedure, objectToMap.GetType ().GetProperty (propertyInfo.Name).GetValue (objectToMap), parameter.GetParameterDirection));
+                            mappedParameters.Add(new Parameter(currentParameteNameInStoredProcedure, objectToMap.GetType().GetProperty(propertyInfo.Name).GetValue(objectToMap), parameter.GetParameterDirection));
                             break;
                         }
                     }
                 }
-            } catch (Exception ex) {
-                QueryBase.ThrowExacptionOrEvent (onError, ex, string.Empty);
+            }
+            catch (Exception ex)
+            {
+                QueryBase.ThrowExacptionOrEvent(onError, ex, string.Empty);
             }
         }
 
@@ -210,37 +262,53 @@ namespace LightADO {
         /// <param name="row">the data row to map.</param>
         /// <param name="propertyInfo">the property info to map</param>
         /// <param name="onError">in case any error</param>
-        private static void MapPropertyOfObject<T> (T item, DataRow row, PropertyInfo propertyInfo, OnError onError) {
-            bool isForignKey = propertyInfo.GetCustomAttributes (typeof (ForeignKey), false).Length > 0;
-            string columnName = DataMapper.GetColumnName (propertyInfo, onError);
+        private static void MapPropertyOfObject<T>(T item, DataRow row, PropertyInfo propertyInfo, OnError onError)
+        {
+            bool isForignKey = propertyInfo.GetCustomAttributes(typeof(ForeignKey), false).Length > 0;
+            string columnName = DataMapper.GetColumnName(propertyInfo, onError);
 
-            try {
-                if (row.Table.Columns[columnName] == null) {
+            try
+            {
+                if (row.Table.Columns[columnName] == null)
+                {
                     return;
                 }
 
-                if (isForignKey == false) {
-                    if (DBNull.Value.Equals (row[columnName])) {
-                        propertyInfo.SetValue (item, null);
-                    } else if (propertyInfo.PropertyType.IsEnum) {
-                        propertyInfo.SetValue (item, Enum.Parse (propertyInfo.PropertyType, row[columnName].ToString (), true));
-                    } else if (row[columnName] is string) {
-                        propertyInfo.SetValue (item, Convert.ChangeType (new string (row[columnName].ToString ().Trim ().Where (c => !char.IsControl (c)).ToArray ()), propertyInfo.PropertyType));
-                    } else {
-                        Type type = Nullable.GetUnderlyingType (propertyInfo.PropertyType);
-                        if (type is null) {
+                if (isForignKey == false)
+                {
+                    if (DBNull.Value.Equals(row[columnName]))
+                    {
+                        propertyInfo.SetValue(item, null);
+                    }
+                    else if (propertyInfo.PropertyType.IsEnum)
+                    {
+                        propertyInfo.SetValue(item, Enum.Parse(propertyInfo.PropertyType, row[columnName].ToString(), true));
+                    }
+                    else if (row[columnName] is string)
+                    {
+                        propertyInfo.SetValue(item, Convert.ChangeType(new string(row[columnName].ToString().Trim().Where(c => !char.IsControl(c)).ToArray()), propertyInfo.PropertyType));
+                    }
+                    else
+                    {
+                        Type type = Nullable.GetUnderlyingType(propertyInfo.PropertyType);
+                        if (type is null)
+                        {
                             type = propertyInfo.PropertyType;
                         }
 
                         Type conversionType = type;
-                        object obj = row[columnName] == null ? null : Convert.ChangeType (row[columnName], conversionType);
-                        propertyInfo.SetValue (item, obj);
+                        object obj = row[columnName] == null ? null : Convert.ChangeType(row[columnName], conversionType);
+                        propertyInfo.SetValue(item, obj);
                     }
-                } else {
-                    MapForeignObject (item, row, propertyInfo, onError);
                 }
-            } catch (Exception ex) {
-                QueryBase.ThrowExacptionOrEvent (onError, ex, columnName);
+                else
+                {
+                    MapForeignObject(item, row, propertyInfo, onError);
+                }
+            }
+            catch (Exception ex)
+            {
+                QueryBase.ThrowExacptionOrEvent(onError, ex, columnName);
             }
         }
 
@@ -250,18 +318,23 @@ namespace LightADO {
         /// <param name="propertyInfo">property to read the column name.</param>
         /// <param name="onError">in case any error</param>
         /// <returns>the name of column.</returns>
-        private static string GetColumnName (PropertyInfo propertyInfo, OnError onError) {
-            try {
+        private static string GetColumnName(PropertyInfo propertyInfo, OnError onError)
+        {
+            try
+            {
                 string name = propertyInfo.Name;
-                ColumnName columnName = propertyInfo.GetCustomAttribute<ColumnName> (true);
+                ColumnName columnName = propertyInfo.GetCustomAttribute<ColumnName>(true);
 
-                if (columnName != null) {
+                if (columnName != null)
+                {
                     name = columnName.Name;
                 }
 
                 return name;
-            } catch (Exception ex) {
-                QueryBase.ThrowExacptionOrEvent (onError, ex, string.Empty);
+            }
+            catch (Exception ex)
+            {
+                QueryBase.ThrowExacptionOrEvent(onError, ex, string.Empty);
             }
 
             return null;
@@ -275,18 +348,23 @@ namespace LightADO {
         /// <param name="row">the row data to convert.</param>
         /// <param name="propertyInfo">the property info to red.</param>
         /// <param name="onError">in case any error</param>
-        private static void MapForeignObject<T> (T item, DataRow row, PropertyInfo propertyInfo, OnError onError) {
-            try {
+        private static void MapForeignObject<T>(T item, DataRow row, PropertyInfo propertyInfo, OnError onError)
+        {
+            try
+            {
                 Type propertyType = propertyInfo.PropertyType;
 
-                if (propertyType.GetConstructor (new Type[1] { row[propertyInfo.Name].GetType () }) == null) {
+                if (propertyType.GetConstructor(new Type[1] { row[propertyInfo.Name].GetType() }) == null)
+                {
                     return;
                 }
 
-                object instance = Activator.CreateInstance (propertyType, row[propertyInfo.Name]);
-                typeof (T).InvokeMember (propertyInfo.Name, BindingFlags.SetProperty, null, item, new object[1] { instance });
-            } catch (Exception ex) {
-                QueryBase.ThrowExacptionOrEvent (onError, ex, string.Empty);
+                object instance = Activator.CreateInstance(propertyType, row[propertyInfo.Name]);
+                typeof(T).InvokeMember(propertyInfo.Name, BindingFlags.SetProperty, null, item, new object[1] { instance });
+            }
+            catch (Exception ex)
+            {
+                QueryBase.ThrowExacptionOrEvent(onError, ex, string.Empty);
             }
         }
 
@@ -299,19 +377,25 @@ namespace LightADO {
         /// <param name="parameter">the parameter to check.</param>
         /// <param name="currentParameteName">current Parameter Name</param>
         /// <param name="onError">in case any error</param>
-        private static void GetPrimaryKeyValue<T> (T objectToMap, List<Parameter> parameters, StoredProcedureParameter parameter, string currentParameteName, OnError onError) {
-            try {
-                object obj = objectToMap.GetType ().GetProperty (currentParameteName).GetValue (objectToMap);
-                foreach (PropertyInfo property in obj.GetType ().GetProperties ()) {
-                    if (obj.GetType ().GetProperty (property.Name).GetCustomAttributes (typeof (PrimaryKey), false).Length > 0) {
-                        parameters.Add (new Parameter (currentParameteName, obj.GetType ().GetProperty (property.Name).GetValue (obj), parameter.GetParameterDirection));
+        private static void GetPrimaryKeyValue<T>(T objectToMap, List<Parameter> parameters, StoredProcedureParameter parameter, string currentParameteName, OnError onError)
+        {
+            try
+            {
+                object obj = objectToMap.GetType().GetProperty(currentParameteName).GetValue(objectToMap);
+                foreach (PropertyInfo property in obj.GetType().GetProperties())
+                {
+                    if (obj.GetType().GetProperty(property.Name).GetCustomAttributes(typeof(PrimaryKey), false).Length > 0)
+                    {
+                        parameters.Add(new Parameter(currentParameteName, obj.GetType().GetProperty(property.Name).GetValue(obj), parameter.GetParameterDirection));
                         return;
                     }
                 }
 
-                throw new LightAdoExcption (string.Format ("primary key is Not defined in {0}", obj.GetType ().ToString ()));
-            } catch (Exception ex) {
-                QueryBase.ThrowExacptionOrEvent (onError, ex, string.Empty);
+                throw new LightAdoExcption(string.Format("primary key is Not defined in {0}", obj.GetType().ToString()));
+            }
+            catch (Exception ex)
+            {
+                QueryBase.ThrowExacptionOrEvent(onError, ex, string.Empty);
             }
         }
 
@@ -325,19 +409,25 @@ namespace LightADO {
         /// <param name="currentParameteName">current Parameter Name</param>
         /// <param name="propertyName">property Name to check.</param>
         /// <param name="onError">in case any error</param>
-        private static void GetPrimaryKeyValue<T> (T objectToMap, List<Parameter> parameters, StoredProcedureParameter parameter, string currentParameteName, string propertyName, OnError onError) {
-            try {
-                object obj = objectToMap.GetType ().GetProperty (propertyName).GetValue (objectToMap);
-                foreach (PropertyInfo property in obj.GetType ().GetProperties ()) {
-                    if (obj.GetType ().GetProperty (property.Name).GetCustomAttributes (typeof (PrimaryKey), false).Length > 0) {
-                        parameters.Add (new Parameter (currentParameteName, obj.GetType ().GetProperty (property.Name).GetValue (obj), parameter.GetParameterDirection));
+        private static void GetPrimaryKeyValue<T>(T objectToMap, List<Parameter> parameters, StoredProcedureParameter parameter, string currentParameteName, string propertyName, OnError onError)
+        {
+            try
+            {
+                object obj = objectToMap.GetType().GetProperty(propertyName).GetValue(objectToMap);
+                foreach (PropertyInfo property in obj.GetType().GetProperties())
+                {
+                    if (obj.GetType().GetProperty(property.Name).GetCustomAttributes(typeof(PrimaryKey), false).Length > 0)
+                    {
+                        parameters.Add(new Parameter(currentParameteName, obj.GetType().GetProperty(property.Name).GetValue(obj), parameter.GetParameterDirection));
                         return;
                     }
                 }
 
-                throw new LightAdoExcption (string.Format ("primary key is Not defined in {0}", obj.GetType ().ToString ()));
-            } catch (Exception ex) {
-                QueryBase.ThrowExacptionOrEvent (onError, ex, string.Empty);
+                throw new LightAdoExcption(string.Format("primary key is Not defined in {0}", obj.GetType().ToString()));
+            }
+            catch (Exception ex)
+            {
+                QueryBase.ThrowExacptionOrEvent(onError, ex, string.Empty);
             }
         }
 
@@ -346,8 +436,9 @@ namespace LightADO {
         /// </summary>
         /// <param name="sqltype">the SQL type to convert.</param>
         /// <returns>the CLI Type</returns>
-        private static Type GetCSharpType (SqlDbType sqltype) {
-            new Dictionary<SqlDbType, Type> () {
+        private static Type GetCSharpType(SqlDbType sqltype)
+        {
+            new Dictionary<SqlDbType, Type>() {
                 {
                     SqlDbType.BigInt,
                         typeof (long)
@@ -430,7 +521,7 @@ namespace LightADO {
                     SqlDbType.VarChar,
                     typeof (string)
                 }
-            }.TryGetValue (sqltype, out Type type);
+            }.TryGetValue(sqltype, out Type type);
 
             return type;
         }

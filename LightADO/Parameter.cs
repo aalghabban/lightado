@@ -15,20 +15,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace LightADO {
+namespace LightADO
+{
     using System.Data;
 
     /// <summary>
     /// Providers a way send parameters to SQL command.
     /// </summary>
-    public sealed class Parameter {
+    public sealed class Parameter
+    {
         /// <summary>
         /// Initializes a new instance of the <see cref="Parameter"/> class.
         /// </summary>
         /// <param name="name">name of the Parameter</param>
         /// <param name="value">value of the Parameter</param>
         /// <param name="direction">the direction of the Parameter</param>
-        public Parameter (string name, object value, ParameterDirection direction = ParameterDirection.Input) {
+        public Parameter(string name, object value, ParameterDirection direction = ParameterDirection.Input)
+        {
             this.Name = "@" + name;
             this.Value = value;
             this.Direction = direction;

@@ -34,7 +34,7 @@ namespace LightADO {
         internal static SqlCommand Create (string commnadName, CommandType commandType, LightADOSetting lightAdoSetting, params Parameter[] parameters) {
             SqlCommand sqlCommand = new SqlCommand (commnadName, new SqlConnection (lightAdoSetting.ConnectionString));
             sqlCommand.CommandType = commandType;
-            if (parameters != null && (uint) parameters.Length > 0U) {
+            if (parameters != null && parameters.Length > 0) {
                 for (int index = 0; index < parameters.Length; ++index) {
                     Parameter parameter = parameters[index];
                     SqlParameter sqlParameter = new SqlParameter (parameter.Name, parameter.Value);
@@ -61,7 +61,7 @@ namespace LightADO {
             sqlCommand.CommandType = commandType;
             sqlCommand.Transaction = transaction;
 
-            if (parameters != null && (uint) parameters.Length > 0U) {
+            if (parameters != null && parameters.Length > 0U) {
                 for (int index = 0; index < parameters.Length; ++index) {
                     Parameter parameter = parameters[index];
                     SqlParameter sqlParameter = new SqlParameter (parameter.Name, parameter.Value);

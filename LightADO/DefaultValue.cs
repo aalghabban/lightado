@@ -15,21 +15,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace LightADO {
+namespace LightADO
+{
     using System.Reflection;
     using System;
     using static LightADO.Types;
 
-    [AttributeUsage (AttributeTargets.Property)]
+    [AttributeUsage(AttributeTargets.Property)]
     /// <summary>
     /// Provide an option to set a default value for the property before it 
     /// get mapped from or to the database.
     /// </summary>
-    public sealed class DefaultValue : Attribute {
+    public sealed class DefaultValue : Attribute
+    {
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultValue"/> class.
         /// </summary>
-        public DefaultValue () { }
+        public DefaultValue() { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultValue"/> class.
@@ -38,7 +40,8 @@ namespace LightADO {
         /// <param name="valueType">where to look for the default value</param>
         /// <param name="direction">the direction of the setting default value</param>
         /// <param name="parameters">any parameters to sent to a method</param>
-        public DefaultValue (string value, ValueTypes valueType = ValueTypes.Value, Directions direction = Directions.WithNonQuery, params object[] parameters) {
+        public DefaultValue(string value, ValueTypes valueType = ValueTypes.Value, Directions direction = Directions.WithNonQuery, params object[] parameters)
+        {
             this.Value = value;
             this.Direction = direction;
             this.Parameters = parameters;
@@ -73,13 +76,17 @@ namespace LightADO {
         /// <param name="objectToMapDefaultValues">object to set it's default values.</param>
         /// <param name="directions">in which direct to set the default values.</param>
         /// <returns>objectToMapDefaultValues after default values was set</returns>
-        internal static T SetDefaultValus<T> (T objectToMapDefaultValues, Directions directions = Directions.WithBoth) {
-            foreach (PropertyInfo property in objectToMapDefaultValues.GetType ().GetProperties ()) {
-                DefaultValue customAttribute = property.GetCustomAttribute<DefaultValue> (true);
-                if (customAttribute != null) {
-                    if (customAttribute.Direction == Directions.WithBoth || customAttribute.Direction == directions) {
+        internal static T SetDefaultValus<T>(T objectToMapDefaultValues, Directions directions = Directions.WithBoth)
+        {
+            foreach (PropertyInfo property in objectToMapDefaultValues.GetType().GetProperties())
+            {
+                DefaultValue customAttribute = property.GetCustomAttribute<DefaultValue>(true);
+                if (customAttribute != null)
+                {
+                    if (customAttribute.Direction == Directions.WithBoth || customAttribute.Direction == directions)
+                    {
                         DefaultValue defaultValue = customAttribute;
-                        SetDefaultValue (objectToMapDefaultValues, customAttribute, objectToMapDefaultValues.GetType ().GetProperty (property.Name));
+                        SetDefaultValue(objectToMapDefaultValues, customAttribute, objectToMapDefaultValues.GetType().GetProperty(property.Name));
                     }
                 }
             }
@@ -95,19 +102,26 @@ namespace LightADO {
         /// <param name="defaultValueSettings">default Value Settings</param>
         /// <param name="property">property to set it's value</param>
         /// <returns>the property after setting the values</returns>
-        private static T SetDefaultValue<T> (T objectToMapDefaultValues, DefaultValue defaultValueSettings, PropertyInfo property) {
+        private static T SetDefaultValue<T>(T objectToMapDefaultValues, DefaultValue defaultValueSettings, PropertyInfo property)
+        {
             object valueAfterTypedChanged;
-            if (defaultValueSettings.ValueType == ValueTypes.Value) {
-                valueAfterTypedChanged = Convert.ChangeType (defaultValueSettings.Value, property.PropertyType);
-            } else {
-                if (defaultValueSettings.ValueType == ValueTypes.Properties) {
-                    valueAfterTypedChanged = Convert.ChangeType (property.PropertyType.GetProperty (defaultValueSettings.Value.ToString ()).GetValue (null), property.PropertyType);
-                } else {
-                    valueAfterTypedChanged = Convert.ChangeType (property.PropertyType.GetMethod (defaultValueSettings.Value.ToString ()).Invoke (null, defaultValueSettings.Parameters), property.PropertyType);
+            if (defaultValueSettings.ValueType == ValueTypes.Value)
+            {
+                valueAfterTypedChanged = Convert.ChangeType(defaultValueSettings.Value, property.PropertyType);
+            }
+            else
+            {
+                if (defaultValueSettings.ValueType == ValueTypes.Properties)
+                {
+                    valueAfterTypedChanged = Convert.ChangeType(property.PropertyType.GetProperty(defaultValueSettings.Value.ToString()).GetValue(null), property.PropertyType);
+                }
+                else
+                {
+                    valueAfterTypedChanged = Convert.ChangeType(property.PropertyType.GetMethod(defaultValueSettings.Value.ToString()).Invoke(null, defaultValueSettings.Parameters), property.PropertyType);
                 }
             }
 
-            objectToMapDefaultValues.GetType ().GetProperty (property.Name).SetValue (objectToMapDefaultValues, valueAfterTypedChanged);
+            objectToMapDefaultValues.GetType().GetProperty(property.Name).SetValue(objectToMapDefaultValues, valueAfterTypedChanged);
             return objectToMapDefaultValues;
         }
     }

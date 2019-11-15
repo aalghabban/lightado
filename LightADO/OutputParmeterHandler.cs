@@ -15,7 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace LightADO {
+namespace LightADO
+{
     using System.Collections.Generic;
     using System.Data.Common;
     using System.Data.SqlClient;
@@ -26,17 +27,21 @@ namespace LightADO {
     /// <summary>
     /// Providers a way to get the output parameters from a SQL command execution.
     /// </summary>
-    internal class OutputParmeterHandler {
+    internal class OutputParmeterHandler
+    {
         /// <summary>
         /// Get Output Parameters
         /// </summary>
         /// <param name="sqlCommand">SQL Command</param>
         /// <returns>the list of parameters</returns>
-        internal static List<Parameter> GetOutputParamters (SqlCommand sqlCommand) {
-            List<Parameter> parameterList = new List<Parameter> ();
-            foreach (SqlParameter parameter in (DbParameterCollection) sqlCommand.Parameters) {
-                if (parameter.Direction == ParameterDirection.Output) {
-                    parameterList.Add (new Parameter (parameter.ParameterName, parameter.Value, ParameterDirection.Input));
+        internal static List<Parameter> GetOutputParamters(SqlCommand sqlCommand)
+        {
+            List<Parameter> parameterList = new List<Parameter>();
+            foreach (SqlParameter parameter in (DbParameterCollection)sqlCommand.Parameters)
+            {
+                if (parameter.Direction == ParameterDirection.Output)
+                {
+                    parameterList.Add(new Parameter(parameter.ParameterName, parameter.Value, ParameterDirection.Input));
                 }
             }
 
@@ -50,17 +55,23 @@ namespace LightADO {
         /// <param name="sqlCommand">the SQL command to get the output parameter from it.</param>
         /// <param name="objectToMap">object to map</param>
         /// <param name="parameters">parameters to map</param>
-        internal static void SetOutputParameter<T> (SqlCommand sqlCommand, T objectToMap, params Parameter[] parameters) {
-            List<Parameter> outputParamters = OutputParmeterHandler.GetOutputParamters (sqlCommand);
-            if (outputParamters == null || outputParamters.Count <= 0) {
+        internal static void SetOutputParameter<T>(SqlCommand sqlCommand, T objectToMap, params Parameter[] parameters)
+        {
+            List<Parameter> outputParamters = OutputParmeterHandler.GetOutputParamters(sqlCommand);
+            if (outputParamters == null || outputParamters.Count <= 0)
+            {
                 return;
             }
 
-            foreach (Parameter parameter in outputParamters) {
-                if (objectToMap.GetType ().GetProperty (parameter.Name.Remove (0, 2)) != null) {
-                    objectToMap.GetType ().GetProperty (parameter.Name.Remove (0, 2)).SetValue ((object) objectToMap, parameter.Value);
-                } else if (Array.Find (parameters, x => parameter.Name.Remove (0, 1) == x.Name) != null) {
-                    Array.Find (parameters, x => parameter.Name.Remove (0, 1) == x.Name).Value = parameter.Value;
+            foreach (Parameter parameter in outputParamters)
+            {
+                if (objectToMap.GetType().GetProperty(parameter.Name.Remove(0, 2)) != null)
+                {
+                    objectToMap.GetType().GetProperty(parameter.Name.Remove(0, 2)).SetValue((object)objectToMap, parameter.Value);
+                }
+                else if (Array.Find(parameters, x => parameter.Name.Remove(0, 1) == x.Name) != null)
+                {
+                    Array.Find(parameters, x => parameter.Name.Remove(0, 1) == x.Name).Value = parameter.Value;
                 }
             }
         }

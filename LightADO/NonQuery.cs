@@ -15,7 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace LightADO {
+namespace LightADO
+{
     using System.Collections.Generic;
     using System.Data.SqlClient;
     using System.Data;
@@ -26,17 +27,18 @@ namespace LightADO {
     /// <summary>
     /// Providers a methods to execute non queries into a database.
     /// </summary>
-    public class NonQuery : QueryBase {
+    public class NonQuery : QueryBase
+    {
         /// <summary>
         /// Initializes a new instance of the <see cref="NonQuery"/> class.
         /// </summary>
-        public NonQuery () { }
+        public NonQuery() { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NonQuery"/> class.
         /// </summary>
         /// <param name="connectionString">The connection string or a key name in the configuration file</param>
-        public NonQuery (string connectionString) : base (connectionString) { }
+        public NonQuery(string connectionString) : base(connectionString) { }
 
         /// <summary>
         /// will be fired before the Non Query get execute.
@@ -80,11 +82,15 @@ namespace LightADO {
         /// <param name="commandType">the command type</param>
         /// <param name="parameters">any parameters needed by the query.</param>
         /// <returns>true if the query get Executes</returns>
-        public bool Execute (string command, CommandType commandType = CommandType.Text, params Parameter[] parameters) {
-            try {
-                return this.ExcecuteNonQueryCommand (SqlCommandFactory.Create (command, commandType, this.LightAdoSetting, parameters));
-            } catch (Exception ex) {
-                QueryBase.ThrowExacptionOrEvent (this.OnError, ex, string.Empty);
+        public bool Execute(string command, CommandType commandType = CommandType.Text, params Parameter[] parameters)
+        {
+            try
+            {
+                return this.ExcecuteNonQueryCommand(SqlCommandFactory.Create(command, commandType, this.LightAdoSetting, parameters));
+            }
+            catch (Exception ex)
+            {
+                QueryBase.ThrowExacptionOrEvent(this.OnError, ex, string.Empty);
             }
 
             return false;
@@ -97,8 +103,9 @@ namespace LightADO {
         /// <param name="commandType">the command type</param>
         /// <param name="parameters">any parameters needed by the query.</param>
         /// <returns>true if the query get Executes</returns>
-        public Task<bool> ExecuteAsync (string command, CommandType commandType = CommandType.Text, params Parameter[] parameters) {
-            return Task.FromResult<bool> (this.Execute (command, commandType, parameters));
+        public Task<bool> ExecuteAsync(string command, CommandType commandType = CommandType.Text, params Parameter[] parameters)
+        {
+            return Task.FromResult<bool>(this.Execute(command, commandType, parameters));
         }
 
         /// <summary>
@@ -109,8 +116,9 @@ namespace LightADO {
         /// <param name="objectToMap">object to map</param>
         /// <param name="parameters">any parameters needed by the query.</param>
         /// <returns>true if the query get Executed</returns>
-        public Task<bool> ExecuteAsync<T> (string command, T objectToMap, params Parameter[] parameters) {
-            return Task.FromResult<bool> (this.Execute (command, objectToMap, parameters));
+        public Task<bool> ExecuteAsync<T>(string command, T objectToMap, params Parameter[] parameters)
+        {
+            return Task.FromResult<bool>(this.Execute(command, objectToMap, parameters));
         }
 
         /// <summary>
@@ -121,13 +129,17 @@ namespace LightADO {
         /// <param name="objectToMap">object to map</param>
         /// <param name="parameters">any parameters needed by the query.</param>
         /// <returns>true if the query get Executed</returns>
-        public bool Execute<T> (string command, T objectToMap, params Parameter[] parameters) {
-            try {
-                AutoValidation.ValidateObject<T> (objectToMap);
-                EncryptEngine.EncryptOrDecryptObject<T> (objectToMap, OprationType.Encrypt);
-                return this.ExcecuteNonQueryCommand<T> (SqlCommandFactory.Create (command, CommandType.StoredProcedure, this.LightAdoSetting, DataMapper.MapObjectToStoredProcedure<T> (command, objectToMap, this.LightAdoSetting, this.OnError, parameters).ToArray ()), objectToMap, parameters);
-            } catch (Exception ex) {
-                QueryBase.ThrowExacptionOrEvent (this.OnError, ex, string.Empty);
+        public bool Execute<T>(string command, T objectToMap, params Parameter[] parameters)
+        {
+            try
+            {
+                AutoValidation.ValidateObject<T>(objectToMap);
+                EncryptEngine.EncryptOrDecryptObject<T>(objectToMap, OprationType.Encrypt);
+                return this.ExcecuteNonQueryCommand<T>(SqlCommandFactory.Create(command, CommandType.StoredProcedure, this.LightAdoSetting, DataMapper.MapObjectToStoredProcedure<T>(command, objectToMap, this.LightAdoSetting, this.OnError, parameters).ToArray()), objectToMap, parameters);
+            }
+            catch (Exception ex)
+            {
+                QueryBase.ThrowExacptionOrEvent(this.OnError, ex, string.Empty);
             }
 
             return false;
@@ -141,8 +153,9 @@ namespace LightADO {
         /// <param name="objectToMap">object to map</param>
         /// <param name="parameters">any parameters needed by the query.</param>
         /// <returns>true if the query get Executed</returns>
-        public Task<bool> ExecuteAsync<T> (string command, List<T> objectToMap, params Parameter[] parameters) {
-            return Task.FromResult<bool> (this.Execute (command, objectToMap, parameters));
+        public Task<bool> ExecuteAsync<T>(string command, List<T> objectToMap, params Parameter[] parameters)
+        {
+            return Task.FromResult<bool>(this.Execute(command, objectToMap, parameters));
         }
 
         /// <summary>
@@ -153,15 +166,20 @@ namespace LightADO {
         /// <param name="objectToMap">object to map</param>
         /// <param name="parameters">any parameters needed by the query.</param>
         /// <returns>true if the query get Executed</returns>
-        public bool Execute<T> (string command, List<T> objectToMap, params Parameter[] parameters) {
-            try {
-                foreach (T obj in objectToMap) {
-                    AutoValidation.ValidateObject<T> (obj);
-                    EncryptEngine.EncryptOrDecryptObject<T> (obj, OprationType.Encrypt);
-                    return this.ExcecuteNonQueryCommand<T> (SqlCommandFactory.Create (command, CommandType.StoredProcedure, this.LightAdoSetting, DataMapper.MapObjectToStoredProcedure<T> (command, obj, this.LightAdoSetting, this.OnError, parameters).ToArray ()), obj, parameters);
+        public bool Execute<T>(string command, List<T> objectToMap, params Parameter[] parameters)
+        {
+            try
+            {
+                foreach (T obj in objectToMap)
+                {
+                    AutoValidation.ValidateObject<T>(obj);
+                    EncryptEngine.EncryptOrDecryptObject<T>(obj, OprationType.Encrypt);
+                    return this.ExcecuteNonQueryCommand<T>(SqlCommandFactory.Create(command, CommandType.StoredProcedure, this.LightAdoSetting, DataMapper.MapObjectToStoredProcedure<T>(command, obj, this.LightAdoSetting, this.OnError, parameters).ToArray()), obj, parameters);
                 }
-            } catch (Exception ex) {
-                QueryBase.ThrowExacptionOrEvent (this.OnError, ex, string.Empty);
+            }
+            catch (Exception ex)
+            {
+                QueryBase.ThrowExacptionOrEvent(this.OnError, ex, string.Empty);
             }
 
             return false;
@@ -173,8 +191,9 @@ namespace LightADO {
         /// <param name="transactions">Transaction list to Execute</param>
         /// <param name="rollbackOnError">wither to Rollback or not</param>
         /// <returns>true if all Transaction Execute</returns>
-        public Task<bool> ExecuteAsync (List<Transaction> transactions, bool rollbackOnError = true) {
-            return Task.FromResult<bool> (this.Execute (transactions, rollbackOnError));
+        public Task<bool> ExecuteAsync(List<Transaction> transactions, bool rollbackOnError = true)
+        {
+            return Task.FromResult<bool>(this.Execute(transactions, rollbackOnError));
         }
 
         /// <summary>
@@ -183,24 +202,30 @@ namespace LightADO {
         /// <param name="transactions">Transaction list to Execute</param>
         /// <param name="rollbackOnError">wither to Rollback or not</param>
         /// <returns>true if all Transaction Execute</returns>
-        public bool Execute (List<Transaction> transactions, bool rollbackOnError = true) {
-            SqlConnection connection = new SqlConnection (this.LightAdoSetting.ConnectionString);
-            connection.Open ();
+        public bool Execute(List<Transaction> transactions, bool rollbackOnError = true)
+        {
+            SqlConnection connection = new SqlConnection(this.LightAdoSetting.ConnectionString);
+            connection.Open();
 
-            SqlTransaction sqlTransaction = connection.BeginTransaction ();
-            try {
-                foreach (Transaction transaction in transactions) {
-                    this.ExcecuteNonQueryCommand (SqlCommandFactory.Create (transaction.Command, transaction.CommandType, this.LightAdoSetting, sqlTransaction, DataMapper.MapObjectToStoredProcedure (transaction.Command, transaction.Data, this.LightAdoSetting, this.OnError, transaction.Parameters).ToArray ()), transaction.Data, true, transaction.Parameters);
+            SqlTransaction sqlTransaction = connection.BeginTransaction();
+            try
+            {
+                foreach (Transaction transaction in transactions)
+                {
+                    this.ExcecuteNonQueryCommand(SqlCommandFactory.Create(transaction.Command, transaction.CommandType, this.LightAdoSetting, sqlTransaction, DataMapper.MapObjectToStoredProcedure(transaction.Command, transaction.Data, this.LightAdoSetting, this.OnError, transaction.Parameters).ToArray()), transaction.Data, true, transaction.Parameters);
                 }
 
-                sqlTransaction.Commit ();
-                connection.Close ();
-            } catch (Exception ex) {
-                if (rollbackOnError) {
-                    sqlTransaction.Rollback ();
+                sqlTransaction.Commit();
+                connection.Close();
+            }
+            catch (Exception ex)
+            {
+                if (rollbackOnError)
+                {
+                    sqlTransaction.Rollback();
                 }
 
-                QueryBase.ThrowExacptionOrEvent (this.OnError, ex, string.Empty);
+                QueryBase.ThrowExacptionOrEvent(this.OnError, ex, string.Empty);
             }
 
             return false;
@@ -212,27 +237,36 @@ namespace LightADO {
         /// <param name="sqlCommand">the SQL commend to Execute or SP name</param>
         /// <param name="keepConnectionOpend">wither to keep the connection open or not.</param>
         /// <returns>SQL Command Object</returns>
-        private SqlCommand ExcecuteNonQueryAndGetSqlCommand (SqlCommand sqlCommand, bool keepConnectionOpend = false) {
-            try {
-                this.BeforeConnectionOpened?.Invoke ();
-                if (sqlCommand.Connection.State == ConnectionState.Closed) {
-                    sqlCommand.Connection.Open ();
+        private SqlCommand ExcecuteNonQueryAndGetSqlCommand(SqlCommand sqlCommand, bool keepConnectionOpend = false)
+        {
+            try
+            {
+                this.BeforeConnectionOpened?.Invoke();
+                if (sqlCommand.Connection.State == ConnectionState.Closed)
+                {
+                    sqlCommand.Connection.Open();
                 }
 
-                this.AfterConnectionOpened?.Invoke ();
-                this.BeforeNonQueryExecute?.Invoke ();
-                sqlCommand.ExecuteNonQuery ();
-                this.AfterNonQueryExecute?.Invoke ();
-            } catch (Exception ex) {
-                QueryBase.ThrowExacptionOrEvent (this.OnError, ex, string.Empty);
-            } finally {
-                if (keepConnectionOpend == false) {
-                    this.BeforeConnectionClosed?.Invoke ();
-                    if (sqlCommand.Connection.State == ConnectionState.Open) {
-                        sqlCommand.Connection.Close ();
+                this.AfterConnectionOpened?.Invoke();
+                this.BeforeNonQueryExecute?.Invoke();
+                sqlCommand.ExecuteNonQuery();
+                this.AfterNonQueryExecute?.Invoke();
+            }
+            catch (Exception ex)
+            {
+                QueryBase.ThrowExacptionOrEvent(this.OnError, ex, string.Empty);
+            }
+            finally
+            {
+                if (keepConnectionOpend == false)
+                {
+                    this.BeforeConnectionClosed?.Invoke();
+                    if (sqlCommand.Connection.State == ConnectionState.Open)
+                    {
+                        sqlCommand.Connection.Close();
                     }
 
-                    this.AfterConnectionClosed?.Invoke ();
+                    this.AfterConnectionClosed?.Invoke();
                 }
             }
 
@@ -244,8 +278,9 @@ namespace LightADO {
         /// </summary>
         /// <param name="sqlCommand">the SQL commend to Execute or SP name</param>
         /// <returns>true if the query get Execute</returns>
-        private bool ExcecuteNonQueryCommand (SqlCommand sqlCommand) {
-            this.ExcecuteNonQueryAndGetSqlCommand (sqlCommand);
+        private bool ExcecuteNonQueryCommand(SqlCommand sqlCommand)
+        {
+            this.ExcecuteNonQueryAndGetSqlCommand(sqlCommand);
             return true;
         }
 
@@ -257,8 +292,9 @@ namespace LightADO {
         /// <param name="objectToMap">the object to map</param>
         /// <param name="parameters">the list of parameters to map.</param>
         /// <returns>true if the query get Execute</returns>
-        private bool ExcecuteNonQueryCommand<T> (SqlCommand sqlCommand, T objectToMap, params Parameter[] parameters) {
-            OutputParmeterHandler.SetOutputParameter<T> (this.ExcecuteNonQueryAndGetSqlCommand (sqlCommand), objectToMap, parameters);
+        private bool ExcecuteNonQueryCommand<T>(SqlCommand sqlCommand, T objectToMap, params Parameter[] parameters)
+        {
+            OutputParmeterHandler.SetOutputParameter<T>(this.ExcecuteNonQueryAndGetSqlCommand(sqlCommand), objectToMap, parameters);
             return true;
         }
 
@@ -271,8 +307,9 @@ namespace LightADO {
         /// <param name="keepConnectionOpend">wither to keep the connection open or not.</param>
         /// <param name="parameters">the list of parameters to map.</param>
         /// <returns>true if the query get Execute</returns>
-        private bool ExcecuteNonQueryCommand<T> (SqlCommand sqlCommand, T objectToMap, bool keepConnectionOpend = false, params Parameter[] parameters) {
-            OutputParmeterHandler.SetOutputParameter<T> (this.ExcecuteNonQueryAndGetSqlCommand (sqlCommand, keepConnectionOpend), objectToMap, parameters);
+        private bool ExcecuteNonQueryCommand<T>(SqlCommand sqlCommand, T objectToMap, bool keepConnectionOpend = false, params Parameter[] parameters)
+        {
+            OutputParmeterHandler.SetOutputParameter<T>(this.ExcecuteNonQueryAndGetSqlCommand(sqlCommand, keepConnectionOpend), objectToMap, parameters);
             return true;
         }
     }

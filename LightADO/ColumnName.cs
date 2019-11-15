@@ -15,22 +15,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace LightADO {
+namespace LightADO
+{
     using System;
 
-    [AttributeUsage (AttributeTargets.Property)]
+    [AttributeUsage(AttributeTargets.Property)]
     /// <summary>
     /// Use this class to rename the property 
     /// to database name.
     /// </summary>
-    public class ColumnName : Attribute {
+    public class ColumnName : Attribute
+    {
         /// <summary>
         /// Initializes a new instance of the <see cref="ColumnName"/> class.
         /// </summary>
         /// <param name="name">the name of the column</param>
-        public ColumnName (string name) {
-            if (string.IsNullOrEmpty (name) == true) {
-                throw new LightAdoExcption ("Column name can't be null");
+        public ColumnName(string name)
+        {
+            if (string.IsNullOrEmpty(name) == true)
+            {
+                throw new LightAdoExcption("Column name can't be null");
             }
 
             this.Name = name;
