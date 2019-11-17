@@ -107,11 +107,55 @@ namespace LightADO
                 }
                 else
                 {
-                    string[] propertyValuePath = defaultValueSettings.Value.ToString().Split(".");
+                    valueAfterTypedChanged = Convert.ChangeType(GetDefaultValue(defaultValueSettings.Value.ToString()), property.PropertyType);
                 }
             }
 
             return objectToMapDefaultValues;
+        }
+
+
+        private static object GetDefaultValue(string defaultValue)
+        {
+            string[] paths = defaultValue.Split('.');
+            Type type = GetDefaultValueType(paths[0]);
+            object value = null;
+            for (int path = 1; path < paths.Length; path++)
+            {
+                MethodInfo method = GetDefaultValueMethod(paths[path], type);
+                if (method != null)
+                {
+                    value = method.Invoke(null, null);
+                }
+                else
+                {
+                    PropertyInfo propertyInfo = GetDefaultValueProperty(paths[path], type);
+                    value = propertyInfo.GetValue(null);
+                }
+            }
+
+            return value;
+        }
+
+        private static Type GetDefaultValueType(string typeName)
+        {
+            Type type = Type.GetType("System." + typeName);
+            if (type == null)
+            {
+                throw new LightAdoExcption("Type not found");
+            }
+
+            return type;
+        }
+
+        private static MethodInfo GetDefaultValueMethod(string methodName, Type type)
+        {
+            return type.GetMethod(methodName);
+        }
+
+        private static PropertyInfo GetDefaultValueProperty(string propertyName, Type type)
+        {
+            return type.GetProperty(propertyName);
         }
     }
 }

@@ -101,7 +101,7 @@ That's very much it, Done! things should be that simple and clean.
 - Bulk Execute NonQuery. **(closed)**
 - Workflow, now you can send list of object with relationship to insert. **(closed)**
 - Property ignore during data mapping. **(closed)**
-- Default values now support multi level. so now you can say DateTime.Now.ToString, Guid.Now.ToString.
+- Default values now support multi level. so now you can say DateTime.Now , Guid.Now . **(closed)**
 - Moving all enums to be located in one class named Types. **(closed)**
 - Adding Validation for Max, Min, Not null, Not Empty. **(closed)**
 - Change the log driver to Log4net Unstated of GeniusesCode.Log class. **(closed)**
