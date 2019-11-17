@@ -40,12 +40,11 @@ namespace LightADO
         /// <param name="valueType">where to look for the default value</param>
         /// <param name="direction">the direction of the setting default value</param>
         /// <param name="parameters">any parameters to sent to a method</param>
-        public DefaultValue(string value, ValueTypes valueType = ValueTypes.Value, Directions direction = Directions.WithNonQuery, params object[] parameters)
+        public DefaultValue(string value, Directions direction = Directions.WithNonQuery, params object[] parameters)
         {
             this.Value = value;
             this.Direction = direction;
             this.Parameters = parameters;
-            this.ValueType = valueType;
         }
 
         /// <summary>
@@ -62,11 +61,6 @@ namespace LightADO
         /// Gets the parameters of the default values.
         /// </summary>
         internal object[] Parameters { get; private set; }
-
-        /// <summary>
-        /// Gets the value types.
-        /// </summary>
-        internal ValueTypes ValueType { get; private set; }
 
         /// <summary>
         /// Loop throw each property in object
@@ -105,23 +99,18 @@ namespace LightADO
         private static T SetDefaultValue<T>(T objectToMapDefaultValues, DefaultValue defaultValueSettings, PropertyInfo property)
         {
             object valueAfterTypedChanged;
-            if (defaultValueSettings.ValueType == ValueTypes.Value)
+            if (defaultValueSettings.Value.GetType() == typeof(string))
             {
-                valueAfterTypedChanged = Convert.ChangeType(defaultValueSettings.Value, property.PropertyType);
-            }
-            else
-            {
-                if (defaultValueSettings.ValueType == ValueTypes.Properties)
+                if (defaultValueSettings.Value.ToString().Contains(".") == false)
                 {
-                    valueAfterTypedChanged = Convert.ChangeType(property.PropertyType.GetProperty(defaultValueSettings.Value.ToString()).GetValue(null), property.PropertyType);
+                    valueAfterTypedChanged = Convert.ChangeType(defaultValueSettings.Value, property.PropertyType);
                 }
                 else
                 {
-                    valueAfterTypedChanged = Convert.ChangeType(property.PropertyType.GetMethod(defaultValueSettings.Value.ToString()).Invoke(null, defaultValueSettings.Parameters), property.PropertyType);
+                    string[] propertyValuePath = defaultValueSettings.Value.ToString().Split(".");
                 }
             }
 
-            objectToMapDefaultValues.GetType().GetProperty(property.Name).SetValue(objectToMapDefaultValues, valueAfterTypedChanged);
             return objectToMapDefaultValues;
         }
     }
