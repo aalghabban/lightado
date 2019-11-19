@@ -17,19 +17,26 @@
 
 namespace LightADO
 {
-    using System.Collections.Generic;
     using System;
 
     [AttributeUsage(AttributeTargets.Property)]
     public class CreateOnNotExists : Attribute
     {
-        public CreateOnNotExists(string useThisMethod = "IsExists", List<string> searchWithThoseParameters = null)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CreateOnNotExists"/> class , 
+        /// assuming IsExists method name will be called IsExists.
+        /// </summary>
+        /// <param name="useThisMethod">the method name to call in same object to check wither is exists or not</param>
+        public CreateOnNotExists(string useThisMethod = "IsExists")
         {
             this.UseThisMethod = useThisMethod;
-            this.SearchWithThoseParameters = searchWithThoseParameters;
         }
 
+        /// <summary>
+        /// Gets or gets the method name to call to
+        /// check if row is exists or not.
+        /// </summary>
+        /// <value>the method name to call</value>
         public string UseThisMethod { get; set; }
-        public List<string> SearchWithThoseParameters { get; set; }
     }
 }

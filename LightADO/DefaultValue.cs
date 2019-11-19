@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright (C) 2019 ALGHABBAn
+ * a.alghabban@icloud.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -114,7 +114,11 @@ namespace LightADO
             return objectToMapDefaultValues;
         }
 
-
+        /// <summary>
+        /// Get Default Value from type.
+        /// </summary>
+        /// <param name="defaultValue">default value to get.</param>
+        /// <returns>value of the property of method.</returns>
         private static object GetDefaultValue(string defaultValue)
         {
             string[] paths = defaultValue.Split('.');
@@ -137,6 +141,11 @@ namespace LightADO
             return value;
         }
 
+        /// <summary>
+        /// Get Default Value type.
+        /// </summary>
+        /// <param name="typeName">the type name in system namespace</param>
+        /// <returns>a Type object.</returns>
         private static Type GetDefaultValueType(string typeName)
         {
             Type type = Type.GetType("System." + typeName);
@@ -148,11 +157,23 @@ namespace LightADO
             return type;
         }
 
+        /// <summary>
+        /// Get Default Value from Method.
+        /// </summary>
+        /// <param name="methodName">the method name to get the value from.</param>
+        /// <param name="type">the type in which the method located.</param>
+        /// <returns>a method info object ready to invoke.</returns>
         private static MethodInfo GetDefaultValueMethod(string methodName, Type type)
         {
             return type.GetMethod(methodName);
         }
 
+        /// <summary>
+        /// Get Default value from property.
+        /// </summary>
+        /// <param name="propertyName">the property name to get the value from.</param>
+        /// <param name="type">the type in which the property name located.</param>
+        /// <returns>a property info object ready to get it's value</returns>
         private static PropertyInfo GetDefaultValueProperty(string propertyName, Type type)
         {
             return type.GetProperty(propertyName);
