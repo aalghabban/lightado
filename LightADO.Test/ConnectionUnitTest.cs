@@ -3,12 +3,11 @@ namespace LightADO.Test
     using System;
     using Xunit;
     using LightADO;
-    using System.Collections.Generic;
 
     public class ConnectionUnitTest
     {
         [Fact]
-        public void ConnectionNotFoundInAppSettingsOrSystemEnv()
+        public void ShouldThrowExceptionWhenConnectionStringNotFoundInAppSettings()
         {
             try
             {
@@ -23,18 +22,78 @@ namespace LightADO.Test
         }
 
         [Fact]
-        public void LoadConnectionFromSystemEnv()
+        public void ShouldThrowExceptionWhenConnectionStringIsEmpty()
+        {
+            try
+            {
+                new Query("EmptyConnection");
+                Assert.True(false);
+            }
+            catch (LightAdoExcption ex)
+            {
+                Console.WriteLine(ex);
+                Assert.True(true);
+            }
+        }
+
+        [Fact]
+        public void ShouldLoadConnectionFromSystemEnv()
         {
             try
             {
                 System.Environment.SetEnvironmentVariable("DefaultConnection", "{ConnectionString}");
-                List<Category> categories =  new Query().ExecuteToListOfObject<Category>("Select * from Categories", System.Data.CommandType.Text);
-                Assert.True(categories.Count > 0);
+                new Query();
+                Assert.True(true);
             }
             catch (LightAdoExcption ex)
             {
                 Console.WriteLine(ex);
                 Assert.True(false);
+            }
+        }
+
+        [Fact]
+        public void ShouldLoadConnectionStringFromAppSettings()
+        {
+            try
+            {
+                new Query();
+                Assert.True(true);
+            }
+            catch (LightAdoExcption ex)
+            {
+                Console.WriteLine(ex);
+                Assert.True(false);
+            }
+        }
+
+        [Fact]
+        public void ShouldLoadDirectConnectionStringDirect()
+        {
+            try
+            {
+                new Query("Server=.;Database=northwind;User Id=sa;Password=1986Gabban2017*m");
+                Assert.True(true);
+            }
+            catch (LightAdoExcption ex)
+            {
+                Console.WriteLine(ex);
+                Assert.True(false);
+            }
+        }
+
+        [Fact]
+        public void ShouldThrowExceptionWhenConnectionStringNotValid()
+        {
+            try
+            {
+                new Query("9687469087436456894");
+                Assert.True(false);
+            }
+            catch (LightAdoExcption ex)
+            {
+                Console.WriteLine(ex);
+                Assert.True(true);
             }
         }
     }
