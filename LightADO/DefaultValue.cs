@@ -40,7 +40,7 @@ namespace LightADO
         /// <param name="valueType">where to look for the default value</param>
         /// <param name="direction">the direction of the setting default value</param>
         /// <param name="parameters">any parameters to sent to a method</param>
-        public DefaultValue(string value, Directions direction = Directions.WithNonQuery, params object[] parameters)
+        public DefaultValue(object value, Directions direction = Directions.WithNonQuery, params object[] parameters)
         {
             this.Value = value;
             this.Direction = direction;
@@ -107,10 +107,22 @@ namespace LightADO
                 }
                 else
                 {
-                    valueAfterTypedChanged = Convert.ChangeType(GetDefaultValue(defaultValueSettings.Value.ToString()), property.PropertyType);
+                    if (property.PropertyType == typeof(string))
+                    {
+                        valueAfterTypedChanged = Convert.ChangeType(GetDefaultValue(defaultValueSettings.Value.ToString()).ToString(), property.PropertyType);
+                    }
+                    else
+                    {
+                        valueAfterTypedChanged = Convert.ChangeType(GetDefaultValue(defaultValueSettings.Value.ToString()), property.PropertyType);
+                    }
                 }
             }
+            else
+            {
+                valueAfterTypedChanged = Convert.ChangeType(defaultValueSettings.Value, property.PropertyType);
+            }
 
+            objectToMapDefaultValues.GetType().GetProperty(property.Name).SetValue(objectToMapDefaultValues, valueAfterTypedChanged);
             return objectToMapDefaultValues;
         }
 
