@@ -8,29 +8,58 @@ namespace LightADO.Test
     public class NonQueryTest
     {
         [Fact]
-        public void CreateListOfCategoriesThisShouldUpdateTheCategoryId(){
+        public void SubObjectIdShouldBeBiggerThanZero()
+        {
+            Product product = new Product()
+            {
+                ProductName = "test",
+                Supplier = 1,
+                Category = new Category()
+                {
+                    Name = "this a test for workflow"
+                },
+                QuantityPerUnit = "36 boxes",
+                UnitPrice = 98.0922,
+                UnitsInStock = 98,
+                UnitsOnOrder = 1,
+                ReorderLevel = 10,
+                Discontinued = false
+            };
+
+            product.Create();
+            Assert.True(product.ID > 0 && product.Category.ID > 0);
+        }
+
+        [Fact]
+        public void BulkExecuteTest()
+        {
             List<Category> categories = new List<Category>();
-            categories.Add(new Category{
+            categories.Add(new Category
+            {
                 Name = "Test",
                 Description = "this test number 1"
             });
 
-            categories.Add(new Category{
+            categories.Add(new Category
+            {
                 Name = "Test",
                 Description = "this test number 2"
             });
 
-            categories.Add(new Category{
+            categories.Add(new Category
+            {
                 Name = "Test",
                 Description = "this test number 3"
             });
 
-            categories.Add(new Category{
+            categories.Add(new Category
+            {
                 Name = "Test",
                 Description = "this test number 4"
             });
 
-            categories.Add(new Category{
+            categories.Add(new Category
+            {
                 Name = "Test",
                 Description = "this test number 5"
             });

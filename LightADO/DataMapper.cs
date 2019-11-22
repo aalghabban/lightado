@@ -155,7 +155,7 @@ namespace LightADO
                     PropertyInfo property = objectToMap.GetType().GetProperty(storedProcedureParameterName);
                     if (property != null)
                     {
-                        if (property.GetCustomAttributes(typeof(ForeignKey), false).Length == 0)
+                        if (property.GetCustomAttributes(typeof(ForeignKey), true).Length == 0)
                         {
                             object propertyValue = property.GetValue(objectToMap);
                             if (property.PropertyType.IsEnum)
@@ -176,21 +176,7 @@ namespace LightADO
                         }
                         else
                         {
-                            if (property.GetCustomAttributes(typeof(CreateOnNotExists), false).Length > 0)
-                            {
-                                string crerateOnNotExisitMethodName = ((CreateOnNotExists)property.GetCustomAttribute(typeof(CreateOnNotExists), false)).UseThisMethod;
-                                if (property.GetType().GetMethod(crerateOnNotExisitMethodName) == null)
-                                {
-                                    throw new LightAdoExcption(string.Format("The object {0}, dont't have a method named {1}", property.GetType().ToString(), crerateOnNotExisitMethodName));
-                                }
-                                property.SetValue(objectToMap, property.GetType().GetMethod(crerateOnNotExisitMethodName).Invoke(null, new object[1] { property.GetValue(objectToMap) }));
-                                GetPrimaryKeyValue(objectToMap, parameterList, parameter, storedProcedureParameterName, onError);
-                            }
-                            else
-                            {
-                                GetPrimaryKeyValue(objectToMap, parameterList, parameter, storedProcedureParameterName, onError);
-                            }
-
+                            GetPrimaryKeyValue(objectToMap, parameterList, parameter, storedProcedureParameterName, onError);
                         }
                     }
                     else if (Array.Find(parameters, x => parameter.Name == x.Name) != null)
@@ -238,7 +224,7 @@ namespace LightADO
                         {
                             if (objectToMap.GetType().GetProperty(propertyInfo.Name).GetCustomAttributes(typeof(ForeignKey), false).Length > 0)
                             {
-                                GetPrimaryKeyValue(objectToMap, mappedParameters, parameter, columnName, propertyInfo.Name, onError);
+                                GetPrimaryKeyValue(objectToMap, mappedParameters, parameter, propertyInfo.Name, onError, columnName);
                                 break;
                             }
 
@@ -376,40 +362,9 @@ namespace LightADO
         /// <param name="parameters">the list of parameters to map.</param>
         /// <param name="parameter">the parameter to check.</param>
         /// <param name="currentParameteName">current Parameter Name</param>
-        /// <param name="onError">in case any error</param>
-        private static void GetPrimaryKeyValue<T>(T objectToMap, List<Parameter> parameters, StoredProcedureParameter parameter, string currentParameteName, OnError onError)
-        {
-            try
-            {
-                object obj = objectToMap.GetType().GetProperty(currentParameteName).GetValue(objectToMap);
-                foreach (PropertyInfo property in obj.GetType().GetProperties())
-                {
-                    if (obj.GetType().GetProperty(property.Name).GetCustomAttributes(typeof(PrimaryKey), false).Length > 0)
-                    {
-                        parameters.Add(new Parameter(currentParameteName, obj.GetType().GetProperty(property.Name).GetValue(obj), parameter.GetParameterDirection));
-                        return;
-                    }
-                }
-
-                throw new LightAdoExcption(string.Format("primary key is Not defined in {0}", obj.GetType().ToString()));
-            }
-            catch (Exception ex)
-            {
-                QueryBase.ThrowExacptionOrEvent(onError, ex, string.Empty);
-            }
-        }
-
-        /// <summary>
-        /// Get Primary key value
-        /// </summary>
-        /// <typeparam name="T">the T type of object</typeparam>
-        /// <param name="objectToMap">object to map</param>
-        /// <param name="parameters">the list of parameters to map.</param>
-        /// <param name="parameter">the parameter to check.</param>
-        /// <param name="currentParameteName">current Parameter Name</param>
         /// <param name="propertyName">property Name to check.</param>
         /// <param name="onError">in case any error</param>
-        private static void GetPrimaryKeyValue<T>(T objectToMap, List<Parameter> parameters, StoredProcedureParameter parameter, string currentParameteName, string propertyName, OnError onError)
+        private static void GetPrimaryKeyValue<T>(T objectToMap, List<Parameter> parameters, StoredProcedureParameter parameter, string propertyName, OnError onError, string columnName = "")
         {
             try
             {
@@ -418,8 +373,32 @@ namespace LightADO
                 {
                     if (obj.GetType().GetProperty(property.Name).GetCustomAttributes(typeof(PrimaryKey), false).Length > 0)
                     {
-                        parameters.Add(new Parameter(currentParameteName, obj.GetType().GetProperty(property.Name).GetValue(obj), parameter.GetParameterDirection));
-                        return;
+                        object createdObject = CreateOnExisit(objectToMap.GetType().GetProperty(propertyName), objectToMap);
+                        if (createdObject != null)
+                        {
+                            foreach (PropertyInfo createdProperty in createdObject.GetType().GetProperties())
+                            {
+                                if (createdObject.GetType().GetProperty(createdProperty.Name).GetCustomAttributes(typeof(PrimaryKey), false).Length > 0)
+                                {
+                                    if(string.IsNullOrEmpty(columnName) == false){
+                                        parameters.Add(new Parameter(columnName, createdObject.GetType().GetProperty(createdProperty.Name).GetValue(createdObject), parameter.GetParameterDirection));
+                                    } else {
+                                        parameters.Add(new Parameter(parameter.Name, createdObject.GetType().GetProperty(createdProperty.Name).GetValue(createdObject), parameter.GetParameterDirection));
+                                    }
+                                    
+                                    return;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if(string.IsNullOrEmpty(columnName) == false){
+                                parameters.Add(new Parameter(columnName, obj.GetType().GetProperty(property.Name).GetValue(obj), parameter.GetParameterDirection));
+                            } else {
+                                parameters.Add(new Parameter(parameter.Name, obj.GetType().GetProperty(property.Name).GetValue(obj), parameter.GetParameterDirection));
+                            }
+                            return;
+                        }
                     }
                 }
 
@@ -430,6 +409,27 @@ namespace LightADO
                 QueryBase.ThrowExacptionOrEvent(onError, ex, string.Empty);
             }
         }
+
+
+        private static object CreateOnExisit<T>(PropertyInfo property, T objectToMap)
+        {
+            if (property.GetCustomAttributes(typeof(CreateOnNotExists), false).Length > 0)
+            {
+                string crerateOnNotExisitMethodName = ((CreateOnNotExists)property.GetCustomAttribute(typeof(CreateOnNotExists), false)).UseThisMethod;
+                if (property.PropertyType.GetMethod(crerateOnNotExisitMethodName) == null)
+                {
+                    throw new LightAdoExcption(string.Format("The object {0}, dont't have a method named {1}", property.GetType().ToString(), crerateOnNotExisitMethodName));
+                }
+
+                object instance = Activator.CreateInstance(property.PropertyType);
+                instance = property.PropertyType.GetMethod(crerateOnNotExisitMethodName).Invoke(instance, new object[1] { property.GetValue(objectToMap) });
+                return instance;
+            }
+
+
+            return null;
+        }
+
 
         /// <summary>
         /// Convert SQL type to CLI

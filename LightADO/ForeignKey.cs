@@ -23,5 +23,5 @@ namespace LightADO
     /// <summary>
     /// Marked Property as Foreign Key
     /// </summary>
-    public sealed class ForeignKey : Attribute { }
+    public class ForeignKey : Attribute { }
 }

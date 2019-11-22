@@ -23,6 +23,7 @@ namespace LightADO
     using System.Data;
     using System.Reflection;
     using System;
+    using System.Linq;
 
     /// <summary>
     /// Providers a way to get the output parameters from a SQL command execution.
@@ -37,7 +38,7 @@ namespace LightADO
         internal static List<Parameter> GetOutputParamters(SqlCommand sqlCommand)
         {
             List<Parameter> parameterList = new List<Parameter>();
-            foreach (SqlParameter parameter in (DbParameterCollection)sqlCommand.Parameters)
+            foreach (SqlParameter parameter in sqlCommand.Parameters)
             {
                 if (parameter.Direction == ParameterDirection.Output)
                 {
@@ -67,11 +68,28 @@ namespace LightADO
             {
                 if (objectToMap.GetType().GetProperty(parameter.Name.Remove(0, 2)) != null)
                 {
-                    objectToMap.GetType().GetProperty(parameter.Name.Remove(0, 2)).SetValue((object)objectToMap, parameter.Value);
+                    objectToMap.GetType().GetProperty(parameter.Name.Remove(0, 2)).SetValue(objectToMap, parameter.Value);
                 }
                 else if (Array.Find(parameters, x => parameter.Name.Remove(0, 1) == x.Name) != null)
                 {
                     Array.Find(parameters, x => parameter.Name.Remove(0, 1) == x.Name).Value = parameter.Value;
+                }
+                else
+                {
+                    PropertyInfo[] properties = objectToMap.GetType().GetProperties();
+                    Func<PropertyInfo, bool> predicate = null;
+                    predicate = p => p.GetCustomAttributes(typeof(ColumnName), true).Length > 0;
+                    if (predicate != null)
+                    {
+                        foreach (PropertyInfo propertyInfo in properties.Where(predicate))
+                        {
+                            ColumnName columnName = propertyInfo.GetCustomAttribute<ColumnName>(true);
+                            if (columnName.Name == parameter.Name.Remove(0, 2))
+                            {
+                                objectToMap.GetType().GetProperty(propertyInfo.Name).SetValue(objectToMap, parameter.Value);
+                            }
+                        }
+                    }
                 }
             }
         }

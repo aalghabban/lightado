@@ -27,7 +27,7 @@ namespace LightADO
         /// assuming IsExists method name will be called IsExists.
         /// </summary>
         /// <param name="useThisMethod">the method name to call in same object to check wither is exists or not</param>
-        public CreateOnNotExists(string useThisMethod = "IsExists")
+        public CreateOnNotExists(string useThisMethod = "CreateOnNotExists")
         {
             this.UseThisMethod = useThisMethod;
         }
