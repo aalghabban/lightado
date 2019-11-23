@@ -54,6 +54,9 @@ namespace LightADO
         /// <param name="extraInfo">any more details</param>
         internal static void ThrowExacptionOrEvent(OnError onError, Exception exception, string extraInfo = "")
         {
+            if(exception.InnerException.GetType() == typeof(ValidationException)){
+                throw exception.InnerException;
+            }
             if (onError == null)
             {
                 throw new LightAdoExcption(exception);

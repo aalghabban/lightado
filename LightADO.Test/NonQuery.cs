@@ -8,6 +8,33 @@ namespace LightADO.Test
     public class NonQueryTest
     {
         [Fact]
+        public void ShoulThrowMaxValidationException()
+        {
+            try
+            {
+                new NonQuery().Execute<Product>("ProductCreate", new Product()
+                {
+                    UnitsInStock = 49, 
+                    ProductName = "test"
+                });
+            }
+            catch (ValidationException)
+            {
+                Assert.True(true);
+            }
+            catch (LightAdoExcption ex)
+            {
+                Console.WriteLine(ex.Details.Message);
+                Assert.True(false);
+            }
+            catch (Exception ex)
+            {
+                Assert.True(false);
+                Console.WriteLine(ex.Message);
+            }
+        }
+
+        [Fact]
         public void SubObjectIdShouldBeBiggerThanZero()
         {
             Product product = new Product()

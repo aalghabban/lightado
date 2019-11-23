@@ -34,7 +34,7 @@ namespace LightADO
         {
             if (value < this.minimum)
             {
-                throw new LightAdoExcption(new ValidationException(this.onNotValidMessage));
+                throw new ValidationException(this.onNotValidMessage);
             }
         }
     }

@@ -23,7 +23,10 @@ namespace LightADO
         public NotNullOrEmpty(bool allowWhiteSpace = false, string onNotValidMessage = "value must not be null or empty")
         {
             this.onNotValidMessage = onNotValidMessage;
+            this.allowWhiteSpace = allowWhiteSpace;
         }
+
+        private bool allowWhiteSpace;
 
         private string onNotValidMessage;
 
@@ -31,12 +34,15 @@ namespace LightADO
         {
             if (string.IsNullOrEmpty(value) == true)
             {
-                throw new LightAdoExcption(new ValidationException(this.onNotValidMessage));
+                throw new ValidationException(this.onNotValidMessage);
             }
 
-            if (string.IsNullOrWhiteSpace(value) == true)
+            if (this.allowWhiteSpace == false)
             {
-                throw new LightAdoExcption(new ValidationException(this.onNotValidMessage));
+                if (string.IsNullOrWhiteSpace(value) == true)
+                {
+                    throw new ValidationException(this.onNotValidMessage);
+                }
             }
         }
     }

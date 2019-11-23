@@ -88,6 +88,9 @@ namespace LightADO
             {
                 return this.ExcecuteNonQueryCommand(SqlCommandFactory.Create(command, commandType, this.LightAdoSetting, parameters));
             }
+            catch(ValidationException ex){
+                throw ex;
+            }
             catch (Exception ex)
             {
                 QueryBase.ThrowExacptionOrEvent(this.OnError, ex, string.Empty);
@@ -179,6 +182,9 @@ namespace LightADO
                 
                 return true;
             }
+            catch(ValidationException ex){
+                throw ex;
+            }
             catch (Exception ex)
             {
                 QueryBase.ThrowExacptionOrEvent(this.OnError, ex, string.Empty);
@@ -220,6 +226,9 @@ namespace LightADO
                 sqlTransaction.Commit();
                 connection.Close();
             }
+            catch(ValidationException ex){
+                throw ex;
+            }
             catch (Exception ex)
             {
                 if (rollbackOnError)
@@ -253,6 +262,9 @@ namespace LightADO
                 this.BeforeNonQueryExecute?.Invoke();
                 sqlCommand.ExecuteNonQuery();
                 this.AfterNonQueryExecute?.Invoke();
+            }
+            catch(ValidationException ex){
+                throw ex;
             }
             catch (Exception ex)
             {

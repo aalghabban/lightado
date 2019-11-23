@@ -5,6 +5,7 @@ namespace LightADO.Test
         [ColumnName("ProductID")]
         public int ID { get; set; }
 
+        [NotNullOrEmpty(false, "Product Name must not be empty or null or white space")]
         public string ProductName { get; set; }
 
         [ColumnName("SupplierID")]
@@ -14,8 +15,10 @@ namespace LightADO.Test
 
         public double UnitPrice { get; set; }
 
+        [Max(50, "Units In Stock must be less than 50")]
         public int UnitsInStock { get; set; }
 
+        [Min(10, "Unit in stock must be bigger than 10")]
         public int UnitsOnOrder { get; set; }
 
         public int ReorderLevel { get; set; }
