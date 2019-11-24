@@ -37,7 +37,8 @@ namespace LightADO.Test
         [Fact]
         public void SubObjectIdShouldBeBiggerThanZero()
         {
-            Product product = new Product()
+            try{
+                Product product = new Product()
             {
                 ProductName = "test",
                 Supplier = 1,
@@ -47,14 +48,21 @@ namespace LightADO.Test
                 },
                 QuantityPerUnit = "36 boxes",
                 UnitPrice = 98.0922,
-                UnitsInStock = 98,
-                UnitsOnOrder = 1,
+                UnitsInStock = 49,
+                UnitsOnOrder = 11,
                 ReorderLevel = 10,
                 Discontinued = false
             };
 
             product.Create();
             Assert.True(product.ID > 0 && product.Category.ID > 0);
+            }
+            catch(LightAdoExcption ex){
+                
+            }
+            catch(Exception ex){
+                Console.WriteLine(ex.Message);
+            }
         }
 
         [Fact]

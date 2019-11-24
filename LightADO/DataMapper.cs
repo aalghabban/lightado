@@ -380,21 +380,27 @@ namespace LightADO
                             {
                                 if (createdObject.GetType().GetProperty(createdProperty.Name).GetCustomAttributes(typeof(PrimaryKey), false).Length > 0)
                                 {
-                                    if(string.IsNullOrEmpty(columnName) == false){
+                                    if (string.IsNullOrEmpty(columnName) == false)
+                                    {
                                         parameters.Add(new Parameter(columnName, createdObject.GetType().GetProperty(createdProperty.Name).GetValue(createdObject), parameter.GetParameterDirection));
-                                    } else {
+                                    }
+                                    else
+                                    {
                                         parameters.Add(new Parameter(parameter.Name, createdObject.GetType().GetProperty(createdProperty.Name).GetValue(createdObject), parameter.GetParameterDirection));
                                     }
-                                    
+
                                     return;
                                 }
                             }
                         }
                         else
                         {
-                            if(string.IsNullOrEmpty(columnName) == false){
+                            if (string.IsNullOrEmpty(columnName) == false)
+                            {
                                 parameters.Add(new Parameter(columnName, obj.GetType().GetProperty(property.Name).GetValue(obj), parameter.GetParameterDirection));
-                            } else {
+                            }
+                            else
+                            {
                                 parameters.Add(new Parameter(parameter.Name, obj.GetType().GetProperty(property.Name).GetValue(obj), parameter.GetParameterDirection));
                             }
                             return;

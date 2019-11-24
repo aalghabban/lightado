@@ -18,6 +18,7 @@
 namespace LightADO
 {
     using System;
+    using System.Reflection;
 
     /// <summary>
     /// Provider exception for light ADO errors.
@@ -37,10 +38,7 @@ namespace LightADO
         {
             this.Message = message;
             this.Details = ex;
-            log.Error(ex);
         }
-
-        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         /// <summary>
         /// Gets the error Messages

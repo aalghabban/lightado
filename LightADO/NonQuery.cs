@@ -84,19 +84,7 @@ namespace LightADO
         /// <returns>true if the query get Executes</returns>
         public bool Execute(string command, CommandType commandType = CommandType.Text, params Parameter[] parameters)
         {
-            try
-            {
-                return this.ExcecuteNonQueryCommand(SqlCommandFactory.Create(command, commandType, this.LightAdoSetting, parameters));
-            }
-            catch(ValidationException ex){
-                throw ex;
-            }
-            catch (Exception ex)
-            {
-                QueryBase.ThrowExacptionOrEvent(this.OnError, ex, string.Empty);
-            }
-
-            return false;
+            return this.ExcecuteNonQueryCommand(SqlCommandFactory.Create(command, commandType, this.LightAdoSetting, parameters));
         }
 
         /// <summary>
@@ -134,18 +122,9 @@ namespace LightADO
         /// <returns>true if the query get Executed</returns>
         public bool Execute<T>(string command, T objectToMap, params Parameter[] parameters)
         {
-            try
-            {
-                AutoValidation.ValidateObject<T>(objectToMap);
-                EncryptEngine.EncryptOrDecryptObject<T>(objectToMap, OprationType.Encrypt);
-                return this.ExcecuteNonQueryCommand<T>(SqlCommandFactory.Create(command, CommandType.StoredProcedure, this.LightAdoSetting, DataMapper.MapObjectToStoredProcedure<T>(command, objectToMap, this.LightAdoSetting, this.OnError, parameters).ToArray()), objectToMap, parameters);
-            }
-            catch (Exception ex)
-            {
-                QueryBase.ThrowExacptionOrEvent(this.OnError, ex, string.Empty);
-            }
-
-            return false;
+            AutoValidation.ValidateObject<T>(objectToMap);
+            EncryptEngine.EncryptOrDecryptObject<T>(objectToMap, OprationType.Encrypt);
+            return this.ExcecuteNonQueryCommand<T>(SqlCommandFactory.Create(command, CommandType.StoredProcedure, this.LightAdoSetting, DataMapper.MapObjectToStoredProcedure<T>(command, objectToMap, this.LightAdoSetting, this.OnError, parameters).ToArray()), objectToMap, parameters);
         }
 
         /// <summary>
@@ -171,26 +150,14 @@ namespace LightADO
         /// <returns>true if the query get Executed</returns>
         public bool Execute<T>(string command, List<T> objectToMap, params Parameter[] parameters)
         {
-            try
+            foreach (T obj in objectToMap)
             {
-                foreach (T obj in objectToMap)
-                {
-                    AutoValidation.ValidateObject<T>(obj);
-                    EncryptEngine.EncryptOrDecryptObject<T>(obj, OprationType.Encrypt);
-                    this.ExcecuteNonQueryCommand<T>(SqlCommandFactory.Create(command, CommandType.StoredProcedure, this.LightAdoSetting, DataMapper.MapObjectToStoredProcedure<T>(command, obj, this.LightAdoSetting, this.OnError, parameters).ToArray()), obj, parameters);
-                }
-                
-                return true;
-            }
-            catch(ValidationException ex){
-                throw ex;
-            }
-            catch (Exception ex)
-            {
-                QueryBase.ThrowExacptionOrEvent(this.OnError, ex, string.Empty);
+                AutoValidation.ValidateObject<T>(obj);
+                EncryptEngine.EncryptOrDecryptObject<T>(obj, OprationType.Encrypt);
+                this.ExcecuteNonQueryCommand<T>(SqlCommandFactory.Create(command, CommandType.StoredProcedure, this.LightAdoSetting, DataMapper.MapObjectToStoredProcedure<T>(command, obj, this.LightAdoSetting, this.OnError, parameters).ToArray()), obj, parameters);
             }
 
-            return false;
+            return true;
         }
 
         /// <summary>
@@ -226,9 +193,6 @@ namespace LightADO
                 sqlTransaction.Commit();
                 connection.Close();
             }
-            catch(ValidationException ex){
-                throw ex;
-            }
             catch (Exception ex)
             {
                 if (rollbackOnError)
@@ -262,9 +226,6 @@ namespace LightADO
                 this.BeforeNonQueryExecute?.Invoke();
                 sqlCommand.ExecuteNonQuery();
                 this.AfterNonQueryExecute?.Invoke();
-            }
-            catch(ValidationException ex){
-                throw ex;
             }
             catch (Exception ex)
             {
