@@ -96,6 +96,19 @@ That's very much it, Done! things should be that simple and clean.
 - Multi Mapping convert result to multiple types of objects.
 
 # Chanage Logs
+ ### 5.4.0 (2020/01/01)
+- Claening more code and adding some null check Statement. **(closed)**
+- Bulk Execute NonQuery. **(closed)**
+- Workflow, now you can send list of object with relationship to insert. **(closed)**
+- Property ignore during data mapping. **(closed)**
+- Default values now support multi level. so now you can say DateTime.Now , Guid.Now . **(closed)**
+- Moving all enums to be located in one class named Types. **(closed)**
+- Adding Validation for Max, Min, Not null, Not Empty. **(closed)**
+- Supporting Asynchronous Calls. **(closed)**
+- Supporting reading connection string from system Environment variable. **(closed)**
+- Supporting Microservices architecture by calling Multiple databases. **(closed)**
+- Unified all Exception to throw LightAdo, Unstated of multiple types. **(closed)**
+
  #### 5.3.0
 - This release is all about Performance, reducing the execution time by removing cleaning and sharping the code. 
 - Fixing bugs with default values. 

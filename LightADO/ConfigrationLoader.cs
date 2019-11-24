@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright (C) 2019 ALGHABBAn
+ * a.alghabban@icloud.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -26,29 +26,13 @@ namespace LightADO
     internal static class ConfigurationLoader
     {
         /// <summary>
-        /// The Configuration Sections
-        /// </summary>
-        internal enum ConfigurationSections
-        {
-            /// <summary>
-            /// Connection String Section
-            /// </summary>
-            ConnectionString,
-
-            /// <summary>
-            /// The App Settings section
-            /// </summary>
-            AppSettings
-        }
-
-        /// <summary>
         /// returns the value of given key from app settings,
         /// app.config or web.config file
         /// </summary>
         /// <param name="keyName">the key name to read.</param>
         /// <param name="section">from where to read the key</param>
         /// <returns>a value of the given key</returns>
-        internal static string GetValueOfKey(string keyName, ConfigurationSections section = ConfigurationSections.ConnectionString)
+        internal static string GetValueOfKey(string keyName, Types.ConfigurationSections section = Types.ConfigurationSections.ConnectionString)
         {
             string value = null;
             IConfigurationBuilder builder = new ConfigurationBuilder();
@@ -57,14 +41,18 @@ namespace LightADO
                 IConfigurationRoot configRoot = builder.AddJsonFile(Path.Combine(Directory.GetCurrentDirectory(), "appsettings.json")).Build();
                 switch (section)
                 {
-                    case ConfigurationSections.ConnectionString:
+                    case Types.ConfigurationSections.ConnectionString:
                         value = configRoot.GetConnectionString(keyName);
                         break;
-                    case ConfigurationSections.AppSettings:
+                    case Types.ConfigurationSections.AppSettings:
                         value = configRoot.GetSection("AppSettings" + ":" + keyName).Value;
 
                         break;
                 }
+            }
+            else
+            {
+                value = System.Environment.GetEnvironmentVariable(keyName);
             }
 
             return value;

@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright (C) 2019 ALGHABBAn
+ * a.alghabban@icloud.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,16 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace LightADO
-{
-    using System.Data;
+namespace LightADO {
     using System.Data.SqlClient;
+    using System.Data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SqlCommandFactory"/> class.
     /// </summary>
-    internal class SqlCommandFactory
-    {
+    internal class SqlCommandFactory {
         /// <summary>
         /// Create a new SQL Command.
         /// </summary>
@@ -33,19 +31,16 @@ namespace LightADO
         /// <param name="lightAdoSetting">light ADO settings</param>
         /// <param name="parameters">parameters to send to the command</param>
         /// <returns>A SQL Command ready to execute.</returns>
-        internal static SqlCommand Create(string commnadName, CommandType commandType, LightADOSetting lightAdoSetting, params Parameter[] parameters)
-        {
-            SqlCommand sqlCommand = new SqlCommand(commnadName, new SqlConnection(lightAdoSetting.ConnectionString));
+        internal static SqlCommand Create (string commnadName, CommandType commandType, LightADOSetting lightAdoSetting, params Parameter[] parameters) {
+            SqlCommand sqlCommand = new SqlCommand (commnadName, new SqlConnection (lightAdoSetting.ConnectionString));
             sqlCommand.CommandType = commandType;
-            if (parameters != null && (uint)parameters.Length > 0U)
-            {
-                for (int index = 0; index < parameters.Length; ++index)
-                {
+            if (parameters != null && parameters.Length > 0) {
+                for (int index = 0; index < parameters.Length; ++index) {
                     Parameter parameter = parameters[index];
-                    SqlParameter sqlParameter = new SqlParameter(parameter.Name, parameter.Value);
+                    SqlParameter sqlParameter = new SqlParameter (parameter.Name, parameter.Value);
                     sqlParameter.Size = int.MaxValue;
                     sqlParameter.Direction = parameter.Direction;
-                    sqlCommand.Parameters.Add(sqlParameter);
+                    sqlCommand.Parameters.Add (sqlParameter);
                 }
             }
 
@@ -61,21 +56,18 @@ namespace LightADO
         /// <param name="transaction">transaction to execute.</param>
         /// <param name="parameters">parameters of the command.</param>
         /// <returns>SQL Command to execute.</returns>
-        internal static SqlCommand Create(string commnadName, CommandType commandType, LightADOSetting lightAdoSetting, SqlTransaction transaction, params Parameter[] parameters)
-        {
-            SqlCommand sqlCommand = new SqlCommand(commnadName, transaction.Connection);
+        internal static SqlCommand Create (string commnadName, CommandType commandType, LightADOSetting lightAdoSetting, SqlTransaction transaction, params Parameter[] parameters) {
+            SqlCommand sqlCommand = new SqlCommand (commnadName, transaction.Connection);
             sqlCommand.CommandType = commandType;
             sqlCommand.Transaction = transaction;
 
-            if (parameters != null && (uint)parameters.Length > 0U)
-            {
-                for (int index = 0; index < parameters.Length; ++index)
-                {
+            if (parameters != null && parameters.Length > 0U) {
+                for (int index = 0; index < parameters.Length; ++index) {
                     Parameter parameter = parameters[index];
-                    SqlParameter sqlParameter = new SqlParameter(parameter.Name, parameter.Value);
+                    SqlParameter sqlParameter = new SqlParameter (parameter.Name, parameter.Value);
                     sqlParameter.Size = int.MaxValue;
                     sqlParameter.Direction = parameter.Direction;
-                    sqlCommand.Parameters.Add(sqlParameter);
+                    sqlCommand.Parameters.Add (sqlParameter);
                 }
             }
 

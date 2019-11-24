@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright (C) 2019 ALGHABBAn
+ * a.alghabban@icloud.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -19,10 +19,9 @@ namespace LightADO
 {
     using System;
 
+    [AttributeUsage(AttributeTargets.Property)]
     /// <summary>
     /// Providers a way to mark a property as primary key
     /// </summary>
-    public sealed class PrimaryKey : Attribute
-    {
-    }
+    public sealed class PrimaryKey : Attribute { }
 }

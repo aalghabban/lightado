@@ -1,5 +1,5 @@
-﻿/*
- * a.alghabban@icloud.com
+/*
+ * Copyright (C) 2019 ALGHABBAn
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -20,29 +20,23 @@ namespace LightADO
     using System;
 
     [AttributeUsage(AttributeTargets.Property)]
-    /// <summary>
-    /// Use this class to rename the property 
-    /// to database name.
-    /// </summary>
-    public class ColumnName : Attribute
+    public class CreateOnNotExists : Attribute
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ColumnName"/> class.
+        /// Initializes a new instance of the <see cref="CreateOnNotExists"/> class , 
+        /// assuming IsExists method name will be called IsExists.
         /// </summary>
-        /// <param name="name">the name of the column</param>
-        public ColumnName(string name)
+        /// <param name="useThisMethod">the method name to call in same object to check wither is exists or not</param>
+        public CreateOnNotExists(string useThisMethod = "CreateOnNotExists")
         {
-            if (string.IsNullOrEmpty(name) == true)
-            {
-                throw new LightAdoExcption("Column name can't be null");
-            }
-
-            this.Name = name;
+            this.UseThisMethod = useThisMethod;
         }
 
         /// <summary>
-        /// Gets or sets the Column Name in database
+        /// Gets or gets the method name to call to
+        /// check if row is exists or not.
         /// </summary>
-        public string Name { get; set; }
+        /// <value>the method name to call</value>
+        public string UseThisMethod { get; set; }
     }
 }

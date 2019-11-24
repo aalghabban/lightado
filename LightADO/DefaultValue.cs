@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright (C) 2019 ALGHABBAn
+ * a.alghabban@icloud.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -17,9 +17,11 @@
 
 namespace LightADO
 {
-    using System;
     using System.Reflection;
+    using System;
+    using static LightADO.Types;
 
+    [AttributeUsage(AttributeTargets.Property)]
     /// <summary>
     /// Provide an option to set a default value for the property before it 
     /// get mapped from or to the database.
@@ -29,9 +31,7 @@ namespace LightADO
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultValue"/> class.
         /// </summary>
-        public DefaultValue()
-        {
-        }
+        public DefaultValue() { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultValue"/> class.
@@ -40,55 +40,11 @@ namespace LightADO
         /// <param name="valueType">where to look for the default value</param>
         /// <param name="direction">the direction of the setting default value</param>
         /// <param name="parameters">any parameters to sent to a method</param>
-        public DefaultValue(string value, ValueTypes valueType = ValueTypes.Value, Directions direction = Directions.WithNonQuery, params object[] parameters)
+        public DefaultValue(object value, Directions direction = Directions.WithNonQuery, params object[] parameters)
         {
             this.Value = value;
             this.Direction = direction;
             this.Parameters = parameters;
-            this.ValueType = valueType;
-        }
-
-        /// <summary>
-        /// The direction of setting 
-        /// up the default value.
-        /// </summary>
-        public enum Directions
-        {
-            /// <summary>
-            /// Only with Query.
-            /// </summary>
-            WithQuery,
-
-            /// <summary>
-            /// Only with non Query.
-            /// </summary>
-            WithNonQuery,
-
-            /// <summary>
-            /// With both of them.
-            /// </summary>
-            WithBoth
-        }
-
-        /// <summary>
-        /// The type of the passed value.
-        /// </summary>
-        public enum ValueTypes
-        {
-            /// <summary>
-            /// Get the value from the Object Property.
-            /// </summary>
-            Properties,
-
-            /// <summary>
-            /// Get The type from the object methods.
-            /// </summary>
-            Methods,
-
-            /// <summary>
-            /// straightforward value
-            /// </summary>
-            Value
         }
 
         /// <summary>
@@ -105,11 +61,6 @@ namespace LightADO
         /// Gets the parameters of the default values.
         /// </summary>
         internal object[] Parameters { get; private set; }
-
-        /// <summary>
-        /// Gets the value types.
-        /// </summary>
-        internal ValueTypes ValueType { get; private set; }
 
         /// <summary>
         /// Loop throw each property in object
@@ -148,24 +99,96 @@ namespace LightADO
         private static T SetDefaultValue<T>(T objectToMapDefaultValues, DefaultValue defaultValueSettings, PropertyInfo property)
         {
             object valueAfterTypedChanged;
-            if (defaultValueSettings.ValueType == ValueTypes.Value)
+            if (defaultValueSettings.Value.GetType() == typeof(string))
             {
-                valueAfterTypedChanged = Convert.ChangeType(defaultValueSettings.Value, property.PropertyType);
-            }
-            else
-            {
-                if (defaultValueSettings.ValueType == ValueTypes.Properties)
+                if (defaultValueSettings.Value.ToString().Contains(".") == false)
                 {
-                    valueAfterTypedChanged = Convert.ChangeType(property.PropertyType.GetProperty(defaultValueSettings.Value.ToString()).GetValue(null), property.PropertyType);
+                    valueAfterTypedChanged = Convert.ChangeType(defaultValueSettings.Value, property.PropertyType);
                 }
                 else
                 {
-                    valueAfterTypedChanged = Convert.ChangeType(property.PropertyType.GetMethod(defaultValueSettings.Value.ToString()).Invoke(null, defaultValueSettings.Parameters), property.PropertyType);
+                    if (property.PropertyType == typeof(string))
+                    {
+                        valueAfterTypedChanged = Convert.ChangeType(GetDefaultValue(defaultValueSettings.Value.ToString()).ToString(), property.PropertyType);
+                    }
+                    else
+                    {
+                        valueAfterTypedChanged = Convert.ChangeType(GetDefaultValue(defaultValueSettings.Value.ToString()), property.PropertyType);
+                    }
                 }
+            }
+            else
+            {
+                valueAfterTypedChanged = Convert.ChangeType(defaultValueSettings.Value, property.PropertyType);
             }
 
             objectToMapDefaultValues.GetType().GetProperty(property.Name).SetValue(objectToMapDefaultValues, valueAfterTypedChanged);
             return objectToMapDefaultValues;
+        }
+
+        /// <summary>
+        /// Get Default Value from type.
+        /// </summary>
+        /// <param name="defaultValue">default value to get.</param>
+        /// <returns>value of the property of method.</returns>
+        private static object GetDefaultValue(string defaultValue)
+        {
+            string[] paths = defaultValue.Split('.');
+            Type type = GetDefaultValueType(paths[0]);
+            object value = null;
+            for (int path = 1; path < paths.Length; path++)
+            {
+                MethodInfo method = GetDefaultValueMethod(paths[path], type);
+                if (method != null)
+                {
+                    value = method.Invoke(null, null);
+                }
+                else
+                {
+                    PropertyInfo propertyInfo = GetDefaultValueProperty(paths[path], type);
+                    value = propertyInfo.GetValue(null);
+                }
+            }
+
+            return value;
+        }
+
+        /// <summary>
+        /// Get Default Value type.
+        /// </summary>
+        /// <param name="typeName">the type name in system namespace</param>
+        /// <returns>a Type object.</returns>
+        private static Type GetDefaultValueType(string typeName)
+        {
+            Type type = Type.GetType("System." + typeName);
+            if (type == null)
+            {
+                throw new LightAdoExcption("Type not found");
+            }
+
+            return type;
+        }
+
+        /// <summary>
+        /// Get Default Value from Method.
+        /// </summary>
+        /// <param name="methodName">the method name to get the value from.</param>
+        /// <param name="type">the type in which the method located.</param>
+        /// <returns>a method info object ready to invoke.</returns>
+        private static MethodInfo GetDefaultValueMethod(string methodName, Type type)
+        {
+            return type.GetMethod(methodName);
+        }
+
+        /// <summary>
+        /// Get Default value from property.
+        /// </summary>
+        /// <param name="propertyName">the property name to get the value from.</param>
+        /// <param name="type">the type in which the property name located.</param>
+        /// <returns>a property info object ready to get it's value</returns>
+        private static PropertyInfo GetDefaultValueProperty(string propertyName, Type type)
+        {
+            return type.GetProperty(propertyName);
         }
     }
 }

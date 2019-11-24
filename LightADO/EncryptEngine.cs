@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright (C) 2019 ALGHABBAn
+ * a.alghabban@icloud.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -17,31 +17,17 @@
 
 namespace LightADO
 {
-    using System;
     using System.Linq;
     using System.Reflection;
+    using System;
+    using static LightADO.Types;
 
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Property)]
     /// <summary>
     /// Providers a options to call an Encryption/decryption method at run time.
     /// </summary>
     public abstract class EncryptEngine : Attribute
     {
-        /// <summary>
-        /// Encrypt Engine Options
-        /// </summary>
-        internal enum OprationType
-        {
-            /// <summary>
-            /// Encrypt string.
-            /// </summary>
-            Encrypt,
-
-            /// <summary>
-            /// decrypt string.
-            /// </summary>
-            Descrypt
-        }
-
         /// <summary>
         /// Encrypt as string.
         /// </summary>
@@ -73,7 +59,7 @@ namespace LightADO
             {
                 EncrypOrDecrypProperty(objectToEncrypt, oprationType);
             }
-                
+
             return objectToEncrypt;
         }
 
@@ -110,14 +96,14 @@ namespace LightADO
         /// <param name="oprationType">oprationType wither to encrypt or decrypt</param>
         private static void EncrypOrDecrypProperty<T>(T objectToEncrypt, OprationType oprationType)
         {
-           var properties = objectToEncrypt.GetType().GetProperties()
-                                       .Where(prop => prop.IsDefined(typeof(EncryptEngine), false));
+            var properties = objectToEncrypt.GetType().GetProperties()
+                .Where(prop => prop.IsDefined(typeof(EncryptEngine), false));
 
             foreach (PropertyInfo property in properties)
             {
                 if (property.GetValue(objectToEncrypt) != null && property.GetValue(objectToEncrypt) is string)
                 {
-                    if(oprationType == OprationType.Encrypt)
+                    if (oprationType == OprationType.Encrypt)
                     {
                         property.SetValue(objectToEncrypt, CallEncryptMethod(((MemberInfo)property).GetCustomAttribute(typeof(EncryptEngine), true), property.GetValue(objectToEncrypt).ToString()));
                     }
@@ -136,7 +122,8 @@ namespace LightADO
         /// <returns>a value after it get encrypted</returns>
         private static string CallEncryptMethod(object customEncryptObject, string value)
         {
-            return customEncryptObject.GetType().GetMethod("Encrypt").Invoke(customEncryptObject, new object[1] { (object)value }).ToString();
+            return customEncryptObject.GetType().GetMethod("Encrypt").Invoke(customEncryptObject, new object[1] {
+                (object) value }).ToString();
         }
 
         /// <summary>
@@ -147,7 +134,8 @@ namespace LightADO
         /// <returns>a value after it get decrypted</returns>
         private static string CallDecryptMethod(object customEncryptObject, string value)
         {
-            return customEncryptObject.GetType().GetMethod("Decrypt").Invoke(customEncryptObject, new object[1] { (object)value }).ToString();
+            return customEncryptObject.GetType().GetMethod("Decrypt").Invoke(customEncryptObject, new object[1] {
+                (object) value }).ToString();
         }
     }
 }

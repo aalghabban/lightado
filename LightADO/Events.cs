@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright (C) 2019 ALGHABBAn
+ * a.alghabban@icloud.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -17,8 +17,6 @@
 
 namespace LightADO
 {
-    using System;
-
     /// <summary>
     /// Will be fired after the connection closed.
     /// </summary>
@@ -53,5 +51,5 @@ namespace LightADO
     /// Will be fired On Error.
     /// </summary>
     /// <param name="ex">the error to throw</param>
-    public delegate void OnError(Exception ex);
+    public delegate void OnError(LightAdoExcption ex);
 }

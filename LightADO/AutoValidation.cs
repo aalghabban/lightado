@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright (C) 2019 ALGHABBAn
+ * a.alghabban@icloud.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -17,9 +17,10 @@
 
 namespace LightADO
 {
-    using System;
     using System.Reflection;
+    using System;
 
+    [AttributeUsage(AttributeTargets.Property)]
     /// <summary>
     /// Set Property to be auto validate before  
     /// sending the object data to the database.

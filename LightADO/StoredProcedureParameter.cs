@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright (C) 2019 ALGHABBAn
+ * a.alghabban@icloud.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -33,9 +33,7 @@ namespace LightADO
         /// <summary>
         /// Initializes a new instance of the <see cref="StoredProcedureParameter"/> class.
         /// </summary>
-        public StoredProcedureParameter()
-        {
-        }
+        public StoredProcedureParameter() { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="StoredProcedureParameter"/> class.
@@ -86,7 +84,7 @@ namespace LightADO
         {
             get
             {
-                return new Query(this.LightAdoSetting.ConnectionString).ExecuteToListOfObject<StoredProcedureParameter>("select PARAMETER_NAME as Name, PARAMETER_MODE as Mode, Data_Type as TypeName from information_schema.parameters where specific_name= @StoredProcedureName", CommandType.Text, new Parameter("StoredProcedureName", (object)this.storedProcedureName, ParameterDirection.Input));
+                return new Query(this.LightAdoSetting.ConnectionString).ExecuteToListOfObject<StoredProcedureParameter>("select PARAMETER_NAME as Name, PARAMETER_MODE as Mode, Data_Type as TypeName from information_schema.parameters where specific_name= @StoredProcedureName", CommandType.Text, new Parameter("StoredProcedureName", this.storedProcedureName, ParameterDirection.Input));
             }
         }
     }

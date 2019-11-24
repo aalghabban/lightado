@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright (C) 2019 ALGHABBAn
+ * a.alghabban@icloud.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -54,13 +54,23 @@ namespace LightADO
         /// <param name="extraInfo">any more details</param>
         internal static void ThrowExacptionOrEvent(OnError onError, Exception exception, string extraInfo = "")
         {
+            if (exception.InnerException != null && exception.InnerException.GetType() == typeof(ValidationException))
+            {
+                throw exception.InnerException;
+            }
+
             if (onError == null)
             {
+                if (exception.GetType() != typeof(LightAdoExcption))
+                {
+                    throw new LightAdoExcption(exception, exception.Message);
+                }
+
                 throw exception;
             }
-                
+
             exception.Source = extraInfo;
-            onError(exception);
+            onError(new LightAdoExcption(exception, exception.Message));
         }
     }
 }

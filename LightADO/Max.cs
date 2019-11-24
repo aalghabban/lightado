@@ -1,4 +1,4 @@
-﻿/*
+/*
  * a.alghabban@icloud.com
  *
  * This program is free software: you can redistribute it and/or modify
@@ -17,32 +17,25 @@
 
 namespace LightADO
 {
-    using System;
-
-    [AttributeUsage(AttributeTargets.Property)]
-    /// <summary>
-    /// Use this class to rename the property 
-    /// to database name.
-    /// </summary>
-    public class ColumnName : Attribute
+    [System.AttributeUsage(System.AttributeTargets.Property, Inherited = false, AllowMultiple = false)]
+    public class Max : AutoValidation
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ColumnName"/> class.
-        /// </summary>
-        /// <param name="name">the name of the column</param>
-        public ColumnName(string name)
+        public Max(double maximum, string onNotValidMessage = "valid not valid")
         {
-            if (string.IsNullOrEmpty(name) == true)
-            {
-                throw new LightAdoExcption("Column name can't be null");
-            }
-
-            this.Name = name;
+            this.maximum = maximum;
+            this.onNotValidMessage = onNotValidMessage;
         }
 
-        /// <summary>
-        /// Gets or sets the Column Name in database
-        /// </summary>
-        public string Name { get; set; }
+        private string onNotValidMessage;
+
+        private double maximum;
+
+        public void Validate(double value)
+        {
+            if (value > this.maximum)
+            {
+                throw new ValidationException(this.onNotValidMessage);
+            }
+        }
     }
 }

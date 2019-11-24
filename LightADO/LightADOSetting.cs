@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright (C) 2019 ALGHABBAn
+ * a.alghabban@icloud.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -68,7 +68,7 @@ namespace LightADO
             {
                 if (string.IsNullOrWhiteSpace(value))
                 {
-                    throw new Exception("Can't set null or empty as connection string");
+                    throw new LightAdoExcption("Can't set null or empty as connection string");
                 }
 
                 this.connectionStirng = SqlConnectionHandler.ValdiateGivenConnectionString(value);

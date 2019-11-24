@@ -1,7 +1,0 @@
-C:\Users\aalgh\Documents\Visual Studio 2019\Projects\lightado\LightADO\bin\Debug\netcoreapp3.0\LightADO.deps.json
-C:\Users\aalgh\Documents\Visual Studio 2019\Projects\lightado\LightADO\bin\Debug\netcoreapp3.0\LightADO.dll
-C:\Users\aalgh\Documents\Visual Studio 2019\Projects\lightado\LightADO\bin\Debug\netcoreapp3.0\LightADO.pdb
-C:\Users\aalgh\Documents\Visual Studio 2019\Projects\lightado\LightADO\obj\Debug\netcoreapp3.0\LightADO.AssemblyInfoInputs.cache
-C:\Users\aalgh\Documents\Visual Studio 2019\Projects\lightado\LightADO\obj\Debug\netcoreapp3.0\LightADO.AssemblyInfo.cs
-C:\Users\aalgh\Documents\Visual Studio 2019\Projects\lightado\LightADO\obj\Debug\netcoreapp3.0\LightADO.dll
-C:\Users\aalgh\Documents\Visual Studio 2019\Projects\lightado\LightADO\obj\Debug\netcoreapp3.0\LightADO.pdb

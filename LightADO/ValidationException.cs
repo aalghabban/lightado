@@ -1,4 +1,4 @@
-﻿/*
+/*
  * a.alghabban@icloud.com
  *
  * This program is free software: you can redistribute it and/or modify
@@ -17,11 +17,13 @@
 
 namespace LightADO
 {
-    using System;
+    public class ValidationException : System.Exception
+    {
+        public ValidationException(string message)
+        {
+            this.Message = message;
+        }
 
-    [AttributeUsage(AttributeTargets.Property)]
-    /// <summary>
-    /// Marked Property as Foreign Key
-    /// </summary>
-    public class ForeignKey : Attribute { }
+        public new string Message { get; private set; }
+    }
 }

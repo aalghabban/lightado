@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright (C) 2019 ALGHABBAn
+ * a.alghabban@icloud.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -17,15 +17,17 @@
 
 namespace LightADO
 {
-    using System;
     using System.Collections.Generic;
-    using System.Data;
     using System.Data.SqlClient;
+    using System.Data;
     using System.IO;
     using System.Reflection;
-    using System.Xml;
+    using System.Threading.Tasks;
     using System.Xml.Serialization;
+    using System.Xml;
+    using System;
     using Newtonsoft.Json;
+    using static LightADO.Types;
 
     /// <summary>
     /// Provides a way to execute, map object from - to SQL Command.
@@ -35,18 +37,13 @@ namespace LightADO
         /// <summary>
         /// Initializes a new instance of the <see cref="Query"/> class.
         /// </summary>
-        public Query() : base()
-        {
-        }
+        public Query() : base() { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Query"/> class.
         /// </summary>
         /// <param name="connectionString">connection string or key name</param>
-        public Query(string connectionString)
-          : base(connectionString)
-        {
-        }
+        public Query(string connectionString) : base(connectionString) { }
 
         /// <summary>
         /// will be fired Before Open Connection.
@@ -84,6 +81,18 @@ namespace LightADO
         public event LightADO.OnError OnError;
 
         /// <summary>
+        /// Asynchronous Execute To Data Table
+        /// </summary>
+        /// <param name="command">SQL Command To Execute.</param>
+        /// <param name="commandType">Command Type text or SP</param>
+        /// <param name="parameters">parameters of the command</param>
+        /// <returns>a data table object</returns>
+        public Task<DataTable> ExecuteToDataTableAsync(string command, CommandType commandType = CommandType.StoredProcedure, params Parameter[] parameters)
+        {
+            return Task.FromResult<DataTable>(this.ExecuteToDataTable(command, commandType, parameters));
+        }
+
+        /// <summary>
         /// Execute To Data Table
         /// </summary>
         /// <param name="command">SQL Command To Execute.</param>
@@ -102,9 +111,34 @@ namespace LightADO
         /// <param name="commandType">Command Type text or SP</param>
         /// <param name="parameters">parameters of the command</param>
         /// <returns>a data Set object</returns>
+        public Task<DataSet> ExecuteToDataSetAsync(string command, CommandType commandType = CommandType.StoredProcedure, params Parameter[] parameters)
+        {
+            return Task.FromResult<DataSet>(this.ExecuteToDataSet(command, commandType, parameters));
+        }
+
+        /// <summary>
+        /// Execute To Data Set
+        /// </summary>
+        /// <param name="command">SQL Command To Execute.</param>
+        /// <param name="commandType">Command Type text or SP</param>
+        /// <param name="parameters">parameters of the command</param>
+        /// <returns>a data Set object</returns>
         public DataSet ExecuteToDataSet(string command, CommandType commandType = CommandType.StoredProcedure, params Parameter[] parameters)
         {
             return DataMapper.ConvertDataTableToDataSet(this.ExecuteToDataTable(SqlCommandFactory.Create(command, commandType, this.LightAdoSetting, parameters)));
+        }
+
+        /// <summary>
+        /// Execute Command and map result to Object
+        /// </summary>
+        /// <typeparam name="T">The T Type of the object</typeparam>
+        /// <param name="command">Command To Execute.</param>
+        /// <param name="commandType">the command type text or SP</param>
+        /// <param name="parameters">the parameters of the Command</param>
+        /// <returns>a single T object</returns>
+        public Task<T> ExecuteToObjectAsync<T>(string command, CommandType commandType = CommandType.StoredProcedure, params Parameter[] parameters)
+        {
+            return Task.FromResult<T>(this.ExecuteToObject<T>(command, commandType, parameters));
         }
 
         /// <summary>
@@ -138,8 +172,21 @@ namespace LightADO
 
             foreach (PropertyInfo property in obj.GetType().GetProperties())
             {
-                mapResultToThisObject.GetType().GetProperty(property.Name).SetValue((object)mapResultToThisObject, property.GetValue((object)obj));
+                mapResultToThisObject.GetType().GetProperty(property.Name).SetValue(mapResultToThisObject, property.GetValue(obj));
             }
+        }
+
+        /// <summary>
+        /// Execute To List Of Object
+        /// </summary>
+        /// <typeparam name="T">The type T of object</typeparam>
+        /// <param name="command">command to execute.</param>
+        /// <param name="commandType">command type text or SP.</param>
+        /// <param name="parameters">parameters of the commands</param>
+        /// <returns>a list of T.</returns>
+        public Task<List<T>> ExecuteToListOfObjectAsync<T>(string command, CommandType commandType = CommandType.StoredProcedure, params Parameter[] parameters)
+        {
+            return Task.FromResult<List<T>>(DataMapper.ConvertDataTableToListOfObject<T>(this.ExecuteToDataTable(SqlCommandFactory.Create(command, commandType, this.LightAdoSetting, parameters)), this.OnError));
         }
 
         /// <summary>
@@ -153,6 +200,20 @@ namespace LightADO
         public List<T> ExecuteToListOfObject<T>(string command, CommandType commandType = CommandType.StoredProcedure, params Parameter[] parameters)
         {
             return DataMapper.ConvertDataTableToListOfObject<T>(this.ExecuteToDataTable(SqlCommandFactory.Create(command, commandType, this.LightAdoSetting, parameters)), this.OnError);
+        }
+
+        /// <summary>
+        /// Execute command and get JSON or XML file.
+        /// </summary>
+        /// <typeparam name="T">the T type of the object</typeparam>
+        /// <param name="command">command or SP name.</param>
+        /// <param name="commandType">command as text or SP name</param>
+        /// <param name="formatType">what format the result should be.</param>
+        /// <param name="parameters">the command parameters.</param>
+        /// <returns>a JSON or XML of the an object</returns>
+        public Task<string> ExecuteToObjectAsync<T>(string command, CommandType commandType = CommandType.StoredProcedure, FormatType formatType = FormatType.XML, params Parameter[] parameters)
+        {
+            return Task.FromResult<string>(this.ExecuteToObject<T>(command, commandType, formatType, parameters));
         }
 
         /// <summary>
@@ -179,6 +240,20 @@ namespace LightADO
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// Execute command and get JSON or XML file.
+        /// </summary>
+        /// <typeparam name="T">the T type of the object</typeparam>
+        /// <param name="command">command or SP name.</param>
+        /// <param name="commandType">command as text or SP name</param>
+        /// <param name="formatType">what format the result should be.</param>
+        /// <param name="parameters">the command parameters.</param>
+        /// <returns>a List of JSON or XML of the an object</returns>
+        public Task<List<string>> ExecuteToListOfObjectAsync<T>(string command, CommandType commandType = CommandType.StoredProcedure, FormatType formatType = FormatType.XML, params Parameter[] parameters)
+        {
+            return Task.FromResult<List<string>>(this.ExecuteToListOfObject<T>(command, commandType, formatType, parameters));
         }
 
         /// <summary>
@@ -283,7 +358,7 @@ namespace LightADO
             }
             catch (Exception ex)
             {
-                throw new Exception("An error occurred", ex);
+                throw new LightAdoExcption(ex);
             }
         }
     }

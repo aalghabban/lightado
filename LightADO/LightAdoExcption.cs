@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright (C) 2019 ALGHABBAn
+ * a.alghabban@icloud.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -14,10 +14,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
- 
- namespace LightADO
+
+namespace LightADO
 {
     using System;
+    using System.Reflection;
 
     /// <summary>
     /// Provider exception for light ADO errors.
@@ -33,9 +34,17 @@
             this.Message = message;
         }
 
+        public LightAdoExcption(Exception ex, string message = "An error occurred, check the error details for more.")
+        {
+            this.Message = message;
+            this.Details = ex;
+        }
+
         /// <summary>
         /// Gets the error Messages
         /// </summary>
         public new string Message { get; private set; }
+
+        public Exception Details { get; set; }
     }
 }

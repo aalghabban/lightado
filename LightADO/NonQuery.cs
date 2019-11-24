@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright (C) 2019 ALGHABBAn
+ * a.alghabban@icloud.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -17,10 +17,12 @@
 
 namespace LightADO
 {
-    using System;
     using System.Collections.Generic;
-    using System.Data;
     using System.Data.SqlClient;
+    using System.Data;
+    using System.Threading.Tasks;
+    using System;
+    using static LightADO.Types;
 
     /// <summary>
     /// Providers a methods to execute non queries into a database.
@@ -30,18 +32,13 @@ namespace LightADO
         /// <summary>
         /// Initializes a new instance of the <see cref="NonQuery"/> class.
         /// </summary>
-        public NonQuery()
-        {
-        }
+        public NonQuery() { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NonQuery"/> class.
         /// </summary>
         /// <param name="connectionString">The connection string or a key name in the configuration file</param>
-        public NonQuery(string connectionString)
-          : base(connectionString)
-        {
-        }
+        public NonQuery(string connectionString) : base(connectionString) { }
 
         /// <summary>
         /// will be fired before the Non Query get execute.
@@ -87,16 +84,32 @@ namespace LightADO
         /// <returns>true if the query get Executes</returns>
         public bool Execute(string command, CommandType commandType = CommandType.Text, params Parameter[] parameters)
         {
-            try
-            {
-                return this.ExcecuteNonQueryCommand(SqlCommandFactory.Create(command, commandType, this.LightAdoSetting, parameters));
-            }
-            catch (Exception ex)
-            {
-                QueryBase.ThrowExacptionOrEvent(this.OnError, ex, string.Empty);
-            }
+            return this.ExcecuteNonQueryCommand(SqlCommandFactory.Create(command, commandType, this.LightAdoSetting, parameters));
+        }
 
-            return false;
+        /// <summary>
+        /// Execute Non Query
+        /// </summary>
+        /// <param name="command">the SP or the SQL command as text.</param>
+        /// <param name="commandType">the command type</param>
+        /// <param name="parameters">any parameters needed by the query.</param>
+        /// <returns>true if the query get Executes</returns>
+        public Task<bool> ExecuteAsync(string command, CommandType commandType = CommandType.Text, params Parameter[] parameters)
+        {
+            return Task.FromResult<bool>(this.Execute(command, commandType, parameters));
+        }
+
+        /// <summary>
+        /// Execute Non Query
+        /// </summary>
+        /// <typeparam name="T">the Type of object to map</typeparam>
+        /// <param name="command">the SP or the SQL command as text.</param>
+        /// <param name="objectToMap">object to map</param>
+        /// <param name="parameters">any parameters needed by the query.</param>
+        /// <returns>true if the query get Executed</returns>
+        public Task<bool> ExecuteAsync<T>(string command, T objectToMap, params Parameter[] parameters)
+        {
+            return Task.FromResult<bool>(this.Execute(command, objectToMap, parameters));
         }
 
         /// <summary>
@@ -109,18 +122,53 @@ namespace LightADO
         /// <returns>true if the query get Executed</returns>
         public bool Execute<T>(string command, T objectToMap, params Parameter[] parameters)
         {
-            try
+            AutoValidation.ValidateObject<T>(objectToMap);
+            EncryptEngine.EncryptOrDecryptObject<T>(objectToMap, OprationType.Encrypt);
+            return this.ExcecuteNonQueryCommand<T>(SqlCommandFactory.Create(command, CommandType.StoredProcedure, this.LightAdoSetting, DataMapper.MapObjectToStoredProcedure<T>(command, objectToMap, this.LightAdoSetting, this.OnError, parameters).ToArray()), objectToMap, parameters);
+        }
+
+        /// <summary>
+        /// Execute Stored Procedure with list of objects.
+        /// </summary>
+        /// <typeparam name="T">the Type of object to map</typeparam>
+        /// <param name="command">the SP or the SQL command as text.</param>
+        /// <param name="objectToMap">object to map</param>
+        /// <param name="parameters">any parameters needed by the query.</param>
+        /// <returns>true if the query get Executed</returns>
+        public Task<bool> ExecuteAsync<T>(string command, List<T> objectToMap, params Parameter[] parameters)
+        {
+            return Task.FromResult<bool>(this.Execute(command, objectToMap, parameters));
+        }
+
+        /// <summary>
+        /// Execute Stored Procedure with list of objects.
+        /// </summary>
+        /// <typeparam name="T">the Type of object to map</typeparam>
+        /// <param name="command">the SP or the SQL command as text.</param>
+        /// <param name="objectToMap">object to map</param>
+        /// <param name="parameters">any parameters needed by the query.</param>
+        /// <returns>true if the query get Executed</returns>
+        public bool Execute<T>(string command, List<T> objectToMap, params Parameter[] parameters)
+        {
+            foreach (T obj in objectToMap)
             {
-                AutoValidation.ValidateObject<T>(objectToMap);
-                EncryptEngine.EncryptOrDecryptObject<T>(objectToMap, EncryptEngine.OprationType.Encrypt);
-                return this.ExcecuteNonQueryCommand<T>(SqlCommandFactory.Create(command, CommandType.StoredProcedure, this.LightAdoSetting, DataMapper.MapObjectToStoredProcedure<T>(command, objectToMap, this.LightAdoSetting, this.OnError, parameters).ToArray()), objectToMap, parameters);
-            }
-            catch (Exception ex)
-            {
-                QueryBase.ThrowExacptionOrEvent(this.OnError, ex, string.Empty);
+                AutoValidation.ValidateObject<T>(obj);
+                EncryptEngine.EncryptOrDecryptObject<T>(obj, OprationType.Encrypt);
+                this.ExcecuteNonQueryCommand<T>(SqlCommandFactory.Create(command, CommandType.StoredProcedure, this.LightAdoSetting, DataMapper.MapObjectToStoredProcedure<T>(command, obj, this.LightAdoSetting, this.OnError, parameters).ToArray()), obj, parameters);
             }
 
-            return false;
+            return true;
+        }
+
+        /// <summary>
+        /// Execute a Non Query Transaction Command.
+        /// </summary>
+        /// <param name="transactions">Transaction list to Execute</param>
+        /// <param name="rollbackOnError">wither to Rollback or not</param>
+        /// <returns>true if all Transaction Execute</returns>
+        public Task<bool> ExecuteAsync(List<Transaction> transactions, bool rollbackOnError = true)
+        {
+            return Task.FromResult<bool>(this.Execute(transactions, rollbackOnError));
         }
 
         /// <summary>
