@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
-    <Version>5.3.0</Version>
+    <Version>5.4.0</Version>
     <Authors>ALGHABBAN</Authors>
     <Company>Quad Microsystem</Company>
     <Description>Let's face it Open, close, execute and handle errors for ADO is drag. That's why we wrote **LightAdo dotNet**
@@ -20,14 +20,27 @@ It includes built-in casting, validation,  encryption, bulks , logs and more out
 **** Don't upgrad unless you can offer modifying your code  to support dotnet 3.0 ***** 
 ====================
 
-This release is all about Performance, reducing the execution time be removing some if, cleaning the code. 
-- Fixing bugs with default values. 
-- Remove support for app.config files.
-- Upgrading all packages dependencies to last version and start fixing some issues.</PackageReleaseNotes>
+Map Object vice versa between CLI and SQL Server.
+Validate the object before push it to SQL Server.
+Custome Validation ber property.
+Setting default values for each property.
+Relationship mapping between objects using Primary and forign kyes.
+SQL Server Transcation supported.
+Change type of property on runtime before send it to SQL Server.
+Use C# naming conventions to replace the naming conventions for SQL server.
+Convert object vice verrsa between Json and XML and CLI.
+Go old schoole and get straight-forward Data set or datatable.
+Send Bulks of objects for insert, update and delete with support for workflow and Relationship.
+Plug your logic to lightado events gives you the power to control and see the transactions all the way from mapping, validations execution, closing tell the object get back to you.
+Enable logging using the power of log4net.
+Encrypt each property and decrypt on run time, using your encryption methods.
+Multi Mapping convert result to multiple types of objects.
+
+</PackageReleaseNotes>
     <PackageId>LightAdo.net</PackageId>
     <Product>LightAdo.net</Product>
-    <AssemblyVersion>5.3.0.0</AssemblyVersion>
-    <FileVersion>5.3.0.0</FileVersion>
+    <AssemblyVersion>5.4.0.0</AssemblyVersion>
+    <FileVersion>5.4.0.0</FileVersion>
     <RepositoryUrl>https://github.com/aalghabban/lightado</RepositoryUrl>
     <PackageProjectUrl>https://lighado.quadmicrosystem.com</PackageProjectUrl>
     <PackageIconUrl>https://i.ibb.co/9gdzCHg/lightweight-icon-250x250.png</PackageIconUrl>
