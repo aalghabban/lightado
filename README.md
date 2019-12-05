@@ -96,6 +96,9 @@ That's very much it, Done! things should be that simple and clean.
 - Multi Mapping convert result to multiple types of objects.
 
 # Chanage Logs
+ ### 5.4.1
+- Fixing  issue when mapping with custom column name during NonQuery and Query.
+
  ### 5.4.0 (Production)
 - Claening more code and adding some null check Statement.
 - Bulk Execute NonQuery.
