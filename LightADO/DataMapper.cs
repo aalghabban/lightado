@@ -340,12 +340,12 @@ namespace LightADO
             {
                 Type propertyType = propertyInfo.PropertyType;
 
-                if (propertyType.GetConstructor(new Type[1] { row[propertyInfo.Name].GetType() }) == null)
+                if (propertyType.GetConstructor(new Type[1] { row[GetColumnName(propertyInfo, onError)].GetType() }) == null)
                 {
                     return;
                 }
 
-                object instance = Activator.CreateInstance(propertyType, row[propertyInfo.Name]);
+                object instance = Activator.CreateInstance(propertyType, row[GetColumnName(propertyInfo, onError)]);
                 typeof(T).InvokeMember(propertyInfo.Name, BindingFlags.SetProperty, null, item, new object[1] { instance });
             }
             catch (Exception ex)
@@ -401,7 +401,7 @@ namespace LightADO
                             }
                             else
                             {
-                                parameters.Add(new Parameter(parameter.Name, obj.GetType().GetProperty(property.Name).GetValue(obj), parameter.GetParameterDirection));
+                                parameters.Add(new Parameter(parameter.Name.Split('@')[1], obj.GetType().GetProperty(property.Name).GetValue(obj), parameter.GetParameterDirection));
                             }
                             return;
                         }

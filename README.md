@@ -96,7 +96,10 @@ That's very much it, Done! things should be that simple and clean.
 - Multi Mapping convert result to multiple types of objects.
 
 # Chanage Logs
- ### 5.4.0 (Production)
+ ### 5.4.1 (Production)
+- Fixing  issue when mapping with custom column name during NonQuery and Query.
+
+ ### 5.4.0 
 - Claening more code and adding some null check Statement.
 - Bulk Execute NonQuery.
 - Workflow, now you can send list of object with relationship to insert. 
