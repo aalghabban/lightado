@@ -78,7 +78,7 @@ new NonQuery().Execute("Create_Employes", this);
 That's very much it, Done! things should be that simple and clean.
 
 # Features
-
+- Default CRUD Operations. 
 - Map Object vice versa between CLI and SQL Server.
 - Validate the object before push it to SQL Server. 
 - Custome Validation ber property.
