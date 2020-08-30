@@ -96,7 +96,43 @@ That's very much it, Done! things should be that simple and clean.
 - Multi Mapping convert result to multiple types of objects.
 
 # Chanage Logs
- ### 5.4.1 (Production)
+ ### 5.5.0 (production)
+-  Give your  class the power of ( Create, Update, Delete , GetById), 
+  by calling SP out of the box for example: 
+  
+  SP Name: Companies_Create. 
+  And Company Class as following: 
+  ```C#
+    [Table(Name="Companies")]
+    public class Company : CrudBase<Company>
+    {
+        public Company()
+        {
+            
+        }
+
+        public Company(int id) : base(id)
+        {
+        }
+
+        [PrimaryKey]
+        public int ID { get; set; }
+        
+        public string Name { get; set; }
+        
+        public bool IsActive { get; set; }
+    }
+```
+now you can write something like: 
+ ```C#
+new Company() {}.Create();
+```
+
+where create will call an SP named Companies_Create and rest of CRUD operations
+Companies_Update, Companies_Deleted, Companies_GetById
+
+
+ ### 5.4.1 
 - Fixing  issue when mapping with custom column name during NonQuery and Query.
 
  ### 5.4.0 

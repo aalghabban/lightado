@@ -165,7 +165,29 @@ namespace LightADO
         public void ExecuteToObject<T>(string command, T mapResultToThisObject, CommandType commandType = CommandType.StoredProcedure, params Parameter[] parameters)
         {
             T obj = DataMapper.ConvertDataTableToObject<T>(this.ExecuteToDataTable(SqlCommandFactory.Create(command, commandType, this.LightAdoSetting, parameters)), this.OnError);
-            if ((object)obj == null)
+            if (obj == null)
+            {
+                return;
+            }
+
+            foreach (PropertyInfo property in obj.GetType().GetProperties())
+            {
+                mapResultToThisObject.GetType().GetProperty(property.Name).SetValue(mapResultToThisObject, property.GetValue(obj));
+            }
+        }
+        
+        /// <summary>
+        /// Execute Command and map result to Object
+        /// </summary>
+        /// <typeparam name="T">The T Type of the object</typeparam>
+        /// <param name="command">Command To Execute.</param>
+        /// <param name="mapResultToThisObject">Map result to this object</param>
+        /// <param name="commandType">the command type text or SP</param>
+        /// <param name="parameters">the parameters of the Command</param>
+        public void ExecuteToObject<T>(string command, CrudBase<T> mapResultToThisObject, CommandType commandType = CommandType.StoredProcedure, params Parameter[] parameters)
+        {
+            T obj = DataMapper.ConvertDataTableToObject<T>(this.ExecuteToDataTable(SqlCommandFactory.Create(command, commandType, this.LightAdoSetting, parameters)), this.OnError);
+            if (obj == null)
             {
                 return;
             }
